@@ -1,8 +1,10 @@
 import pytest
 import torch
 
-from giavlm.data import assignment, read_manifest, synthetic
-from giavlm.evaluation import image_metrics, match_pairs, summarize, text_metrics
+from core.data import assignment, read_manifest, synthetic
+from evaluation.reconstruction import match_pairs, summarize
+from metrics.image import image_metrics
+from metrics.text import text_metrics
 
 
 def test_cross_task_images_never_cross_partitions(tmp_path):

@@ -19,6 +19,9 @@ def create_defense(config):
     elif name == "sign_sgd":
         return SignSGDDefense(**options)
     elif name in {"token_obfuscation", "safe_template"}:
+        # Deliberately fails closed rather than degrading like an unimplemented
+        # attack. A defense is part of the experimental condition: continuing
+        # would emit rows labelled with a defense that was never applied.
         raise NotImplementedError(f"{name} requires a separate pre-training protocol")
     raise ValueError(f"Unknown defense: {name}")
 

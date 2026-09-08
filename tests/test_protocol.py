@@ -4,11 +4,11 @@ import json
 import pytest
 import torch
 
-from giavlm.artifacts import read_json
-from giavlm.attacks import AttackRunner, Candidate, matching_loss, supports
-from giavlm.config import AttackSpec, ModelSpec, TrainingSpec, load_config
-from giavlm.federated import capture, fedavg, load_observation, save_observation, simulate_update
-from giavlm.models import build_model
+from core.artifacts import read_json
+from attacks import AttackRunner, Candidate, matching_loss, supports
+from core.config import AttackSpec, ModelSpec, TrainingSpec, load_config
+from core.fl import capture, fedavg, load_observation, save_observation, simulate_update
+from core.vlm_wrapper import build_model
 
 
 def fixture(mode="full", observation="gradient", steps=1, task="vqa", knowledge="private"):

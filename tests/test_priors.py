@@ -1,11 +1,11 @@
 import torch
 
-from giavlm.artifacts import write_tensors
-from giavlm.attacks import AttackRunner
-from giavlm.config import AttackSpec, ModelSpec, TrainingSpec
-from giavlm.federated import capture
-from giavlm.models import build_model
-from giavlm.priors import BatchNormPrior, document_prior, patch_prior
+from core.artifacts import write_tensors
+from attacks import AttackRunner
+from core.config import AttackSpec, ModelSpec, TrainingSpec
+from core.fl import capture
+from core.vlm_wrapper import build_model
+from attacks.priors import BatchNormPrior, document_prior, patch_prior
 
 
 def test_image_priors_preserve_autograd():

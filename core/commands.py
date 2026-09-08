@@ -1,6 +1,7 @@
 import argparse
 from dataclasses import asdict
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -10,6 +11,20 @@ import torch
 from core.artifacts import (environment, file_hash, read_json, source_fingerprint,
                               write_json, write_tensors)
 from core.config import digest, load_config
+
+
+def child_environment():
+    """Put the repository root on the child PYTHONPATH so `-m core.commands` resolves.
+
+    The staged CLI is launched as a module rather than an installed console
+    script, so a child started from another working directory would otherwise
+    fail to import `core`.
+    """
+    root = str(Path(__file__).resolve().parent.parent)
+    env = dict(os.environ)
+    existing = env.get("PYTHONPATH", "")
+    env["PYTHONPATH"] = f"{root}{os.pathsep}{existing}" if existing else root
+    return env
 
 
 def emit(value):
@@ -287,10 +302,12 @@ def smoke(args):
     if root.exists() and any(root.iterdir()):
         raise FileExistsError("Smoke output must be empty")
     root.mkdir(parents=True, exist_ok=True)
-    prefix = [sys.executable, "-m", "giavlm", "--threads", "1"]
+    prefix = [sys.executable, "-m", "core.commands", "--threads", "1"]
+
+    env = child_environment()
 
     def run(*command):
-        subprocess.run(prefix + list(command), check=True)
+        subprocess.run(prefix + list(command), check=True, env=env)
 
     run("prepare-data", "--synthetic", "--count", "96", "--clients", "1", "--output", str(root / "data"))
     modes = ["full"] if args.quick else ["full", "lora_llm"]

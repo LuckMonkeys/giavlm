@@ -3,10 +3,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from giavlm.artifacts import read_json, write_json
-from giavlm.cli import build_parser
-from giavlm.data import synthetic
-from giavlm.suite import execute, materialize
+from core.artifacts import read_json, write_json
+from core.commands import build_parser
+from core.data import synthetic
+from utils.suite import execute, materialize
 
 
 def command(*argv):

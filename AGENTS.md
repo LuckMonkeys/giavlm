@@ -12,8 +12,8 @@
   `*_adapted` methods.
 - `defenses/` owns upload transforms. `metrics/` owns metric implementations;
   `evaluation/` alone joins attack outputs to private reference artifacts.
-- `src/giavlm/` is a compatibility layer for existing imports and the staged CLI.
-  Add new implementation to the owning top-level package, not that layer.
+- There is no compatibility import layer. Every module is imported from its
+  owning top-level package; the staged CLI runs as `python -m core.commands`.
 - `utils/run_cmds.py` runs explicit Hydra jobs from `run_yaml/`, sequentially,
   with argv arrays and no shell execution or GPU occupancy jobs.
 
@@ -26,6 +26,11 @@
 - `BaseAttacker.attack` returns `Reconstruction`, not ground truth. Evaluation
   reads truth only after reconstruction is committed. Python type boundaries
   are not an OS sandbox; use a separate user/container for stronger isolation.
+- An unimplemented attack degrades to `Reconstruction("not_implemented")` so a
+  sweep records the empty cell; an unimplemented defense raises instead, because
+  a defense is part of the condition and continuing would mislabel the row.
+  `attacks/registry.py` is the single source of truth for the method surface and
+  is asserted to cover every name `attacks/factory.py` accepts.
 - Report unsupported or unimplemented conditions honestly. Closed-form APRIL,
   iDLG, DAGER, H3 embedding recovery and active-server attacks are not implemented.
 - Uploaded defenses currently use defense-unaware raw-update matching; this
@@ -56,7 +61,7 @@
 
 ```bash
 python -m pytest -q
-ruff check core attacks defenses metrics evaluation utils examples src tests
+ruff check core attacks defenses metrics evaluation utils examples tests
 python examples/run_attack.py --cfg job --resolve
 python examples/run_attack.py attack.iterations=2 attack.checkpoint_interval=1
 python -m utils.run_cmds --cmd-config-yaml run_yaml/tiny_smoke.yaml

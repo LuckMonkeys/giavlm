@@ -1,5 +1,6 @@
 from dataclasses import replace
 from pathlib import Path
+import re
 
 from hydra import compose, initialize_config_dir
 from omegaconf import OmegaConf
@@ -13,6 +14,7 @@ from core.fl import NamedGradientAccumulator, capture, simulate_secure_aggregati
 from core.knowledge import AdversaryKnowledge
 from core.vlm_wrapper import build_model
 from attacks.factory import create_attacker
+from attacks.registry import IMPLEMENTED, METHODS, NOT_APPLICABLE, UNIMPLEMENTED
 from defenses.factory import create_defense
 from metrics.text import pii_exact_match_recall, token_set_f1
 from utils.run_cmds import materialize_jobs
@@ -144,6 +146,17 @@ def test_defense_is_in_report_condition(tmp_path):
     report = read_json(tmp_path / result["runs"][0]["result"])
     assert report["condition"]["defense"]["name"] == "clipping"
     assert report["condition"]["attack_policy"] == "defense_unaware_raw_update_matching"
+
+
+def test_registry_describes_every_factory_name():
+    """METHODS is the benchmark surface; the factory must not accept an undescribed name."""
+    source = Path(__file__).resolve().parent.parent / "attacks" / "factory.py"
+    accepted = set(re.findall(r'name == "([a-z0-9_]+)"', source.read_text()))
+    accepted |= set(re.findall(r'name in \{([^}]*)\}', source.read_text())[0].replace('"', "").replace(" ", "").split(","))
+    assert accepted, "factory name extraction failed"
+    assert accepted <= set(METHODS), f"undescribed factory names: {sorted(accepted - set(METHODS))}"
+    assert set(METHODS) == set(IMPLEMENTED) | set(UNIMPLEMENTED) | set(NOT_APPLICABLE)
+    assert not (set(IMPLEMENTED) & set(UNIMPLEMENTED))
 
 
 def test_factory_does_not_alias_closed_form_april():

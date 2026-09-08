@@ -4,10 +4,11 @@ from dataclasses import replace
 import pytest
 import torch
 
-from giavlm.attacks import Candidate, matching_loss
-from giavlm.config import ModelSpec, TrainingSpec
-from giavlm.federated import capture, simulate_update
-from giavlm.models import HFAdapter, TinyTokenizer
+from attacks import Candidate, matching_loss
+from core.config import ModelSpec, TrainingSpec
+from core.fl import capture, simulate_update
+from core.adapters.hf import HFAdapter
+from core.adapters.tiny_llava import TinyTokenizer
 
 
 def hf_fixture(family, mode):

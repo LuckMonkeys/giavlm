@@ -68,7 +68,6 @@ giavlm/
   jupyter/                    Analysis notebook workspace (no fabricated results)
   figs/                       Figure workspace
   tests/                      Legacy regression + new Hydra/protocol tests
-  src/giavlm/                 Backwards-compatible imports and CLI launchers
   docs/                       Detailed protocol/baselines/validation notes
   GI-DQA-Gradient-Inversion-of-Multimodal-Models/  Untouched reference
 ```

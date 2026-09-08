@@ -6,6 +6,7 @@ import subprocess
 import sys
 
 from core.artifacts import file_hash, read_json, write_json
+from core.commands import child_environment
 from core.config import digest, load_config, validate
 from core.data import read_manifest
 
@@ -140,6 +141,7 @@ def execute(args):
         with (log_dir / f"{job['id']}.log").open("a") as log:
             for command in commands:
                 # No shell expansion. Training data paths never appear in the attack argv.
-                subprocess.run([sys.executable, "-m", "giavlm", "--threads", str(args.threads),
-                                *command], check=True, stdout=log, stderr=subprocess.STDOUT)
+                subprocess.run([sys.executable, "-m", "core.commands", "--threads", str(args.threads),
+                                *command], check=True, stdout=log, stderr=subprocess.STDOUT,
+                               env=child_environment())
         print(json.dumps({"job": job["id"], "status": "finished"}), flush=True)

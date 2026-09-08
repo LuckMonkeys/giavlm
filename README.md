@@ -12,7 +12,7 @@ of numerical reproduction of the original papers.
 
 The project now follows the Hydra organization of `llm_privacy_eval`.
 Implementation lives in `core/`, `attacks/`, `defenses/`, `metrics/`, and
-`evaluation/`; `src/giavlm/` only preserves existing imports and staged commands.
+`evaluation/`. There is no compatibility import layer.
 See [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) for ownership and the explicit
 implemented/planned feature boundary, and [AGENTS.md](AGENTS.md) for contributor rules.
 
@@ -27,7 +27,7 @@ versions to project metadata instead of maintaining a second pin list.
 
 ```bash
 uv sync --frozen --extra dev --extra metrics
-uv run giavlm doctor
+uv run python -m core.commands doctor
 uv run pytest -q
 ```
 
@@ -37,11 +37,15 @@ For a CPU-only environment, install PyTorch first from its CPU index:
 uv venv .venv
 uv pip install --python .venv/bin/python --index-url https://download.pytorch.org/whl/cpu torch==2.6.0 torchvision==0.21.0
 uv pip install --python .venv/bin/python -e '.[dev,metrics]'
-.venv/bin/giavlm smoke --output runs/smoke
+.venv/bin/python -m core.commands smoke --output runs/smoke
 ```
 
 The development validation environment for this checkout is
-`/tmp/giavlm-venv/bin/python`. It does not modify the existing Conda environment.
+`/tmp/giavlm-venv/bin/python`, which matches the pins above exactly. It lives
+under `/tmp` and does not survive a reboot; recreate it with the commands above
+in a durable path before relying on it. The Conda environment `gia`
+(torch 2.6.0+cu124, transformers 4.49.0, peft 0.14.0) also runs the full suite
+and is the one to use once GPUs are available.
 `smoke` runs each stage in a separate process and covers both tasks, full/LoRA,
 and gradient/multistep-delta observations. Use `--quick` for one pipeline.
 
@@ -97,11 +101,11 @@ The following API and flat `configs/{tiny,llava,blip2,qwen2_5_vl}.yaml` files
 remain available for existing scripts. They are not Hydra presets.
 
 ```bash
-giavlm prepare-data --synthetic --count 96 --clients 1 --output data/toy
-giavlm capture --config configs/tiny.yaml --data data/toy/samples.jsonl --client 0 --output runs/example/capture --set training.clients=1 --set training.clients_per_round=1
-giavlm attack --observation runs/example/capture/public --output runs/example/attack
-giavlm evaluate --reconstruction runs/example/attack --truth runs/example/capture/private
-giavlm report --input runs/example --output runs/example/report.json
+python -m core.commands prepare-data --synthetic --count 96 --clients 1 --output data/toy
+python -m core.commands capture --config configs/tiny.yaml --data data/toy/samples.jsonl --client 0 --output runs/example/capture --set training.clients=1 --set training.clients_per_round=1
+python -m core.commands attack --observation runs/example/capture/public --output runs/example/attack
+python -m core.commands evaluate --reconstruction runs/example/attack --truth runs/example/capture/private
+python -m core.commands report --input runs/example --output runs/example/report.json
 ```
 
 `capture/public/` contains only the model/update and declared public text.
@@ -114,9 +118,9 @@ Override configuration with repeated `--set key=value`. Examples:
 
 ```bash
 # A client upload after five local minibatches, not an averaged gradient.
-giavlm capture --data data/toy/samples.jsonl --output runs/delta/capture --set training.observation=client_delta --set training.local_steps=5
+python -m core.commands capture --data data/toy/samples.jsonl --output runs/delta/capture --set training.observation=client_delta --set training.local_steps=5
 # Resume only an identical attack; budgets/configurations cannot silently change.
-giavlm attack --observation runs/example/capture/public --output runs/example/attack --resume
+python -m core.commands attack --observation runs/example/capture/public --output runs/example/attack --resume
 ```
 
 ## Prepare COCO and VQAv2
@@ -125,7 +129,7 @@ Obtain official COCO caption/image files and matching VQAv2 question/answer
 annotations. No datasets or model weights are downloaded implicitly by preparation.
 
 ```bash
-giavlm prepare-data --captions /datasets/coco/annotations/captions_train2014.json --images /datasets/coco/train2014 --questions /datasets/vqa/v2_OpenEnded_mscoco_train2014_questions.json --annotations /datasets/vqa/v2_mscoco_train2014_annotations.json --output data/coco-vqa
+python -m core.commands prepare-data --captions /datasets/coco/annotations/captions_train2014.json --images /datasets/coco/train2014 --questions /datasets/vqa/v2_OpenEnded_mscoco_train2014_questions.json --annotations /datasets/vqa/v2_mscoco_train2014_annotations.json --output data/coco-vqa
 ```
 
 The splitter groups by `coco:<image_id>` across tasks and annotations. It uses
@@ -148,10 +152,10 @@ use float32 weights/updates, and require cached weights. Populate the HF cache s
 `HF_HOME` and `TORCH_HOME` when running in a restricted container.
 
 ```bash
-giavlm doctor --config configs/llava.yaml --probe --output runs/llava-probe.json
-giavlm train --config configs/llava.yaml --data data/coco-vqa/samples.jsonl --output runs/federation
-giavlm capture --config configs/llava.yaml --model runs/federation/round-0010 --data data/coco-vqa/samples.jsonl --client 0 --output runs/round10/capture
-giavlm utility --model runs/federation/round-0010 --data data/coco-vqa/samples.jsonl --device cuda:0 --output runs/round10/utility.json
+python -m core.commands doctor --config configs/llava.yaml --probe --output runs/llava-probe.json
+python -m core.commands train --config configs/llava.yaml --data data/coco-vqa/samples.jsonl --output runs/federation
+python -m core.commands capture --config configs/llava.yaml --model runs/federation/round-0010 --data data/coco-vqa/samples.jsonl --client 0 --output runs/round10/capture
+python -m core.commands utility --model runs/federation/round-0010 --data data/coco-vqa/samples.jsonl --device cuda:0 --output runs/round10/utility.json
 ```
 
 Training uses functional SGD, weighted FedAvg, no momentum/weight decay, disabled
@@ -206,8 +210,8 @@ starts from random candidates, with no reference-driven initialization.
 Materialize a pilot before executing a large matrix:
 
 ```bash
-giavlm suite --configs configs/llava.yaml --data data/coco-vqa/samples.jsonl --samples 16 --split tune --seeds 0 --methods ig_adapted --output runs/pilot
-giavlm run-suite --manifest runs/pilot/jobs.jsonl --limit 1
+python -m core.commands suite --configs configs/llava.yaml --data data/coco-vqa/samples.jsonl --samples 16 --split tune --seeds 0 --methods ig_adapted --output runs/pilot
+python -m core.commands run-suite --manifest runs/pilot/jobs.jsonl --limit 1
 ```
 
 `suite` writes sealed configs, argv-based jobs, and GPU-hour budgets; it does not

@@ -23,14 +23,15 @@ suite requires no pretrained weights or network access. It checks:
 - Training/checkpoint/capture/utility workflows, sealed suite inputs, and actual
   interrupted optimization resume compared against a continuous run.
 
-`giavlm smoke` additionally executes prepare/capture/attack/evaluate/report in
+`python -m core.commands smoke` additionally executes prepare/capture/attack/evaluate/report in
 separate Python processes across eight task/training/upload combinations.
 These synthetic runs test execution and contracts, not pretrained-model privacy.
 
 ## Hydra Layout Validation (2026-09-08)
 
 - All original regression tests remain enabled after moving implementation out
-  of `src/giavlm/`; new tests cover Hydra groups/presets, run-ID resume, protocol
+  of the former `src/giavlm/` layer, which has since been removed entirely;
+  new tests cover Hydra groups/presets, run-ID resume, protocol
   mismatch rejection, shared model snapshots, pre-capture federated training,
   bounded OOM recovery, named aggregation, defense metadata and paired controls.
 - Executed both jobs in `run_yaml/tiny_smoke.yaml`: full/FedSGD/private and
