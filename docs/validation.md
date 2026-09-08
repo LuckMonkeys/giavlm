@@ -100,8 +100,11 @@ withholding them removes nothing. **Uploading only LoRA-B is not a defense at th
 first federated round.** Whether it becomes one after B moves off zero is
 untested here and needs a round-indexed sweep.
 
-Pipeline comparison on real images with the 8px tiny fixture, 4 runs, 60
-iterations, `prior_only` control paired per run:
+Attack-budget sensitivity on the tiny fixture, 4 runs, `prior_only` and `random`
+paired per run. Two budgets, because the first one inverts the conclusion:
+
+At 60 iterations on real medical images, 8px, where the fixture's 27-word
+vocabulary truncated two of four targets to the empty string:
 
 | method | PSNR | SSIM | target ROUGE-L | target EM |
 |---|---|---|---|---|
@@ -110,11 +113,29 @@ iterations, `prior_only` control paired per run:
 | dlg_adapted | 7.33 | 0.034 | 0.35 | 0.25 |
 | random | 7.09 | -0.025 | 0.00 | 0.00 |
 
-The control outscores every attack on PSNR and MSE, so absolute image fidelity
-here reflects the smoothness prior rather than the observed update. The attacks
-separate from `random` only on SSIM and on the text metrics. This is a fixture
-result about the pipeline and the metrics, not a privacy claim about any real
-model.
+At 2000 iterations on synthetic data, 16px, where the text is representable in
+the fixture vocabulary:
+
+| method | PSNR | SSIM | target EM | target ROUGE-L | question ROUGE-L |
+|---|---|---|---|---|---|
+| prior_only | 6.59 | 0.026 | 0.00 | 0.00 | 0.50 |
+| random | 5.23 | 0.008 | 0.00 | 0.00 | 0.50 |
+| dlg_adapted | 7.71 | 0.047 | 0.50 | 0.667 | 0.21 |
+| ig_adapted | 10.26 | 0.094 | 0.50 | 0.667 | 0.17 |
+
+The PSNR ordering reverses between the two. At 60 iterations the control beats
+every attack, which reads as "image fidelity comes from the smoothness prior";
+at 2000 it does not, and `ig_adapted` recovers the private answer exactly in two
+of four runs. **The first table measures the budget, not the attack.** Do not
+quote a PSNR comparison from a run that has not been checked for budget
+sensitivity; the repository's own real-model config uses 1000 iterations.
+
+One effect survives the larger budget and is not an artifact: on the *question*
+the control scores higher than either attack (0.50 against 0.17 and 0.21) and no
+method matches it exactly. Optimization concentrates on the target, which is
+where the loss is taken, and does worse than a plain prior on the question. This
+is a fixture result about the pipeline, budgets and metrics, not a privacy claim
+about any real model.
 
 ## Before Formal Results
 
