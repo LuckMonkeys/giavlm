@@ -1,0 +1,2 @@
+# Editable project metadata is the single source of pinned runtime dependencies.
+-e .[dev,metrics]

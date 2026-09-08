@@ -1,0 +1,16 @@
+model:
+  family: tiny
+  name: tiny-vlm
+  image_size: 8
+  question_length: 6
+  target_length: 5
+training:
+  mode: full
+  observation: gradient
+  knowledge: private
+attack:
+  method: ig_adapted
+  text_method: tag_adapted
+  iterations: 100
+  max_evaluations: 400
+

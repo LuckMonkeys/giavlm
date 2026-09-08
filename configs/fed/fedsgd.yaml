@@ -1,0 +1,15 @@
+name: fedsgd
+mode: full
+observation: gradient
+batch_size: 1
+local_steps: 1
+lr: 0.01
+lora_rank: 8
+lora_alpha: 16
+clients: 1
+clients_per_round: 1
+rounds: 0
+snapshots: [0]
+seed: 42
+secure_aggregation: false
+upload_parameters: []

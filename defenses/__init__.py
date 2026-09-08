@@ -1,0 +1,1 @@
+"""Federated VLM privacy benchmark."""

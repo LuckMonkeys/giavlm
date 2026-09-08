@@ -1,0 +1,5 @@
+defaults:
+  - vqav2_llava_ig_private
+  - override data: coco_captions
+  - override model: blip2
+  - _self_

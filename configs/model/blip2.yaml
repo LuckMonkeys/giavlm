@@ -1,0 +1,13 @@
+defaults:
+  - default
+name: blip2
+family: blip2
+checkpoint: Salesforce/blip2-opt-2.7b
+revision: 59a1ef6c1e5117b3f65523d1c6066825bcf315e3
+device: cuda:0
+dtype: float32
+image_size: 224
+patch_size: 14
+question_length: 64
+target_length: 32
+local_files_only: true

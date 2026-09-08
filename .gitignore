@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+/data/
+runs/
+outputs/
+artifacts/
+.cache/
+
+# Vendored reference project (has its own .git)
+GI-DQA-Gradient-Inversion-of-Multimodal-Models/

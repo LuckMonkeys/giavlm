@@ -1,0 +1,8 @@
+name: coco_captions
+task: caption
+manifest: null
+split: eval
+client: 0
+offset: 0
+count: 96
+seed: 42

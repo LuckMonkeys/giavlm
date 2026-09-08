@@ -1,0 +1,28 @@
+defaults:
+  - _self_
+  - fed: fedsgd
+  - data: synthetic
+  - model: tiny_llava
+  - attack: ig_adapted
+  - defense: none
+  - knowledge: private
+  - evaluation: default
+
+num_runs: 1
+start_run_id: 0
+resume: false
+output_dir: null
+model_snapshot: null
+threads: 1
+oom_recovery:
+  enabled: true
+  max_retries: 1
+
+hydra:
+  job:
+    chdir: false
+  run:
+    dir: ./outputs/${attack.name}_${knowledge.name}_${defense.name}_${model.name}_${data.name}_${fed.name}_${now:%Y-%m-%d_%H-%M-%S}
+  sweep:
+    dir: ./outputs/multirun/${now:%Y-%m-%d_%H-%M-%S}
+    subdir: ${hydra.job.num}
