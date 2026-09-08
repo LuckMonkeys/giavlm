@@ -29,8 +29,6 @@ def protocol_config(config: DictConfig) -> Config:
     fed.pop("name")
     if fed.pop("secure_aggregation"):
         raise NotImplementedError("Aggregate inversion is not an individual-client observation")
-    if fed.pop("upload_parameters"):
-        raise NotImplementedError("Upload masks are not yet integrated into attack replay")
     fed.update(task=value["data"]["task"], knowledge=knowledge.name)
     attack = dict(value["attack"])
     attack["method"] = attack.pop("name")

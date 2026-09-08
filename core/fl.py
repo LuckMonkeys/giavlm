@@ -1,4 +1,5 @@
 from dataclasses import asdict, replace
+import fnmatch
 from pathlib import Path
 import re
 
@@ -55,8 +56,26 @@ class NamedGradientAccumulator:
                      for name in self.names), {"num_clients": self.client_count}
 
 
+def resolve_upload(names, patterns):
+    """Expand fnmatch patterns into an explicit, ordered allowlist.
+
+    Patterns keep configs readable for models with hundreds of adapters, but the
+    resolved names are what travels and what the attacker sees, so an unmatched
+    pattern is an error rather than a silently empty upload.
+    """
+    if not patterns:
+        return sorted(names)
+    selected = set()
+    for pattern in patterns:
+        matched = fnmatch.filter(names, pattern)
+        if not matched:
+            raise ValueError(f"Upload pattern {pattern!r} matched no trainable parameter")
+        selected.update(matched)
+    return sorted(selected)
+
+
 def mask_upload(updates, parameter_names):
-    """Explicit parameter allowlist; not yet wired into inversion replay."""
+    """Explicit parameter allowlist applied to a client update before upload."""
     if not parameter_names or len(set(parameter_names)) != len(parameter_names):
         raise ValueError("Upload names must be unique and nonempty")
     if set(parameter_names) - set(updates):
@@ -104,8 +123,10 @@ def simulate_update(adapter, batch: Batch, spec: TrainingSpec, differentiable=Fa
 
 def capture(adapter, batch, questions: list[str], targets: list[str]):
     spec = adapter.training_spec
+    update = {k: v.detach().clone() for k, v in simulate_update(adapter, batch, spec).items()}
+    uploaded = resolve_upload(list(update), spec.upload_parameters)
     obs = Observation(model=replace(adapter.spec), training=replace(spec),
-                      tensors={k: v.detach().clone() for k, v in simulate_update(adapter, batch, spec).items()},
+                      tensors=mask_upload(update, uploaded),
                       model_fingerprint=adapter.fingerprint(),
                       public_questions=list(questions) if spec.knowledge != "private" and spec.task == "vqa" else [],
                       public_targets=list(targets) if spec.knowledge == "text_known" else [],

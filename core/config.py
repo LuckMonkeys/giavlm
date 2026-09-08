@@ -40,6 +40,10 @@ class TrainingSpec:
     rounds: int = 20
     snapshots: list[int] = field(default_factory=lambda: [0, 10, 20])
     seed: int = 42
+    # fnmatch patterns selecting which trainable parameters the client uploads.
+    # Empty means the whole trainable set. Resolved against the model at capture
+    # time and recorded there, so the wire stays an explicit allowlist.
+    upload_parameters: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -115,6 +119,10 @@ def validate(cfg: Config) -> Config:
             raise ValueError("Dimensions, counts and intervals must be positive")
     if t.lr <= 0 or a.lr <= 0 or a.text_lr <= 0 or a.seconds <= 0:
         raise ValueError("Learning rates and time budget must be positive")
+    if any(not isinstance(p, str) or not p.strip() for p in t.upload_parameters):
+        raise ValueError("Upload patterns must be nonempty strings")
+    if len(set(t.upload_parameters)) != len(t.upload_parameters):
+        raise ValueError("Upload patterns must be unique")
     if t.observation == "gradient" and t.local_steps != 1:
         raise ValueError("gradient observations require local_steps=1")
     if t.clients_per_round > t.clients or t.rounds < 0:

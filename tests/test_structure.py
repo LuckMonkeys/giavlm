@@ -48,7 +48,7 @@ def test_preset_and_knowledge_validation(tmp_path):
         protocol_config(config)
 
 
-@pytest.mark.parametrize("override", ["fed.secure_aggregation=true", "fed.upload_parameters=[x]",
+@pytest.mark.parametrize("override", ["fed.secure_aggregation=true",
                                       "knowledge.template_known=true", "defense=safe_template"])
 def test_unimplemented_protocols_fail_closed(tmp_path, override):
     with pytest.raises(NotImplementedError):

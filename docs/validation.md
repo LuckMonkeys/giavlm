@@ -87,6 +87,19 @@ Attack cost on the same model, measured not estimated:
   **This is a cost probe, not a result.** Optimization attacks at publication
   budgets are GPU work.
 
+Upload-mask axis on real medical images, tiny fixture, 3 runs, 60 iterations:
+
+| upload | tensors | PSNR | SSIM | target ROUGE-L | question ROUGE-L |
+|---|---|---|---|---|---|
+| whole LoRA update | 8 | 5.807 | 0.031 | 0.133 | 0.111 |
+| `*lora_B*` only | 4 | 5.807 | 0.031 | 0.133 | 0.111 |
+
+The two are identical to every reported digit, and inspecting the uploads shows
+why: all four `lora_A` tensors in the unmasked upload are exactly zero, so
+withholding them removes nothing. **Uploading only LoRA-B is not a defense at the
+first federated round.** Whether it becomes one after B moves off zero is
+untested here and needs a round-indexed sweep.
+
 Pipeline comparison on real images with the 8px tiny fixture, 4 runs, 60
 iterations, `prior_only` control paired per run:
 

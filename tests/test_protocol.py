@@ -7,7 +7,8 @@ import torch
 from core.artifacts import read_json
 from attacks import AttackRunner, Candidate, matching_loss, supports
 from core.config import AttackSpec, ModelSpec, TrainingSpec, load_config
-from core.fl import capture, fedavg, load_observation, save_observation, simulate_update
+from core.fl import (capture, fedavg, load_observation, mask_upload, resolve_upload,
+                     save_observation, simulate_update)
 from core.vlm_wrapper import build_model
 
 
@@ -205,3 +206,47 @@ def test_lora_a_carries_no_signal_at_initialization():
             p.add_(torch.full_like(p, 1e-3))
     moved = simulate_update(model, batch, training)
     assert any(float(moved[n].abs().max()) > 0.0 for n in a_names)
+
+
+def test_upload_patterns_resolve_to_an_explicit_allowlist():
+    names = ["a.lora_A.weight", "a.lora_B.weight", "b.lora_A.weight", "b.lora_B.weight"]
+    assert resolve_upload(names, []) == sorted(names), "no mask uploads the whole trainable set"
+    assert resolve_upload(names, ["*lora_B*"]) == ["a.lora_B.weight", "b.lora_B.weight"]
+    assert resolve_upload(names, ["a.*", "*lora_B*"]) == [
+        "a.lora_A.weight", "a.lora_B.weight", "b.lora_B.weight"], "patterns union, deduplicated"
+    with pytest.raises(ValueError, match="matched no trainable parameter"):
+        resolve_upload(names, ["vision.*"])
+    with pytest.raises(ValueError, match="unique and nonempty"):
+        mask_upload({"a": 1}, ["a", "a"])
+    with pytest.raises(ValueError, match="unknown parameters"):
+        mask_upload({"a": 1}, ["b"])
+
+
+def test_masked_upload_shrinks_the_observation_and_still_inverts(tmp_path):
+    """A client that uploads only grad(B) hands the attacker strictly less."""
+    training = TrainingSpec(mode="lora_llm", upload_parameters=["*lora_B*"])
+    model, batch = fixture(mode="lora_llm")
+    model.training_spec = training
+
+    full = simulate_update(model, batch, replace(training, upload_parameters=[]))
+    observation = capture(model, batch, model.decode(batch.questions), model.decode(batch.targets))
+
+    assert set(observation.tensors) < set(full), "the mask must drop parameters"
+    assert set(observation.tensors) == {n for n in full if "lora_B" in n}
+    assert all(torch.equal(observation.tensors[n], full[n]) for n in observation.tensors), \
+        "masking selects parameters; it must not alter their values"
+
+    spec = AttackSpec(method="ig_adapted", iterations=2, checkpoint_interval=1, max_evaluations=8)
+    result = AttackRunner(model, observation, spec).run()
+    assert result.status == "completed"
+
+
+def test_subset_observation_without_a_declared_mask_is_rejected():
+    """Silently dropping parameters would misreport what the client uploaded."""
+    model, batch = fixture(mode="lora_llm")
+    observation = capture(model, batch, model.decode(batch.questions), model.decode(batch.targets))
+    dropped = sorted(observation.tensors)[0]
+    observation.tensors = {k: v for k, v in observation.tensors.items() if k != dropped}
+    spec = AttackSpec(method="ig_adapted", iterations=1, checkpoint_interval=1, max_evaluations=4)
+    with pytest.raises(ValueError, match="do not match the configured trainable"):
+        AttackRunner(model, observation, spec).run()

@@ -94,11 +94,15 @@ checkpoints include optimizer state, candidate state, RNG and budget counters.
 - Runnable: existing VLM adaptations, both update modes, full/LLM-full/LoRA,
   private/question-known/text-known, five post-update defenses, Hydra repeats,
   resume, bounded OOM recovery, and the legacy staged workflows.
-- Helpers only: named full/LoRA aggregation, parameter upload masks, numerical
-  secure-aggregation mean, tokenizer-ID set F1, canary entity exact-match recall.
-  Masks/aggregate observations fail closed in the experiment entry until replay
-  and attribution are implemented. Token/canary helpers are not automatically
-  included in existing reconstruction reports.
+- `fed.upload_parameters` selects which trainable parameters the client uploads,
+  as fnmatch patterns resolved against the model at capture time. The resolved
+  names are what travels, an unmatched pattern is an error, and the attacker
+  matches on exactly the uploaded subset. With no mask the observation must still
+  equal the full trainable set, so a silently shrunk upload is rejected.
+- Helpers only: named full/LoRA aggregation, numerical secure-aggregation mean,
+  tokenizer-ID set F1. Aggregate observations fail closed in the experiment entry
+  until attribution is implemented. `token_set_f1` is not wired into reports
+  because the attack writes decoded strings rather than token IDs.
 - `prepare-data --medical {vqa_rad,slake}` downloads and normalizes VQA-RAD and
   SLAKE into the manifest schema. Images carry no upstream identifier, so the
   canonical image id is a content hash and every question about one image stays

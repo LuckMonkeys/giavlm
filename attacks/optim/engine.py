@@ -96,10 +96,18 @@ class AttackRunner:
         return self.elapsed_before + time.monotonic() - self.started
 
     def replay(self, batch, differentiable):
+        """Candidate update restricted to what the client actually uploaded.
+
+        The local replay necessarily computes every trainable parameter, but the
+        attacker may only match the uploaded subset. Filtering here keeps that
+        boundary in one place and preserves the key-set equality matching_loss
+        checks.
+        """
         self.check_budget()
         self.evaluations += 1
         self.local_backward_evaluations += self.observation.training.local_steps
-        return simulate_update(self.adapter, batch, self.observation.training, differentiable)
+        update = simulate_update(self.adapter, batch, self.observation.training, differentiable)
+        return {name: update[name] for name in self.observation.tensors}
 
     def text_score(self, candidate):
         if self.text_prior is None:
@@ -187,7 +195,11 @@ class AttackRunner:
         if support.status != "supported":
             return Reconstruction(support.status, support.reason)
         self.observation.validate()
-        if set(self.adapter.trainable()) != set(self.observation.tensors):
+        trainable = set(self.adapter.trainable())
+        observed = set(self.observation.tensors)
+        if not observed <= trainable:
+            raise ValueError("Observed parameters are not a subset of the configured trainable parameters")
+        if not self.observation.training.upload_parameters and observed != trainable:
             raise ValueError("Observed parameters do not match the configured trainable parameters")
         if self.adapter.fingerprint() != self.observation.model_fingerprint:
             raise ValueError("Attack model differs from the observed model state")
