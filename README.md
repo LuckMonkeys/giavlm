@@ -91,7 +91,7 @@ Aggregate inversion and upload-mask replay reject unsupported configuration
 instead of silently running an individual raw-gradient experiment.
 
 `data=medical_vqa` requires a pre-normalized manifest in the existing schema;
-medical dataset conversion and canary injection are not implemented. Closed-form
+canary injection is not implemented. Closed-form
 APRIL, iDLG, DAGER, H3 embedding recovery, and malicious-server modules return
 `not_implemented`; directory presence is not an implementation claim.
 

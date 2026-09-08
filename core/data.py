@@ -103,6 +103,72 @@ def prepare_coco(captions, image_root, output, questions=None, annotations=None,
     return Path(output)
 
 
+MEDICAL_VQA_SOURCES = {
+    "vqa_rad": "flaviagiammarino/vqa-rad",
+    "slake": "mdwiratathya/SLAKE-vqa-english",
+}
+
+
+def _canonical_image_id(image):
+    """Content hash of the decoded pixels.
+
+    Neither corpus ships an image identifier, but both repeat one image across
+    several questions. Hashing the decoded bytes makes those rows share an
+    image_id, so `assignment` keeps them inside one split and client and
+    `read_manifest` does not reject the manifest.
+    """
+    digest = hashlib.sha256()
+    digest.update(f"{image.mode}:{image.size[0]}x{image.size[1]}:".encode())
+    digest.update(image.tobytes())
+    return digest.hexdigest()
+
+
+def prepare_medical_vqa(output, sources=("vqa_rad",), seed=42, clients=10, limit=None,
+                        cache_dir=None):
+    """Normalize medical VQA corpora into the benchmark manifest schema.
+
+    Upstream train/validation/test splits are provenance only; the benchmark
+    re-splits deterministically by canonical image id. Each row carries a single
+    reference answer, so leave-one-out VQA consensus scoring degenerates to exact
+    match on this data.
+    """
+    from datasets import load_dataset
+
+    unknown = set(sources) - set(MEDICAL_VQA_SOURCES)
+    if unknown:
+        raise ValueError(f"Unknown medical VQA source(s): {sorted(unknown)}")
+    output = Path(output)
+    manifest = output / "samples.jsonl"
+    if manifest.exists():
+        raise FileExistsError(manifest)
+    image_dir = output / "images"
+    image_dir.mkdir(parents=True, exist_ok=True)
+
+    records, written = [], {}
+    for slug in sources:
+        dataset = load_dataset(MEDICAL_VQA_SOURCES[slug], cache_dir=cache_dir)
+        for source_split in sorted(dataset):
+            rows = dataset[source_split]
+            for index in range(len(rows) if limit is None else min(limit, len(rows))):
+                row = rows[index]
+                image = row["image"].convert("RGB")
+                key = _canonical_image_id(image)
+                if key not in written:
+                    path = image_dir / f"{key[:16]}.png"
+                    image.save(path)
+                    written[key] = path
+                answer = str(row["answer"]).strip()
+                records.append({"sample_id": f"{slug}:{source_split}:{index}",
+                                "image_id": f"medvqa:{key[:16]}", "task": "vqa",
+                                "image": str(written[key]), "question": str(row["question"]).strip(),
+                                "target": answer, "references": [answer],
+                                "source": slug, "source_split": source_split})
+    if not records:
+        raise ValueError("No medical VQA records were produced")
+    write_manifest(manifest, records, seed, clients)
+    return manifest
+
+
 def read_manifest(path, task=None, split=None, client=None, unique_images=False):
     with Path(path).open() as stream:
         records = [json.loads(line) for line in stream if line.strip()]

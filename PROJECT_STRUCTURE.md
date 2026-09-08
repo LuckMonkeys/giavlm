@@ -99,9 +99,12 @@ checkpoints include optimizer state, candidate state, RNG and budget counters.
   Masks/aggregate observations fail closed in the experiment entry until replay
   and attribution are implemented. Token/canary helpers are not automatically
   included in existing reconstruction reports.
-- `data=medical_vqa` accepts the existing normalized JSONL VQA schema only. It
-  does not download/convert a medical corpus or inject synthetic PII. Such
-  dataset-specific preparation and canary loss protocols remain future work.
+- `prepare-data --medical {vqa_rad,slake}` downloads and normalizes VQA-RAD and
+  SLAKE into the manifest schema. Images carry no upstream identifier, so the
+  canonical image id is a content hash and every question about one image stays
+  in a single split and client. Each row has one reference answer, so
+  leave-one-out VQA consensus degenerates to exact match on this data.
+  Synthetic PII injection and canary loss protocols remain future work.
 - Not implemented: original closed-form APRIL, iDLG, DAGER, H3 embedding recovery,
   malicious-server attacks, token obfuscation, safe-template training defense,
   registered-PSNR, CW-SSIM, IIP and VLM-judge answerability.

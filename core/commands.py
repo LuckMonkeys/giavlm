@@ -36,12 +36,15 @@ def configuration(args):
 
 
 def prepare_data(args):
-    from core.data import prepare_coco, synthetic
+    from core.data import prepare_coco, prepare_medical_vqa, synthetic
     if args.synthetic:
         manifest = synthetic(args.output, args.count, args.seed, args.clients)
+    elif args.medical:
+        manifest = prepare_medical_vqa(args.output, tuple(args.medical), args.seed, args.clients,
+                                       args.limit, args.cache_dir)
     else:
         if not args.captions or not args.images:
-            raise ValueError("Supply --captions and --images, or use --synthetic")
+            raise ValueError("Supply --captions and --images, --medical, or --synthetic")
         manifest = prepare_coco(args.captions, args.images, Path(args.output) / "samples.jsonl",
                                 args.questions, args.annotations, args.seed, args.clients)
     emit({"manifest": str(manifest), "sha256": file_hash(manifest)})
@@ -372,8 +375,14 @@ def build_parser():
             p.add_argument("--set", action="append", default=[], metavar="KEY=VALUE")
         return p
 
+    from core.data import MEDICAL_VQA_SOURCES
+
     p = command("prepare-data", prepare_data)
     p.add_argument("--synthetic", action="store_true")
+    p.add_argument("--medical", nargs="+", choices=sorted(MEDICAL_VQA_SOURCES),
+                   help="Normalize the named medical VQA corpora into one manifest")
+    p.add_argument("--limit", type=int, help="Rows per upstream split; for quick CPU checks")
+    p.add_argument("--cache-dir", help="Dataset cache directory; keep it off the NAS mount")
     p.add_argument("--count", type=int, default=64)
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--clients", type=int, default=10)

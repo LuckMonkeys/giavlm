@@ -70,7 +70,7 @@ class ExperimentRunner:
             manifest = self.output / "data" / "samples.jsonl"
             if not manifest.exists():
                 synthetic(self.output / "data", data.count, data.seed, self.protocol.training.clients)
-        elif data.name in {"vqav2", "coco_captions", "medical_vqa"}:
+        elif data.name in {"vqav2", "coco_captions", "medical_vqa", "vqa_rad", "slake"}:
             if not data.manifest:
                 raise ValueError(f"data.manifest is required for {data.name}; use a prepared JSONL manifest")
             manifest = Path(to_absolute_path(data.manifest))

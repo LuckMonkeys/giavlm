@@ -1,0 +1,8 @@
+name: vqa_rad
+task: vqa
+manifest: null
+split: eval
+client: 0
+offset: 0
+count: 96
+seed: 42
