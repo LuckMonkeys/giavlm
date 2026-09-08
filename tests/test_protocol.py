@@ -176,3 +176,32 @@ def test_interrupted_resume_matches_continuous_run(tmp_path, monkeypatch):
     assert continuous.questions == resumed.questions and continuous.targets == resumed.targets
     assert continuous.history == resumed.history
     assert continuous.costs["update_evaluations"] == resumed.costs["update_evaluations"]
+
+
+def test_lora_a_carries_no_signal_at_initialization():
+    """PEFT starts B at zero, so the first federated round uploads only grad(B).
+
+    With B = 0 the chain rule gives grad(A) = (alpha/r) * B^T G^T X = 0, while
+    grad(B) = (alpha/r) * G^T X A^T is nonzero. Input activations X therefore
+    reach the server only through the r-dimensional random projection A until B
+    moves off zero. Locking this in because it bounds what a first-round attack
+    on a LoRA upload can possibly recover.
+    """
+    training = TrainingSpec(mode="lora_llm")
+    model, batch = fixture(mode="lora_llm")
+    update = simulate_update(model, batch, training)
+    a_names = [n for n in update if "lora_A" in n]
+    b_names = [n for n in update if "lora_B" in n]
+    assert a_names and len(a_names) == len(b_names)
+
+    lora_b = [p for n, p in model.named_parameters() if "lora_B" in n]
+    assert all(float(p.abs().max()) == 0.0 for p in lora_b), "PEFT should initialize B at zero"
+    assert all(float(update[n].abs().max()) == 0.0 for n in a_names), "grad(A) must vanish while B is zero"
+    assert any(float(update[n].abs().max()) > 0.0 for n in b_names), "grad(B) must carry the signal"
+
+    # Once B is off zero the A gradients become informative again.
+    with torch.no_grad():
+        for p in lora_b:
+            p.add_(torch.full_like(p, 1e-3))
+    moved = simulate_update(model, batch, training)
+    assert any(float(moved[n].abs().max()) > 0.0 for n in a_names)

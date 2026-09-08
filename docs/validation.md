@@ -51,6 +51,58 @@ a physical GPU allocation failure. The existing GPU/pretrained limitations below
 remain unchanged. Reorganization changes the source fingerprint, so pre-migration
 checkpoints are preserved but cannot be resumed under a different implementation.
 
+## Real-Model and Real-Data Validation (2026-09-08)
+
+Medical VQA ingestion, run on the real corpora rather than a fixture:
+
+- `prepare-data --medical vqa_rad slake` produced 9277 rows over 956 unique
+  images. `read_manifest` accepted the manifest, so no image group crossed a
+  split or client boundary, and `assignment` reproduced every row's placement.
+
+Second-order probe on a real pretrained VLM, CPU only:
+
+- `doctor --probe` passed on Qwen2.5-VL-3B-Instruct (3.76B parameters, float32,
+  CPU, 112px, `lora_llm`) in 98s. `replay_max_error` was exactly 0.0 and the
+  candidate gradient norms were finite and nonzero for images (114.8), questions
+  (1.92) and targets (1.89). The `pixel_values -> loss` path is therefore
+  differentiable end to end through a current `transformers` VLM; both LLaVA and
+  Qwen2-VL insert visual features with `inputs_embeds.masked_scatter`, and the
+  two `@torch.no_grad()` sites in that code sit on Qwen's integer-only RoPE
+  forward and on BLIP-2's `generate`, neither of which is on the loss path.
+- The probe reported 144 of 288 trainable tensors as zero-valued in the upload.
+  All 144 are `lora_A`. PEFT initializes B at zero, so at the first federated
+  round `grad(A) = (alpha/r) B^T G^T X` vanishes and only
+  `grad(B) = (alpha/r) G^T X A^T` is uploaded: input activations reach the server
+  solely through the r-dimensional random projection A until B moves off zero.
+  `test_lora_a_carries_no_signal_at_initialization` locks this in. Any
+  first-round LoRA attack is bounded by it.
+
+Attack cost on the same model, measured not estimated:
+
+- `ig_adapted` on a real VQA-RAD/SLAKE image, CPU, float32, 112px, `lora_llm`:
+  10 iterations in 228s, i.e. **22.8s per iteration**. Extrapolating, the
+  `iterations: 1000` in `configs/qwen2_5_vl.yaml` is 6.3 hours per sample per
+  restart, and 24000 iterations is 152 hours. Ten iterations recovered nothing
+  (PSNR 8.26, SSIM 0.007, ROUGE-L 0.0), as expected at that budget.
+  **This is a cost probe, not a result.** Optimization attacks at publication
+  budgets are GPU work.
+
+Pipeline comparison on real images with the 8px tiny fixture, 4 runs, 60
+iterations, `prior_only` control paired per run:
+
+| method | PSNR | SSIM | target ROUGE-L | target EM |
+|---|---|---|---|---|
+| prior_only | 10.24 | 0.014 | 0.00 | 0.00 |
+| ig_adapted | 6.96 | 0.049 | 0.35 | 0.25 |
+| dlg_adapted | 7.33 | 0.034 | 0.35 | 0.25 |
+| random | 7.09 | -0.025 | 0.00 | 0.00 |
+
+The control outscores every attack on PSNR and MSE, so absolute image fidelity
+here reflects the smoothness prior rather than the observed update. The attacks
+separate from `random` only on SSIM and on the text metrics. This is a fixture
+result about the pipeline and the metrics, not a privacy claim about any real
+model.
+
 ## Before Formal Results
 
 1. Cache the pinned victim, text-prior, CLIP and LPIPS weights in writable paths.
@@ -64,9 +116,10 @@ checkpoints are preserved but cannot be resumed under a different implementation
 
 ## Limits of This Checkout's Validation
 
-The execution host has no usable CUDA driver. No pretrained 7B weights, full-scale
-COCO/VQAv2 experiment, external language/image prior or LPIPS/CLIP weight-based
-score has been validated here. The multi-GPU placement path needs GPU validation.
+No pretrained 7B weights, full-scale COCO/VQAv2 experiment, external
+language/image prior or LPIPS/CLIP weight-based score has been validated here.
+Real-model validation reached a 3B checkpoint on CPU at a 10-iteration budget
+only; no attack has been run to convergence on any pretrained VLM. The multi-GPU placement path needs GPU validation.
 This checkout does not establish baseline ranking, attack success rates, model
 privacy, or comparable downstream utility at the supplied default learning rates.
 
