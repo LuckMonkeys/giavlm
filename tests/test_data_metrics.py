@@ -2,9 +2,9 @@ from PIL import Image
 import pytest
 import torch
 
-from core.data import (MEDICAL_VQA_SOURCES, assignment, prepare_medical_vqa,
-                       read_manifest, synthetic)
-from evaluation.reconstruction import match_pairs, summarize
+from core.data import (MEDICAL_VQA_SOURCES, assignment, inject_canaries,
+                       prepare_medical_vqa, read_manifest, synthetic)
+from evaluation.reconstruction import canary_metrics, match_pairs, summarize
 from metrics.image import image_metrics
 from metrics.text import text_metrics
 
@@ -98,3 +98,58 @@ def test_medical_vqa_rejects_unknown_source(tmp_path):
     assert set(MEDICAL_VQA_SOURCES) == {"vqa_rad", "slake"}
     with pytest.raises(ValueError, match="Unknown medical VQA source"):
         prepare_medical_vqa(tmp_path / "med", sources=("imagenet",))
+
+
+def test_canary_injection_preserves_partitions_and_marks_entities(tmp_path):
+    source = synthetic(tmp_path / "base", count=12)
+    before = {r["sample_id"]: (r["split"], r["client"]) for r in read_manifest(source)}
+
+    # A different canary seed must not disturb the inherited partitioning.
+    injected = inject_canaries(tmp_path / "base" / "samples.jsonl", tmp_path / "canary",
+                               canary_seed=7, rate=1.0, field="question")
+    rows = read_manifest(injected)
+
+    assert {r["sample_id"]: (r["split"], r["client"]) for r in rows} == before, \
+        "injection must not move a sample between splits or clients"
+    for row in rows:
+        assert len(row["canary"]) == 3
+        assert all(value in row["question"] for value in row["canary"])
+    assert len({tuple(r["canary"]) for r in rows}) > 1, "entities vary across samples"
+    with pytest.raises(FileExistsError):
+        inject_canaries(source, tmp_path / "canary")
+
+
+def test_canary_injection_rate_and_field(tmp_path):
+    source = synthetic(tmp_path / "base", count=40)
+    partial = inject_canaries(source, tmp_path / "some", canary_seed=3, rate=0.5, field="target")
+    rows = read_manifest(partial)
+    marked = [r for r in rows if r["canary"]]
+    assert 0 < len(marked) < len(rows), "a rate below one leaves some rows clean"
+    for row in marked:
+        assert all(value in row["target"] for value in row["canary"])
+        assert row["references"] == [row["target"]]
+    for bad in [{"field": "image"}, {"rate": 0.0}, {"rate": 1.5}]:
+        with pytest.raises(ValueError):
+            inject_canaries(source, tmp_path / f"bad-{bad}", **bad)
+    (tmp_path / "base" / "samples.meta.json").unlink()
+    with pytest.raises(FileNotFoundError, match="inherits its partitioning"):
+        inject_canaries(source, tmp_path / "orphan")
+
+
+def test_canary_recall_scores_only_trained_entities():
+    row = {"canary": ["Ellary Northcott", "MRN5548093", "1968-03-16"]}
+    # All three reached the trained tokens; the attack recovered two.
+    full = canary_metrics(row, "patient Ellary Northcott MRN5548093 dob 1968-03-16 what",
+                          "Ellary Northcott MRN5548093 dob unknown")
+    assert full == {"canary_declared": 3, "canary_trained": 3, "canary_recall": 2 / 3}
+
+    # Truncation dropped two; recall is over the survivor only, not over three.
+    clipped = canary_metrics(row, "patient Ellary Northcott", "Ellary Northcott")
+    assert clipped == {"canary_declared": 3, "canary_trained": 1, "canary_recall": 1.0}
+
+    # Nothing survived tokenization, so recall is undefined rather than zero.
+    none_trained = canary_metrics(row, "what", "Ellary Northcott")
+    assert none_trained["canary_trained"] == 0 and none_trained["canary_recall"] is None
+
+    assert canary_metrics({"canary": []}, "a", "b") == {}
+    assert canary_metrics({}, "a", "b") == {}

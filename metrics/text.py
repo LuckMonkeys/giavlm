@@ -16,9 +16,14 @@ def edit_distance(a, b):
     return previous[-1]
 
 
+# Stateless and thread-safe for scoring; built once because evaluate() calls
+# text_metrics twice per sample.
+_ROUGE = RougeScorer(["rouge1", "rouge2", "rougeL"], use_stemmer=False)
+
+
 def text_metrics(reference, prediction):
     ref, pred = words(reference), words(prediction)
-    scores = RougeScorer(["rouge1", "rouge2", "rougeL"], use_stemmer=False).score(reference, prediction)
+    scores = _ROUGE.score(reference, prediction)
     overlap = sum((Counter(ref) & Counter(pred)).values())
     return {"exact_match": float(reference == prediction),
             "normalized_exact_match": float(ref == pred),

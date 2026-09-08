@@ -11,7 +11,7 @@ import torch
 from core.artifacts import read_json, read_tensors
 
 
-from metrics.text import words, edit_distance, text_metrics
+from metrics.text import words, edit_distance, pii_exact_match_recall, text_metrics
 from metrics.image import image_metrics
 from metrics.semantic import OptionalMetrics
 
@@ -30,6 +30,22 @@ def match_pairs(reference_images, prediction_images, reference_texts, prediction
     _, text_assignment = linear_sum_assignment(text_cost)
     agreement = float(np.mean(image_assignment == text_assignment)) if use_text and n > 1 else None
     return assignment.tolist(), agreement
+
+
+def canary_metrics(row, reference_text, prediction_text):
+    """Recall over the synthetic entities that actually reached the trained tokens.
+
+    An entity injected into the manifest can be truncated away by the model's
+    question/target budget, and one that was never trained on cannot leak. Scoring
+    it would understate recall, so survivors are counted separately and the drop is
+    reported rather than hidden.
+    """
+    declared = row.get("canary") or []
+    if not declared:
+        return {}
+    survived = [value for value in declared if value in reference_text]
+    return {"canary_declared": len(declared), "canary_trained": len(survived),
+            "canary_recall": pii_exact_match_recall(survived, prediction_text)}
 
 
 def evaluate(reconstruction_dir, truth_dir, spec, device="cpu"):
@@ -75,6 +91,7 @@ def evaluate(reconstruction_dir, truth_dir, spec, device="cpu"):
                 rows[i]["model_target"], result["targets"][j]).items()})
         metrics.update(optional.score(true_images[i], pred_images[j], rows[i]["model_target"],
                                       result["targets"][j], t["task"]))
+        metrics.update(canary_metrics(rows[i], reference_texts[i], prediction_texts[j]))
         report["samples"].append({"image_id": rows[i]["image_id"], "sample_id": rows[i]["sample_id"],
                                    "prediction_index": j, "metrics": metrics})
     return report

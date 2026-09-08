@@ -169,6 +169,78 @@ def prepare_medical_vqa(output, sources=("vqa_rad",), seed=42, clients=10, limit
     return manifest
 
 
+CANARY_GIVEN = ["Alden", "Brisco", "Corwen", "Delphy", "Ellary", "Fenwick",
+                "Garrick", "Hesper", "Ilbert", "Jarrah", "Kelvyn", "Lorwen"]
+CANARY_FAMILY = ["Fairbrook", "Ganthorpe", "Halvorsen", "Ingersoll", "Jessamy",
+                 "Kirkwald", "Lammerton", "Mowbray", "Northcott", "Osgarth"]
+
+
+def canary_entities(index, rng):
+    """Synthetic patient identifiers that do not occur in any source corpus.
+
+    The surnames are invented, so a recovered entity is evidence of leakage from
+    this run rather than of the attacker's language prior over clinical text.
+    """
+    name = f"{CANARY_GIVEN[rng.integers(len(CANARY_GIVEN))]} {CANARY_FAMILY[rng.integers(len(CANARY_FAMILY))]}"
+    mrn = f"MRN{int(rng.integers(1000000, 9999999))}"
+    dob = "{:04d}-{:02d}-{:02d}".format(int(rng.integers(1930, 2010)),
+                                        int(rng.integers(1, 13)), int(rng.integers(1, 29)))
+    return [name, mrn, dob]
+
+
+def inject_canaries(manifest, output, canary_seed=42, rate=1.0, field="question"):
+    """Rewrite a prepared manifest with synthetic PII in the question or target.
+
+    The partition seed and client count are inherited from the source manifest so
+    every sample keeps its split and client. Choosing them freely here would move
+    samples between partitions and silently break any comparison against the
+    un-injected baseline, which is the whole point of running both.
+
+    Injection happens before tokenization, so an entity may still be truncated
+    away by the model's question/target budget. The evaluator therefore scores
+    recall only over the entities that survived into the trained tokens.
+    """
+    if field not in {"question", "target"}:
+        raise ValueError("Canaries are injected into the question or the target")
+    if not 0 < rate <= 1:
+        raise ValueError("Canary rate must be in (0, 1]")
+    manifest = Path(manifest)
+    meta_path = manifest.with_suffix(".meta.json")
+    if not meta_path.is_file():
+        raise FileNotFoundError(f"Missing {meta_path}; canary injection inherits its partitioning")
+    meta = json.loads(meta_path.read_text())
+    seed, clients = meta["seed"], meta["clients"]
+    rows = read_manifest(manifest)
+    if not rows:
+        raise ValueError(f"No records in {manifest}")
+    output = Path(output)
+    destination = output / "samples.jsonl"
+    if destination.exists():
+        raise FileExistsError(destination)
+    original = {row["sample_id"]: (row["split"], row["client"]) for row in rows}
+    rng = np.random.default_rng(canary_seed)
+    records = []
+    for index, row in enumerate(sorted(rows, key=lambda r: r["sample_id"])):
+        row = dict(row)
+        for key in ["split", "client"]:
+            row.pop(key, None)
+        if rng.random() < rate:
+            entities = canary_entities(index, rng)
+            row["canary"] = entities
+            prefix = f"patient {entities[0]} {entities[1]} dob {entities[2]}"
+            row[field] = f"{prefix} {row[field]}".strip()
+            if field == "target":
+                row["references"] = [row["target"]]
+        else:
+            row["canary"] = []
+        records.append(row)
+    write_manifest(destination, records, seed, clients)
+    moved = {r["sample_id"] for r in records if original[r["sample_id"]] != (r["split"], r["client"])}
+    if moved:
+        raise RuntimeError(f"Canary injection moved {len(moved)} samples between partitions")
+    return destination
+
+
 def read_manifest(path, task=None, split=None, client=None, unique_images=False):
     with Path(path).open() as stream:
         records = [json.loads(line) for line in stream if line.strip()]

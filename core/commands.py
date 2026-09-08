@@ -50,6 +50,12 @@ def prepare_data(args):
     emit({"manifest": str(manifest), "sha256": file_hash(manifest)})
 
 
+def inject_canaries(args):
+    from core.data import inject_canaries as inject
+    manifest = inject(args.data, args.output, args.canary_seed, args.rate, args.field)
+    emit({"manifest": str(manifest), "sha256": file_hash(manifest)})
+
+
 def train(args):
     import numpy as np
     from core.data import load_batch, read_manifest
@@ -389,6 +395,14 @@ def build_parser():
     for name in ["captions", "images", "questions", "annotations"]:
         p.add_argument("--" + name)
     p.add_argument("--output", required=True)
+    p = command("inject-canaries", inject_canaries)
+    p.add_argument("--data", required=True, help="Prepared manifest to rewrite")
+    p.add_argument("--output", required=True)
+    p.add_argument("--field", default="question", choices=["question", "target"])
+    p.add_argument("--rate", type=float, default=1.0)
+    p.add_argument("--canary-seed", type=int, default=42,
+                   help="Entity generation only; partitioning is inherited from --data")
+
     p = command("train", train, True)
     p.add_argument("--data", required=True)
     p.add_argument("--output", required=True)

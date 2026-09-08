@@ -104,7 +104,14 @@ checkpoints include optimizer state, candidate state, RNG and budget counters.
   canonical image id is a content hash and every question about one image stays
   in a single split and client. Each row has one reference answer, so
   leave-one-out VQA consensus degenerates to exact match on this data.
-  Synthetic PII injection and canary loss protocols remain future work.
+  `inject-canaries` adds synthetic patient identifiers to a prepared manifest,
+  inheriting the source partitioning so the injected and clean runs stay
+  comparable. `evaluation/` reports `canary_recall` over the entities that
+  survived tokenization, plus `canary_declared`/`canary_trained` so the drop is
+  visible; recall is `None`, never zero, when nothing survived. The tiny
+  fixture's 27-word vocabulary cannot represent an entity, so canary runs need
+  a real tokenizer. `token_set_f1` stays unwired: the attack writes decoded
+  strings, not token IDs.
 - Not implemented: original closed-form APRIL, iDLG, DAGER, H3 embedding recovery,
   malicious-server attacks, token obfuscation, safe-template training defense,
   registered-PSNR, CW-SSIM, IIP and VLM-judge answerability.
