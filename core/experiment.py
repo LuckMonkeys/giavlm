@@ -26,7 +26,7 @@ def protocol_config(config: DictConfig) -> Config:
     model = dict(value["model"])
     model["name"] = model.pop("checkpoint")
     fed = dict(value["fed"])
-    # pop out name for the exactly match the dataclass
+    # Hydra group labels are provenance; strict protocol dataclasses contain behavior only.
     fed.pop("name")
     if fed.pop("secure_aggregation"):
         raise NotImplementedError("Aggregate inversion is not an individual-client observation")

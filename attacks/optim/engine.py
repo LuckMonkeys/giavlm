@@ -75,6 +75,7 @@ class BudgetExhausted(Exception):
 
 class AttackRunner:
     def __init__(self, adapter, observation, spec: AttackSpec):
+        self._validate_spec(spec)
         self.adapter, self.observation, self.spec = adapter, observation, spec
         self.evaluations = 0
         self.local_backward_evaluations = 0
@@ -87,6 +88,16 @@ class AttackRunner:
         self.best_score = math.inf
         self.text_prior = None
         self.image_prior = None
+
+    @staticmethod
+    def _validate_spec(spec):
+        """Validate optimizer details where they are actually consumed."""
+        if spec.lr <= 0 or spec.text_lr <= 0:
+            raise ValueError("Attack learning rates must be positive")
+        if spec.method != "random" and spec.checkpoint_interval <= 0:
+            raise ValueError("attack.checkpoint_interval must be positive")
+        if spec.text_method == "lamp_adapted" and spec.prior_interval <= 0:
+            raise ValueError("attack.prior_interval must be positive for LAMP")
 
     def check_budget(self):
         if self.evaluations >= self.spec.max_evaluations or self.elapsed() >= self.spec.seconds:

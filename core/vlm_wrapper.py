@@ -6,7 +6,8 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-from core.config import ModelSpec, TrainingSpec
+from core.config import (MODEL_DEVICE_MAPS, MODEL_DTYPES, MODEL_FAMILIES,
+                         ModelSpec, TrainingSpec)
 from core.types import Batch
 
 
@@ -23,6 +24,9 @@ class VLMAdapter(nn.Module, ABC):
 
     def __init__(self, spec: ModelSpec, training: TrainingSpec):
         super().__init__()
+        for field in ["image_size", "question_length", "target_length"]:
+            if getattr(spec, field) <= 0:
+                raise ValueError(f"model.{field} must be positive")
         self.spec, self.training_spec = spec, training
         self.position_gradient_names = []
         self.tokenizer = None
@@ -95,6 +99,8 @@ class VLMAdapter(nn.Module, ABC):
         for name, p in self.named_parameters():
             p.requires_grad_(mode == "full" or (mode == "llm_full" and self.is_language(name)))
         if mode == "lora_llm":
+            if self.training_spec.lora_rank <= 0 or self.training_spec.lora_alpha <= 0:
+                raise ValueError("LoRA rank and alpha must be positive")
             from peft import LoraConfig, inject_adapter_in_model
             names = [name for name, module in self.named_modules()
                      if isinstance(module, nn.Linear) and self.is_language(name)
@@ -165,6 +171,18 @@ def build_model(spec: ModelSpec, training: TrainingSpec):
     from core.adapters.qwen_vl import QwenVLAdapter
     classes = {"tiny": TinyAdapter, "llava": LlavaAdapter,
                "blip2": Blip2Adapter, "qwen2_5_vl": QwenVLAdapter}
+    if spec.family not in MODEL_FAMILIES:
+        raise ValueError(f"Unknown model family: {spec.family}")
+    if spec.family != "tiny" and not spec.revision:
+        raise ValueError("A pinned model revision is required; run doctor --resolve-revision")
+    if spec.dtype not in MODEL_DTYPES:
+        raise ValueError(f"Unsupported model dtype: {spec.dtype}")
+    if spec.family != "tiny" and spec.dtype == "float64":
+        raise ValueError("float64 is only supported for the tiny correctness fixture")
+    if spec.device_map not in MODEL_DEVICE_MAPS:
+        raise ValueError(f"Unsupported model device_map: {spec.device_map}")
+    if spec.family == "tiny" and spec.device_map:
+        raise ValueError("device_map is supported for Hugging Face models only")
     with torch.random.fork_rng(devices=[]):
         torch.manual_seed(spec.seed)
         adapter = classes[spec.family](spec, training)

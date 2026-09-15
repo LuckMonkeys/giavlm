@@ -148,6 +148,27 @@ def test_validation_rejects_ambiguous_protocol():
         load_config(overrides=["model.family=llava"])
 
 
+def test_implementation_specific_validation_is_owned_by_consumer():
+    """Core config ignores inactive details; their owning runtime validates them."""
+    full = TrainingSpec(mode="full", lora_rank=0, lora_alpha=0)
+    assert build_model(ModelSpec(), full).training_spec == full
+
+    with pytest.raises(ValueError, match="LoRA rank"):
+        build_model(ModelSpec(), TrainingSpec(mode="lora_llm", lora_rank=0))
+    with pytest.raises(ValueError, match="dtype"):
+        build_model(ModelSpec(dtype="float16"), TrainingSpec())
+    with pytest.raises(ValueError, match="divisible"):
+        build_model(ModelSpec(image_size=7, patch_size=4), TrainingSpec())
+
+    adapter, batch = fixture()
+    observation = capture(adapter, batch, [], [])
+    with pytest.raises(ValueError, match="checkpoint_interval"):
+        AttackRunner(adapter, observation, AttackSpec(checkpoint_interval=0))
+    with pytest.raises(ValueError, match="prior_interval"):
+        AttackRunner(adapter, observation,
+                     AttackSpec(text_method="lamp_adapted", prior_interval=0))
+
+
 def test_public_token_ids_do_not_depend_on_decode_roundtrip():
     adapter, batch = fixture(knowledge="text_known")
     batch.targets[0, 0] = 3  # An unknown token disappears from the decoded string.

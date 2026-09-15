@@ -59,6 +59,10 @@ class TinyLM(nn.Module):
 class TinyAdapter(VLMAdapter):
     def __init__(self, spec, training):
         super().__init__(spec, training)
+        if spec.hidden_size <= 0 or spec.patch_size <= 0:
+            raise ValueError("Tiny hidden_size and patch_size must be positive")
+        if spec.image_size % spec.patch_size:
+            raise ValueError("Tiny image_size must be divisible by patch_size")
         self.tokenizer = TinyTokenizer()
         dim = spec.hidden_size
         patches = (spec.image_size // spec.patch_size) ** 2

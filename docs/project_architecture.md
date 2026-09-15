@@ -144,7 +144,7 @@ Hydra attack.name       -> AttackSpec.method
 Hydra fed.*             -> TrainingSpec.*
 ```
 
-严格协议由 `ModelSpec`、`TrainingSpec`、`AttackSpec` 和 `EvalSpec` 构成，会检查模型族、精度、训练模式、观测类型、知识条件、长度、预算、上传参数模式等约束。落盘的 `run-NNNNN/protocol.json` 使用这一格式。
+严格协议由 `ModelSpec`、`TrainingSpec`、`AttackSpec` 和 `EvalSpec` 构成。所有枚举型配置选项集中定义在 `core/config.py` 顶部的有序 tuple 中，便于统一查看和修改。`core.config.validate()` 只负责所有实验路径共享的核心约束，并按 model/training/attack/cross-component 四层组织；dtype、device placement、LoRA 参数、patch 尺寸以及 checkpoint/prior interval 等实现细节，由模型 Adapter 或攻击引擎在实际消费处校验。落盘的 `run-NNNNN/protocol.json` 使用这一格式。
 
 安全聚合攻击目前没有接入完整实验入口；`fed.secure_aggregation=true` 会明确报错，而不是误跑单客户端攻击。
 

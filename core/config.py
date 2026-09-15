@@ -6,6 +6,18 @@ from pathlib import Path
 from omegaconf import OmegaConf
 
 
+# Configuration vocabulary. Tuples keep the supported surface ordered and easy
+# to review; validation and runtime consumers must reuse these definitions.
+MODEL_FAMILIES = ("tiny", "llava", "blip2", "qwen2_5_vl")
+MODEL_DTYPES = ("float32", "bfloat16", "float64")
+MODEL_DEVICE_MAPS = ("", "auto", "balanced")
+TRAINING_MODES = ("full", "llm_full", "lora_llm")
+OBSERVATION_TYPES = ("gradient", "client_delta")
+KNOWLEDGE_CONDITIONS = ("private", "question_known", "text_known")
+TASK_TYPES = ("vqa", "caption")
+TEXT_METHODS = ("none", "tag_adapted", "lamp_adapted")
+
+
 @dataclass
 class ModelSpec:
     family: str = "tiny"
@@ -89,50 +101,63 @@ class Config:
     evaluation: EvalSpec = field(default_factory=EvalSpec)
 
 
-def validate(cfg: Config) -> Config:
-    m, t, a = cfg.model, cfg.training, cfg.attack
-    if m.family not in {"tiny", "llava", "blip2", "qwen2_5_vl"}:
-        raise ValueError(f"Unknown model family: {m.family}")
-    if m.family != "tiny" and not m.revision:
+def _require_choice(field, value, choices):
+    if value not in choices:
+        raise ValueError(f"Unknown {field}: {value}")
+
+
+def _require_positive(field, value):
+    if value <= 0:
+        raise ValueError(f"{field} must be positive, got {value}")
+
+
+def validate_model_config(model: ModelSpec) -> None:
+    """Validate only the model identity needed to select an adapter."""
+    _require_choice("model family", model.family, MODEL_FAMILIES)
+    if model.family != "tiny" and not model.revision:
         raise ValueError("A pinned model revision is required; run doctor --resolve-revision")
-    if m.dtype not in {"float32", "bfloat16", "float64"}:
-        raise ValueError("Use float32, float64 (tiny), or bfloat16; no quantized attack path")
-    if m.device_map not in {"", "auto", "balanced"} or (m.family == "tiny" and m.device_map):
-        raise ValueError("device_map is auto/balanced for HF models only")
-    if m.family != "tiny" and m.dtype == "float64":
-        raise ValueError("float64 is only supported for the tiny correctness fixture")
-    if t.mode not in {"full", "llm_full", "lora_llm"}:
-        raise ValueError(f"Unknown training mode: {t.mode}")
-    if t.observation not in {"gradient", "client_delta"}:
-        raise ValueError("Only individual gradients and client deltas are supported")
-    if t.knowledge not in {"private", "question_known", "text_known"}:
-        raise ValueError("Unknown knowledge condition")
-    if t.task not in {"vqa", "caption"}:
-        raise ValueError("Task must be vqa or caption")
-    if t.task == "caption" and t.knowledge == "question_known":
+
+
+def validate_training_config(training: TrainingSpec) -> None:
+    """Validate the minimal local/federated training protocol."""
+    _require_choice("training mode", training.mode, TRAINING_MODES)
+    _require_choice("observation", training.observation, OBSERVATION_TYPES)
+    _require_choice("knowledge condition", training.knowledge, KNOWLEDGE_CONDITIONS)
+    _require_choice("task", training.task, TASK_TYPES)
+    for name in ["batch_size", "local_steps", "clients", "clients_per_round"]:
+        _require_positive(f"training.{name}", getattr(training, name))
+    _require_positive("training.lr", training.lr)
+    if training.rounds < 0:
+        raise ValueError(f"training.rounds must be nonnegative, got {training.rounds}")
+    if training.clients_per_round > training.clients:
+        raise ValueError("training.clients_per_round cannot exceed training.clients")
+
+
+def validate_attack_config(attack: AttackSpec) -> None:
+    """Validate only controls required by every optimization run."""
+    _require_choice("text method", attack.text_method, TEXT_METHODS)
+    for name in ["iterations", "max_evaluations", "restarts"]:
+        _require_positive(f"attack.{name}", getattr(attack, name))
+    _require_positive("attack.seconds", attack.seconds)
+
+
+def validate_protocol_compatibility(cfg: Config) -> None:
+    """Reject cross-component combinations with ambiguous research semantics."""
+    training, attack = cfg.training, cfg.attack
+    if training.task == "caption" and training.knowledge == "question_known":
         raise ValueError("Caption has a public task instruction, not a private question")
-    for value in [m.image_size, m.question_length, m.target_length, m.hidden_size,
-                  m.patch_size, t.batch_size, t.local_steps, t.lora_rank, t.lora_alpha,
-                  t.clients, t.clients_per_round, a.iterations, a.max_evaluations,
-                  a.restarts, a.checkpoint_interval, a.prior_interval]:
-        if value <= 0:
-            raise ValueError("Dimensions, counts and intervals must be positive")
-    if t.lr <= 0 or a.lr <= 0 or a.text_lr <= 0 or a.seconds <= 0:
-        raise ValueError("Learning rates and time budget must be positive")
-    if any(not isinstance(p, str) or not p.strip() for p in t.upload_parameters):
-        raise ValueError("Upload patterns must be nonempty strings")
-    if len(set(t.upload_parameters)) != len(t.upload_parameters):
-        raise ValueError("Upload patterns must be unique")
-    if t.observation == "gradient" and t.local_steps != 1:
+    if training.observation == "gradient" and training.local_steps != 1:
         raise ValueError("gradient observations require local_steps=1")
-    if t.clients_per_round > t.clients or t.rounds < 0:
-        raise ValueError("Invalid federation size")
-    if m.image_size % m.patch_size and m.family == "tiny":
-        raise ValueError("Tiny image size must be divisible by patch size")
-    if a.text_method not in {"none", "tag_adapted", "lamp_adapted"}:
-        raise ValueError("Unknown text method")
-    if a.text_method == "none" and t.knowledge != "text_known" and a.method != "random":
+    if attack.text_method == "none" and training.knowledge != "text_known" and attack.method != "random":
         raise ValueError("Private text needs an explicit reconstruction component")
+
+
+def validate(cfg: Config) -> Config:
+    """Validate the small set of invariants shared by all experiment paths."""
+    validate_model_config(cfg.model)
+    validate_training_config(cfg.training)
+    validate_attack_config(cfg.attack)
+    validate_protocol_compatibility(cfg)
     return cfg
 
 
