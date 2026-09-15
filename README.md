@@ -245,6 +245,8 @@ compare no-update and wrong-update controls before attributing results to leakag
 
 ## Further Documentation
 
+- [Project structure and implementation walkthrough (Chinese)](docs/project_architecture.md)
+- [Project learning roadmap (Chinese)](docs/learning_roadmap.md)
 - [Protocol and observation contract](docs/protocol.md)
 - [Baseline fidelity and applicability](docs/baselines.md)
 - [Validation and remaining experimental limits](docs/validation.md)

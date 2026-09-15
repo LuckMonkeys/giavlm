@@ -1,5 +1,8 @@
 # Project Structure
 
+For the runtime call graph, module responsibilities, data formats and testing
+workflow, see [`docs/project_architecture.md`](docs/project_architecture.md).
+
 The repository root remains `giavlm/`; it implements the proposed
 `fedvlm_gia_bench` layout without adding a redundant nested repository.
 

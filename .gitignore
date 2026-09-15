@@ -11,6 +11,7 @@ runs/
 outputs/
 artifacts/
 .cache/
+.vscode/
 
 # Vendored reference project (has its own .git)
 GI-DQA-Gradient-Inversion-of-Multimodal-Models/
