@@ -40,8 +40,9 @@ def supports(method, adapter, observation):
     if method in NOT_APPLICABLE:
         return Support("not_applicable", NOT_APPLICABLE[method])
     if method == "april_adapted":
+        from core.aggregation import create_federated_algorithm
         names = adapter.position_gradient_names
-        if observation.training.observation != "gradient":
+        if create_federated_algorithm(observation.training).upload_type != "gradient":
             return Support("not_applicable", "APRIL positional derivative premise does not hold for multistep deltas")
         if not names or not all(n in observation.tensors for n in names):
             return Support("not_applicable", "Required visual position embedding gradients are not uploaded")

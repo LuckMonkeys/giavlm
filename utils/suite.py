@@ -28,73 +28,91 @@ def materialize(args):
             clients = {}
             for row in rows:
                 clients.setdefault(row["client"], []).append(row)
-            slots = args.batch_size * args.local_steps
-            batches = [(client, offset) for client in sorted(clients)
-                       for offset in range(0, len(clients[client]) - slots + 1, slots)]
-            required = (args.samples + slots - 1) // slots
-            if len(batches) < required:
-                raise ValueError(f"Need {required} complete within-client batches for {task}; found {len(batches)}")
-            # Stable interleaving of clients avoids placing the entire subset on the first client.
-            batches.sort(key=lambda pair: (pair[1], pair[0]))
-            for mode in args.modes:
-                for knowledge in args.knowledge:
-                    if task == "caption" and knowledge == "question_known":
-                        continue
-                    cfg = replace(base, model=replace(base.model, target_length=64)
-                                  if task == "caption" and base.model.family != "tiny" else replace(base.model),
-                                  training=replace(base.training, task=task, mode=mode, knowledge=knowledge,
-                                                   batch_size=args.batch_size, local_steps=args.local_steps,
-                                                   observation=args.observation))
-                    validate(cfg)
-                    model_cfg = replace(cfg, training=replace(cfg.training, knowledge="private", rounds=0,
-                                                               snapshots=[0]))
-                    model_key = digest({"model": asdict(model_cfg.model),
-                                        "training": asdict(model_cfg.training)})[:20]
-                    model_dir = output / "models" / model_key
-                    model_config_path = output / "configs" / f"model-{model_key}.json"
-                    write_json(model_config_path, asdict(model_cfg))
-                    setup_command = ["train", "--config", str(model_config_path), "--data", data,
-                                     "--output", str(model_dir), "--resume"]
-                    for client, offset in batches[:required]:
-                        capture_key = digest({"model": asdict(cfg.model), "training": asdict(cfg.training),
-                                              "data": data_hash, "split": args.split,
-                                              "client": client, "offset": offset})[:20]
-                        capture_dir = output / "captures" / capture_key
-                        capture_cfg = output / "configs" / f"capture-{capture_key}.json"
-                        write_json(capture_cfg, asdict(cfg))
-                        capture_command = ["capture", "--config", str(capture_cfg), "--data", data,
-                                           "--client", str(client), "--offset", str(offset),
-                                           "--split", args.split, "--output", str(capture_dir),
-                                           "--model", str(model_dir / "round-0000")]
-                        for method in args.methods:
-                            for seed in args.seeds:
-                                experiment = replace(cfg, attack=replace(cfg.attack, method=method, seed=seed))
-                                key = digest({"capture": capture_key, "attack": asdict(experiment.attack)})[:20]
-                                config_path = output / "configs" / f"attack-{key}.json"
-                                write_json(config_path, asdict(experiment))
-                                reconstruction = output / "attacks" / key
-                                jobs.append({"id": key, "capture_key": capture_key,
-                                             "model_key": model_key, "model_setup": setup_command,
-                                             "model_config_hash": file_hash(model_config_path),
-                                             "model_dir": str(model_dir),
-                                             "capture_config_hash": file_hash(capture_cfg),
-                                             "attack_config_hash": file_hash(config_path),
-                                             "capture": capture_command,
-                                             "attack": ["attack", "--config", str(config_path),
-                                                        "--observation", str(capture_dir / "public"),
-                                                        "--output", str(reconstruction), "--resume"],
-                                             "evaluate": ["evaluate", "--config", str(config_path),
-                                                          "--reconstruction", str(reconstruction),
-                                                          "--truth", str(capture_dir / "private")],
-                                             "capture_dir": str(capture_dir),
-                                             "reconstruction_dir": str(reconstruction),
-                                             "max_attack_seconds": experiment.attack.seconds})
+            for algorithm in args.algorithms:
+                local_steps = 1 if algorithm == "fedsgd" else args.local_steps
+                slots = args.batch_size * local_steps
+                batches = [(client, offset) for client in sorted(clients)
+                           for offset in range(0, len(clients[client]) - slots + 1, slots)]
+                required = (args.samples + slots - 1) // slots
+                if len(batches) < required:
+                    raise ValueError(
+                        f"Need {required} complete within-client batches for {task}/{algorithm}; "
+                        f"found {len(batches)}")
+                # Stable interleaving avoids placing the entire subset on the first client.
+                batches.sort(key=lambda pair: (pair[1], pair[0]))
+                for mode in args.modes:
+                    for knowledge in args.knowledge:
+                        if task == "caption" and knowledge == "question_known":
+                            continue
+                        cfg = replace(
+                            base,
+                            model=replace(base.model, target_length=64)
+                            if task == "caption" and base.model.family != "tiny"
+                            else replace(base.model),
+                            training=replace(base.training, task=task, mode=mode,
+                                             knowledge=knowledge, algorithm=algorithm,
+                                             batch_size=args.batch_size,
+                                             local_steps=local_steps))
+                        validate(cfg)
+                        model_cfg = replace(
+                            cfg, training=replace(cfg.training, knowledge="private", rounds=0,
+                                                  snapshots=[0]))
+                        model_key = digest({"model": asdict(model_cfg.model),
+                                            "training": asdict(model_cfg.training)})[:20]
+                        model_dir = output / "models" / model_key
+                        model_config_path = output / "configs" / f"model-{model_key}.json"
+                        write_json(model_config_path, asdict(model_cfg))
+                        setup_command = ["train", "--config", str(model_config_path), "--data", data,
+                                         "--output", str(model_dir), "--resume"]
+                        for client, offset in batches[:required]:
+                            capture_key = digest({"model": asdict(cfg.model),
+                                                  "training": asdict(cfg.training),
+                                                  "data": data_hash, "split": args.split,
+                                                  "client": client, "offset": offset})[:20]
+                            capture_dir = output / "captures" / capture_key
+                            capture_cfg = output / "configs" / f"capture-{capture_key}.json"
+                            write_json(capture_cfg, asdict(cfg))
+                            capture_command = ["capture", "--config", str(capture_cfg), "--data", data,
+                                               "--client", str(client), "--offset", str(offset),
+                                               "--split", args.split, "--output", str(capture_dir),
+                                               "--model", str(model_dir / "round-0000")]
+                            for method in args.methods:
+                                for seed in args.seeds:
+                                    experiment = replace(
+                                        cfg, attack=replace(cfg.attack, method=method, seed=seed))
+                                    key = digest({"capture": capture_key,
+                                                  "attack": asdict(experiment.attack)})[:20]
+                                    config_path = output / "configs" / f"attack-{key}.json"
+                                    write_json(config_path, asdict(experiment))
+                                    reconstruction = output / "attacks" / key
+                                    jobs.append({"id": key, "capture_key": capture_key,
+                                                 "model_key": model_key, "model_setup": setup_command,
+                                                 "model_config_hash": file_hash(model_config_path),
+                                                 "model_dir": str(model_dir),
+                                                 "capture_config_hash": file_hash(capture_cfg),
+                                                 "attack_config_hash": file_hash(config_path),
+                                                 "capture": capture_command,
+                                                 "attack": ["attack", "--config", str(config_path),
+                                                            "--observation", str(capture_dir / "public"),
+                                                            "--output", str(reconstruction), "--resume"],
+                                                 "evaluate": ["evaluate", "--config", str(config_path),
+                                                              "--reconstruction", str(reconstruction),
+                                                              "--truth", str(capture_dir / "private")],
+                                                 "capture_dir": str(capture_dir),
+                                                 "reconstruction_dir": str(reconstruction),
+                                                 "max_attack_seconds": experiment.attack.seconds})
     manifest = output / "jobs.jsonl"
     manifest.write_text("".join(json.dumps(job, sort_keys=True) + "\n" for job in jobs))
     budget = {"jobs": len(jobs), "captures": len({j["capture_key"] for j in jobs}),
               "shared_models": len({j["model_key"] for j in jobs}),
               "samples_requested_per_condition": args.samples,
-              "samples_actual_per_condition": required * slots,
+              "samples_actual_per_condition": {
+                  algorithm: ((args.samples + args.batch_size
+                               * (1 if algorithm == "fedsgd" else args.local_steps) - 1)
+                              // (args.batch_size
+                                  * (1 if algorithm == "fedsgd" else args.local_steps)))
+                  * args.batch_size * (1 if algorithm == "fedsgd" else args.local_steps)
+                  for algorithm in args.algorithms},
               "manifest_sha256": file_hash(manifest), "data_sha256": data_hash,
               "attack_wall_hours_cap": sum(j["max_attack_seconds"] for j in jobs) / 3600,
               "gpus_per_run": args.gpus_per_run,

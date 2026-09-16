@@ -97,8 +97,9 @@ def simulate_secure_aggregation(client_updates, model_fingerprints):
     return dict(zip(first, mean))
 
 
-def simulate_update(adapter, batch: Batch, spec: TrainingSpec, differentiable=False):
-    """Replay the public SGD rule with one candidate batch per local step."""
+def _simulate_sgd_update(adapter, batch: Batch, spec: TrainingSpec, update_type: str,
+                         differentiable=False):
+    """Low-level SGD replay used by a high-level federated algorithm."""
     if len(batch.images) != spec.batch_size * spec.local_steps:
         raise ValueError("Each local step requires exactly batch_size candidate slots")
     initial = adapter.trainable()
@@ -111,7 +112,7 @@ def simulate_update(adapter, batch: Batch, spec: TrainingSpec, differentiable=Fa
                                     create_graph=differentiable, allow_unused=True)
         updates = {name: torch.zeros_like(p) if grad is None else grad
                    for (name, p), grad in zip(params.items(), grads)}
-        if spec.observation == "gradient":
+        if update_type == "gradient":
             if spec.local_steps != 1:
                 raise ValueError("A gradient observation has exactly one step")
             return updates
@@ -121,12 +122,17 @@ def simulate_update(adapter, batch: Batch, spec: TrainingSpec, differentiable=Fa
     return {name: params[name] - initial[name] for name in initial}
 
 
+def simulate_update(adapter, batch: Batch, spec: TrainingSpec, differentiable=False):
+    """Replay the client upload dictated by the configured federated algorithm."""
+    from core.aggregation import create_federated_algorithm
+    return create_federated_algorithm(spec).client_update(adapter, batch, differentiable)
+
+
 def capture(adapter, batch, questions: list[str], targets: list[str]):
     spec = adapter.training_spec
     update = {k: v.detach().clone() for k, v in simulate_update(adapter, batch, spec).items()}
-    uploaded = resolve_upload(list(update), spec.upload_parameters)
     obs = Observation(model=replace(adapter.spec), training=replace(spec),
-                      tensors=mask_upload(update, uploaded),
+                      tensors=update,
                       model_fingerprint=adapter.fingerprint(),
                       public_questions=list(questions) if spec.knowledge != "private" and spec.task == "vqa" else [],
                       public_targets=list(targets) if spec.knowledge == "text_known" else [],
@@ -184,25 +190,6 @@ def load_observation(directory, device=None):
         raise ValueError("Observed parameter names differ from metadata")
     obs.validate()
     return obs
-
-
-def fedavg(adapter, client_batches, weights=None):
-    """Average uploaded parameter deltas, including LoRA A/B in a shared basis."""
-    if not client_batches:
-        raise ValueError("No clients selected")
-    weights = weights or [len(b.images) for b in client_batches]
-    if len(weights) != len(client_batches) or any(w <= 0 for w in weights):
-        raise ValueError("Client weights must be positive")
-    spec = replace(adapter.training_spec, observation="client_delta")
-    average = {name: torch.zeros_like(p) for name, p in adapter.trainable().items()}
-    for batch, weight in zip(client_batches, weights):
-        delta = simulate_update(adapter, batch, spec)
-        for name in average:
-            average[name].add_(delta[name].detach(), alpha=weight / sum(weights))
-    with torch.no_grad():
-        for name, parameter in adapter.trainable().items():
-            parameter.add_(average[name])
-    return average
 
 
 def save_model(directory, adapter, metadata=None):

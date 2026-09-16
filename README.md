@@ -47,7 +47,7 @@ in a durable path before relying on it. The Conda environment `gia`
 (torch 2.6.0+cu124, transformers 4.49.0, peft 0.14.0) also runs the full suite
 and is the one to use once GPUs are available.
 `smoke` runs each stage in a separate process and covers both tasks, full/LoRA,
-and gradient/multistep-delta observations. Use `--quick` for one pipeline.
+and FedSGD/FedAvg uploads. Use `--quick` for one pipeline.
 
 ## Run One Experiment
 
@@ -121,7 +121,7 @@ Override configuration with repeated `--set key=value`. Examples:
 
 ```bash
 # A client upload after five local minibatches, not an averaged gradient.
-python -m core.commands capture --data data/toy/samples.jsonl --output runs/delta/capture --set training.observation=client_delta --set training.local_steps=5
+python -m core.commands capture --data data/toy/samples.jsonl --output runs/delta/capture --set training.algorithm=fedavg --set training.local_steps=5
 # Resume only an identical attack; budgets/configurations cannot silently change.
 python -m core.commands attack --observation runs/example/capture/public --output runs/example/attack --resume
 ```
@@ -162,14 +162,16 @@ python -m core.commands capture --config configs/llava.yaml --model runs/federat
 python -m core.commands utility --model runs/federation/round-0010 --data data/coco-vqa/samples.jsonl --device cuda:0 --output runs/round10/utility.json
 ```
 
-Training uses functional SGD, weighted FedAvg, no momentum/weight decay, disabled
-dropout, and the versioned `fixed-block-eos-v1` format. It stores rounds 0/10/20
+Training uses functional client SGD and an explicit high-level `fedsgd` or weighted
+`fedavg` algorithm, with no momentum/weight decay, disabled dropout, and the
+versioned `fixed-block-eos-v1` format. The algorithm fixes client computation,
+uploaded update type, server aggregation, and global-model application. Training stores rounds 0/10/20
 and two rotating recovery checkpoints. `--initial-model` starts a new federation
 whose round 0 is the supplied compatible checkpoint; `training.rounds` counts new
 rounds. Repeat `--initial-model` when using `train --resume`, which restores model
 state and deterministic round sampling. Caption runs should set `training.task=caption`
-and `model.target_length=64` on real models. Set `training.observation=client_delta`
-with `training.local_steps=5` to train/capture five local steps.
+and `model.target_length=64` on real models. Set `training.algorithm=fedavg`
+with `training.local_steps=5` to train/capture a five-step client delta.
 
 `training.mode=full` trains every model parameter; `llm_full` trains the language
 model only; `lora_llm` trains Q/K/V/O LoRA A/B parameters only. LoRA defaults to

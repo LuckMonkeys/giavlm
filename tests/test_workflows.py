@@ -67,7 +67,7 @@ def test_suite_materialization_and_data_integrity(tmp_path):
     args = SimpleNamespace(output=str(tmp_path / "suite"), data=str(manifest), configs=[str(config)],
                             set=[], tasks=["vqa"], modes=["full"], knowledge=["private", "text_known"],
                             samples=1, batch_size=1, local_steps=1, gpus_per_run=1, split="eval",
-                            observation="gradient", methods=["ig_adapted", "random"], seeds=[0, 1],
+                            algorithms=["fedsgd"], methods=["ig_adapted", "random"], seeds=[0, 1],
                             pilot_seconds=1.0)
     budget = materialize(args)
     assert budget["jobs"] == 8 and budget["captures"] == 2

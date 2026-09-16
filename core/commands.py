@@ -72,8 +72,9 @@ def inject_canaries(args):
 
 def train(args):
     import numpy as np
+    from core.aggregation import create_federated_algorithm
     from core.data import load_batch, read_manifest
-    from core.fl import fedavg, restore_model, save_model
+    from core.fl import restore_model, save_model
     from core.vlm_wrapper import build_model
     cfg = configuration(args)
     output = Path(args.output)
@@ -114,6 +115,7 @@ def train(args):
         raise ValueError("Too few nonempty training clients in the prepared manifest")
     if any(client >= cfg.training.clients for client in clients):
         raise ValueError("Prepared manifest has more clients than the training protocol")
+    algorithm = create_federated_algorithm(cfg.training)
     count = cfg.training.batch_size * cfg.training.local_steps
     if start == 0 and not pointer.exists():
         save_model(output / "round-0000", adapter,
@@ -129,11 +131,13 @@ def train(args):
             indices = rng.choice(len(rows), count, replace=len(rows) < count)
             batches.append(load_batch([rows[i] for i in indices], adapter))
             weights.append(len(rows))
-        fedavg(adapter, batches, weights)
+        client_updates = (algorithm.client_update(adapter, batch) for batch in batches)
+        server_update = algorithm.aggregate(client_updates, weights)
+        algorithm.apply(adapter, server_update)
         with torch.no_grad():
             loss = sum(adapter(b.images, b.questions, b.targets).item() for b in batches) / len(batches)
         history.append({"round": round_id, "mean_selected_client_loss": loss,
-                        "client_count": len(selected)})
+                        "client_count": len(selected), "algorithm": algorithm.name})
         # Commit every round to make interruption recovery exact; published snapshots are flagged.
         checkpoint = (f"round-{round_id:04d}" if round_id in cfg.training.snapshots
                       else f"latest-{round_id % 2}")
@@ -207,6 +211,7 @@ def capture(args):
 def attack(args):
     from attacks.factory import create_attacker
     from core.knowledge import AdversaryKnowledge
+    from core.aggregation import create_federated_algorithm
     from core.fl import load_observation, restore_model
     cfg = configuration(args)
     public, output = Path(args.observation), Path(args.output)
@@ -254,7 +259,8 @@ def attack(args):
     info.update({"observation_id": meta["observation_id"], "run_signature": signature,
                  "condition": {"model": obs.model.name, "revision": obs.model.revision,
                                "mode": obs.training.mode, "task": obs.training.task,
-                               "observation": obs.training.observation,
+                               "algorithm": obs.training.algorithm,
+                               "client_update": create_federated_algorithm(obs.training).upload_type,
                                "knowledge": obs.training.knowledge, "batch_size": obs.training.batch_size,
                                "local_steps": obs.training.local_steps, "lora_rank": obs.training.lora_rank,
                                "model_state": obs.model_fingerprint, "method": cfg.attack.method,
@@ -356,12 +362,12 @@ def smoke(args):
     tasks = ["vqa"] if args.quick else ["vqa", "caption"]
     for mode in modes:
         for task in tasks:
-            for observation in (["gradient"] if args.quick else ["gradient", "client_delta"]):
-                folder = root / f"{mode}-{task}-{observation}"
+            for algorithm in (["fedsgd"] if args.quick else ["fedsgd", "fedavg"]):
+                folder = root / f"{mode}-{task}-{algorithm}"
                 overrides = [f"training.mode={mode}", f"training.task={task}",
-                             f"training.observation={observation}", "training.clients=1",
+                             f"training.algorithm={algorithm}", "training.clients=1",
                              "training.clients_per_round=1",
-                             f"training.local_steps={2 if observation == 'client_delta' else 1}",
+                             f"training.local_steps={2 if algorithm == 'fedavg' else 1}",
                              "attack.iterations=12", "attack.checkpoint_interval=4",
                              "attack.max_evaluations=50"]
                 opts = [item for setting in overrides for item in ["--set", setting]]
@@ -495,8 +501,9 @@ def build_parser():
     p.add_argument("--methods", nargs="+", default=["dlg_adapted", "ig_adapted", "april_adapted",
                                                    "gradvit_adapted", "gi_dqa_adapted"])
     p.add_argument("--seeds", nargs="+", type=int, default=[0, 1, 2])
-    p.add_argument("--observation", choices=["gradient", "client_delta"], default="gradient")
-    p.add_argument("--local-steps", type=int, default=1)
+    p.add_argument("--algorithms", nargs="+", choices=["fedsgd", "fedavg"], default=["fedsgd"])
+    p.add_argument("--local-steps", type=int, default=1,
+                   help="FedAvg client steps; FedSGD always uses one step")
     p.add_argument("--batch-size", type=int, default=1)
     p.add_argument("--pilot-seconds", type=float)
     p.add_argument("--gpus-per-run", type=int, default=1)

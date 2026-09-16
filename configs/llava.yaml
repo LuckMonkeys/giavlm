@@ -11,7 +11,7 @@ model:
   local_files_only: true
 training:
   mode: lora_llm
-  observation: gradient
+  algorithm: fedsgd
   knowledge: private
   lr: 0.0001
 attack:

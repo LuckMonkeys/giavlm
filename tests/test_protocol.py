@@ -6,14 +6,15 @@ import torch
 
 from core.artifacts import read_json
 from attacks import AttackRunner, Candidate, matching_loss, supports
+from core.aggregation import apply_server_update, create_federated_algorithm
 from core.config import AttackSpec, ModelSpec, TrainingSpec, load_config
-from core.fl import (capture, fedavg, load_observation, mask_upload, resolve_upload,
+from core.fl import (capture, load_observation, mask_upload, resolve_upload,
                      save_observation, simulate_update)
 from core.vlm_wrapper import build_model
 
 
-def fixture(mode="full", observation="gradient", steps=1, task="vqa", knowledge="private"):
-    training = TrainingSpec(mode=mode, observation=observation, local_steps=steps,
+def fixture(mode="full", algorithm="fedsgd", steps=1, task="vqa", knowledge="private"):
+    training = TrainingSpec(mode=mode, algorithm=algorithm, local_steps=steps,
                             task=task, knowledge=knowledge)
     adapter = build_model(ModelSpec(), training)
     batch = adapter.batch(torch.rand(steps, 3, 8, 8),
@@ -26,7 +27,7 @@ def fixture(mode="full", observation="gradient", steps=1, task="vqa", knowledge=
 def test_one_step_sgd_identity_and_input_gradients(mode, task):
     adapter, batch = fixture(mode=mode, task=task)
     gradient = simulate_update(adapter, batch, adapter.training_spec)
-    spec = replace(adapter.training_spec, observation="client_delta")
+    spec = replace(adapter.training_spec, algorithm="fedavg")
     delta = simulate_update(adapter, batch, spec)
     for name in gradient:
         torch.testing.assert_close(delta[name], -spec.lr * gradient[name], atol=2e-7, rtol=1e-4)
@@ -45,7 +46,7 @@ def test_one_step_sgd_identity_and_input_gradients(mode, task):
 
 @pytest.mark.parametrize("mode", ["full", "lora_llm"])
 def test_multistep_matches_actual_optimizer(mode):
-    adapter, batch = fixture(mode, "client_delta", steps=3)
+    adapter, batch = fixture(mode, "fedavg", steps=3)
     before = {k: v.detach().clone() for k, v in adapter.trainable().items()}
     observed = simulate_update(adapter, batch, adapter.training_spec)
     optimizer = torch.optim.SGD(adapter.trainable().values(), lr=adapter.training_spec.lr)
@@ -58,15 +59,51 @@ def test_multistep_matches_actual_optimizer(mode):
         torch.testing.assert_close(value - before[name], observed[name], atol=1e-7, rtol=1e-5)
 
 
-def test_fedavg_uses_same_initial_state_and_weights():
-    adapter, batch = fixture("lora_llm", "client_delta", steps=2)
+@pytest.mark.parametrize("method", ["fedsgd", "fedavg"])
+def test_federated_algorithms_use_same_initial_state_and_weights(method):
+    adapter, batch = fixture("lora_llm", "fedavg", steps=2)
+    training = replace(adapter.training_spec, algorithm=method,
+                       local_steps=1 if method == "fedsgd" else 2)
+    algorithm = create_federated_algorithm(training)
+    assert algorithm.upload_type == ("gradient" if method == "fedsgd" else "client_delta")
+    if method == "fedsgd":
+        batch = batch.slice(0, 1)
     other = replace(batch, images=1 - batch.images)
     initial = {k: v.detach().clone() for k, v in adapter.trainable().items()}
-    first = simulate_update(adapter, batch, adapter.training_spec)
-    second = simulate_update(adapter, other, adapter.training_spec)
-    fedavg(adapter, [batch, other], [1, 3])
+    first = algorithm.client_update(adapter, batch)
+    second = algorithm.client_update(adapter, other)
+    server_update = algorithm.aggregate(iter([first, second]), [1, 3])
+    algorithm.apply(adapter, server_update)
+    scale = -training.lr if method == "fedsgd" else 1
     for name, value in adapter.trainable().items():
-        torch.testing.assert_close(value, initial[name] + first[name] / 4 + second[name] * 3 / 4)
+        expected = initial[name] + scale * (first[name] / 4 + second[name] * 3 / 4)
+        torch.testing.assert_close(value, expected)
+
+
+def test_federated_algorithm_applies_only_uploaded_parameters():
+    adapter, batch = fixture()
+    before = {name: value.detach().clone() for name, value in adapter.trainable().items()}
+    uploaded_name = next(iter(before))
+    training = replace(adapter.training_spec, upload_parameters=[uploaded_name])
+    algorithm = create_federated_algorithm(training)
+    upload = algorithm.client_update(adapter, batch)
+    assert set(upload) == {uploaded_name}
+    algorithm.apply(adapter, algorithm.aggregate(iter([upload]), [1]))
+    for name, value in adapter.trainable().items():
+        expected = before[name] - training.lr * upload[name] if name in upload else before[name]
+        torch.testing.assert_close(value, expected)
+
+
+def test_server_update_validation_precedes_model_mutation():
+    adapter, _ = fixture()
+    before = {name: value.detach().clone() for name, value in adapter.trainable().items()}
+    update = {name: torch.zeros_like(value) for name, value in before.items()}
+    first = next(iter(update))
+    update[first] = torch.zeros(1)
+    with pytest.raises(ValueError, match="shape mismatch"):
+        apply_server_update(adapter, update)
+    for name, value in adapter.trainable().items():
+        torch.testing.assert_close(value, before[name])
 
 
 def test_observation_allowlist_and_integrity(tmp_path):
@@ -146,6 +183,8 @@ def test_validation_rejects_ambiguous_protocol():
         load_config(overrides=["training.local_steps=2"])
     with pytest.raises(ValueError, match="revision"):
         load_config(overrides=["model.family=llava"])
+    with pytest.raises(ValueError, match="federated algorithm"):
+        load_config(overrides=["training.algorithm=unknown"])
 
 
 def test_implementation_specific_validation_is_owned_by_consumer():

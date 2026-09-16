@@ -92,7 +92,7 @@ def test_qwen_patchification_matches_processor():
 @pytest.mark.parametrize("family", ["llava", "blip2", "qwen2_5_vl"])
 def test_hf_multistep_lora_replay(family):
     adapter = hf_fixture(family, "lora_llm")
-    adapter.training_spec = replace(adapter.training_spec, observation="client_delta", local_steps=2)
+    adapter.training_spec = replace(adapter.training_spec, algorithm="fedavg", local_steps=2)
     batch = adapter.batch(torch.rand(2, 3, 8, 8), ["what color", "what shape"], ["red", "circle"])
     obs = capture(adapter, batch, [], [])
     candidate = Candidate(adapter, obs, 15)

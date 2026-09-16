@@ -55,9 +55,12 @@ parameters are frozen. All model families use eager attention.
   repeated slots if sampled during federation.
 - Missing gradients for structurally unused trainable parameters are explicit
   zeros. Frozen parameters are absent, never exported as hypothetical gradients.
-- FedAvg uses local dataset sizes as weights and the same initial global state
-  for all selected clients. LoRA uploads/averages adapter A/B deltas, not a product
-  BA substituted for the communicated tensors.
+- `training.algorithm` is the single source of update semantics. FedSGD computes
+  and uploads one-step gradients, averages them, and applies `-lr`; FedAvg computes
+  and uploads local deltas, averages them, and adds them to the global model. Both
+  use local dataset sizes as weights and the same initial global state for selected
+  clients. LoRA aggregation stays in A/B
+  parameter space rather than substituting the product BA.
 
 ## Artifact Boundary
 
@@ -82,4 +85,3 @@ DP guarantee, QLoRA, stochastic augmentation or unknown optimizer is modeled.
 No differential privacy claim follows from adding arbitrary Gaussian noise.
 No natural-image benchmark proves OCR/sensitive-field recovery. Adding that
 claim requires an independently labeled text-rich dataset and an OCR track.
-

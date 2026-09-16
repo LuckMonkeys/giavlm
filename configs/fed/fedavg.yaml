@@ -1,5 +1,5 @@
 defaults:
   - fedsgd
 name: fedavg
-observation: client_delta
+algorithm: fedavg
 local_steps: 2

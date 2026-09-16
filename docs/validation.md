@@ -7,7 +7,8 @@ suite requires no pretrained weights or network access. It checks:
 
 - Single-step delta/gradient equivalence for full, LLM-full and LoRA modes.
 - Functional multistep replay against actual `torch.optim.SGD`.
-- Weighted FedAvg from a common initial state and LoRA-only parameter exposure.
+- Explicit FedSGD/FedAvg rules, weighted updates from a common initial state,
+  fail-before-mutation application and LoRA-only parameter exposure.
 - Exact observation replay, wrong-input residual and second-order derivatives
   with respect to both image and private text candidates.
 - Standard LoRA first-step zero A gradients/nonzero B gradients.
@@ -33,12 +34,12 @@ These synthetic runs test execution and contracts, not pretrained-model privacy.
   of the former `src/giavlm/` layer, which has since been removed entirely;
   new tests cover Hydra groups/presets, run-ID resume, protocol
   mismatch rejection, shared model snapshots, pre-capture federated training,
-  fail-fast error persistence, named aggregation, defense metadata and paired controls.
+  fail-fast error persistence, named federated algorithms, defense metadata and paired controls.
 - Executed both jobs in `run_yaml/tiny_smoke.yaml`: full/FedSGD/private and
   LoRA/FedAvg/private. Both completed reconstruction and evaluation. Resuming a
   completed Hydra experiment preserved its result artifacts.
 - Re-executed all eight legacy subprocess smoke cases after migration: both
-  tasks, full/LoRA, and gradients/client deltas. All eight reports completed.
+  tasks, full/LoRA, and FedSGD/FedAvg uploads. All eight reports completed.
 - Built an offline wheel and checked that it includes implementation, canonical
   entry and Hydra YAML data groups. The installed console entry resolves configs
   from outside the checkout. `uv lock --check --offline` and shell syntax checks

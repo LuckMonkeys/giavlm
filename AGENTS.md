@@ -6,6 +6,10 @@
   `core.experiment.main` and real Hydra configuration groups in `configs/`.
 - `core/` owns protocol dataclasses, public observations, model adapters,
   client updates, data preparation, artifacts, and experiment lifecycle.
+- `core/aggregation.py` owns high-level federated algorithms: client computation,
+  upload semantics, server aggregation, and global-model application. Keep those
+  stages explicit; register new algorithms in `create_federated_algorithm`. A
+  stateful server rule must add JSON/safetensors checkpoint recovery first.
 - `attacks/optim/engine.py` owns optimization, budget accounting and checkpoint
   recovery. Method modules own objective/prior combinations. Use explicit
   registration in `attacks/factory.py`; never alias original paper names to

@@ -23,8 +23,9 @@ giavlm/
       blip2.py                BLIP-2 OPT/Q-Former adapter
       qwen_vl.py              Qwen2.5-VL adapter, not original Qwen-VL
       tiny_llava.py           Offline miniature fixture, not pretrained TinyLLaVA
-    fl.py                     FedSGD/FedAvg, model/observation persistence,
-                              named accumulation, mask/aggregate utilities
+    fl.py                     Client updates, model/observation persistence,
+                              named accumulation and upload-mask utilities
+    aggregation.py            End-to-end FedSGD/FedAvg algorithm semantics
     knowledge.py              AdversaryKnowledge and disclosure validation
     data.py                   COCO/VQAv2, synthetic data, image-group partitions
     config.py                 Strict artifact/wire dataclasses and validation
@@ -82,11 +83,13 @@ shared initial model or resumable federation -> per-run client update ->
 upload defense -> public observation -> attacker -> committed reconstruction ->
 private evaluation -> per-run result and experiment state.
 
-`fed=fedavg` means observing a client's multi-step delta. It does not mean
-observing a secure sum of several clients. `fed.rounds>0` additionally trains
-a federation before capture. `model_snapshot=...` selects an existing checkpoint;
-when both are set, the snapshot is recorded as the new federation's round 0 and
-`fed.rounds` counts the additional rounds before capture.
+The `fed=fedavg` preset selects one high-level algorithm that computes and uploads
+multi-step client deltas, averages them by client data size, and applies the result
+to the global model. `fedsgd` instead uploads one-step gradients, averages them,
+and applies `-lr`. Neither means observing a secure sum of several clients.
+`fed.rounds>0` trains before capture. `model_snapshot=...`
+selects an existing checkpoint; when both are set, the snapshot becomes the new
+federation's round 0 and `fed.rounds` counts the additional rounds before capture.
 
 Each run owns `capture/public/`, `capture/private/`, and `attack/`. Shared model
 weights live once at experiment level. `experiment.json` indexes stable run IDs;
@@ -95,11 +98,12 @@ checkpoints include optimizer state, candidate state, RNG and budget counters.
 
 ## Implemented Versus Planned
 
-- Runnable: existing VLM adaptations, both update modes, full/LLM-full/LoRA,
-  private/question-known/text-known, five post-update defenses, Hydra repeats,
-  fail-fast serial execution, resume, and the legacy staged workflows.
+- Runnable: existing VLM adaptations, both federated algorithms, full/LLM-full/LoRA,
+  explicit FedSGD/FedAvg update semantics, private/question-known/text-known,
+  five post-update defenses, Hydra repeats, fail-fast serial execution, resume,
+  and the legacy staged workflows.
 - `fed.upload_parameters` selects which trainable parameters the client uploads,
-  as fnmatch patterns resolved against the model at capture time. The resolved
+  as fnmatch patterns resolved by the federated algorithm. The resolved
   names are what travels, an unmatched pattern is an error, and the attacker
   matches on exactly the uploaded subset. With no mask the observation must still
   equal the full trainable set, so a silently shrunk upload is rejected.
@@ -130,5 +134,5 @@ checkpoints include optimizer state, candidate state, RNG and budget counters.
 The new structure follows the active Hydra/runner/factory conventions of
 `../llm_privacy_eval`, not its obsolete structure document. Name-based LoRA
 alignment and run-ID recovery follow that project's patterns; full-tuning
-support, fail-before-mutation aggregation, and no-reference attacker contracts
+support, fail-before-mutation model updates, and no-reference attacker contracts
 are benchmark-specific adjustments.

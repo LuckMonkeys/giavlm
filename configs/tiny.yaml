@@ -6,11 +6,10 @@ model:
   target_length: 5
 training:
   mode: full
-  observation: gradient
+  algorithm: fedsgd
   knowledge: private
 attack:
   method: ig_adapted
   text_method: tag_adapted
   iterations: 100
   max_evaluations: 400
-

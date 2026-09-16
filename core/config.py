@@ -12,7 +12,7 @@ MODEL_FAMILIES = ("tiny", "llava", "blip2", "qwen2_5_vl")
 MODEL_DTYPES = ("float32", "bfloat16", "float64")
 MODEL_DEVICE_MAPS = ("", "auto", "balanced")
 TRAINING_MODES = ("full", "llm_full", "lora_llm")
-OBSERVATION_TYPES = ("gradient", "client_delta")
+FEDERATED_ALGORITHMS = ("fedsgd", "fedavg")
 KNOWLEDGE_CONDITIONS = ("private", "question_known", "text_known")
 TASK_TYPES = ("vqa", "caption")
 TEXT_METHODS = ("none", "tag_adapted", "lamp_adapted")
@@ -39,7 +39,7 @@ class ModelSpec:
 @dataclass
 class TrainingSpec:
     mode: str = "full"
-    observation: str = "gradient"
+    algorithm: str = "fedsgd"
     task: str = "vqa"
     knowledge: str = "private"
     batch_size: int = 1
@@ -121,7 +121,7 @@ def validate_model_config(model: ModelSpec) -> None:
 def validate_training_config(training: TrainingSpec) -> None:
     """Validate the minimal local/federated training protocol."""
     _require_choice("training mode", training.mode, TRAINING_MODES)
-    _require_choice("observation", training.observation, OBSERVATION_TYPES)
+    _require_choice("federated algorithm", training.algorithm, FEDERATED_ALGORITHMS)
     _require_choice("knowledge condition", training.knowledge, KNOWLEDGE_CONDITIONS)
     _require_choice("task", training.task, TASK_TYPES)
     for name in ["batch_size", "local_steps", "clients", "clients_per_round"]:
@@ -131,6 +131,8 @@ def validate_training_config(training: TrainingSpec) -> None:
         raise ValueError(f"training.rounds must be nonnegative, got {training.rounds}")
     if training.clients_per_round > training.clients:
         raise ValueError("training.clients_per_round cannot exceed training.clients")
+    if training.algorithm == "fedsgd" and training.local_steps != 1:
+        raise ValueError("FedSGD requires training.local_steps=1")
 
 
 def validate_attack_config(attack: AttackSpec) -> None:
@@ -146,8 +148,6 @@ def validate_protocol_compatibility(cfg: Config) -> None:
     training, attack = cfg.training, cfg.attack
     if training.task == "caption" and training.knowledge == "question_known":
         raise ValueError("Caption has a public task instruction, not a private question")
-    if training.observation == "gradient" and training.local_steps != 1:
-        raise ValueError("gradient observations require local_steps=1")
     if attack.text_method == "none" and training.knowledge != "text_known" and attack.method != "random":
         raise ValueError("Private text needs an explicit reconstruction component")
 

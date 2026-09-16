@@ -35,7 +35,7 @@ def test_hydra_model_composition(tmp_path, model, family):
     config = configuration(tmp_path, f"model={model}", "fed=fedavg", "fed.mode=lora_llm")
     protocol = protocol_config(config)
     assert protocol.model.family == family
-    assert protocol.training.observation == "client_delta"
+    assert protocol.training.algorithm == "fedavg"
     assert protocol.training.local_steps == 2
     assert protocol.training.mode == "lora_llm"
 
@@ -76,7 +76,9 @@ def test_hydra_run_resume_and_integrity(tmp_path):
 def test_federated_training_in_hydra_entry(tmp_path):
     result = run_experiment(configuration(tmp_path, "fed.rounds=1", "fed=fedavg", "fed.mode=lora_llm"))
     assert result["runs"][0]["status"] == "completed"
-    assert read_json(tmp_path / "federation/training.json")["round"] == 1
+    state = read_json(tmp_path / "federation/training.json")
+    assert state["round"] == 1
+    assert state["history"][0]["algorithm"] == "fedavg"
 
 
 def test_hydra_federation_can_start_from_snapshot(tmp_path):

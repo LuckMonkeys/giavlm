@@ -242,7 +242,7 @@ L = Σ_i mask_i · CE(target_i, logits_i) / Σ_i mask_i
 
 LoRA 只注入语言侧 attention projection 中名为 `q_proj/k_proj/v_proj/o_proj/out_proj` 的线性层，dropout 被设为 0，模型处于 eval 模式。这些都属于实验定义，而不是所有 FedVLM 训练的默认行为。
 
-### 5.4 联邦更新：`core/fl.py`
+### 5.4 客户端更新与服务器聚合：`core/fl.py`、`core/aggregation.py`
 
 [core/fl.py](../core/fl.py) 使用 `torch.func.functional_call` 重放本地 SGD。
 
@@ -263,9 +263,11 @@ upload = selected(Δθ)
 
 一个 `Batch` 被按 `batch_size` 切成 `local_steps` 个连续片段，每步恰好消费一个片段。当前未模拟 momentum、Adam、学习率调度、重复 epoch 或 DataLoader shuffle。
 
-`TrainingSpec.upload_parameters` 是 `fnmatch` 模式列表。capture 时先把模式解析成显式参数名，再只上传这些 tensor；未命中的模式会报错。攻击重放仍计算完整可训练集合，但只对公开子集计算匹配损失。
+`TrainingSpec.upload_parameters` 是 `fnmatch` 模式列表。算法计算本地 update 后把模式解析成显式参数名，再只上传这些 tensor；未命中的模式会报错。攻击重放使用同一算法，因此只返回并匹配公开子集。
 
-`fedavg()` 用样本权重平均多个客户端从同一初始模型产生的 delta，然后更新服务器模型。`simulate_secure_aggregation()` 只是同一模型 fingerprint 下的数值平均工具，不是密码学实现，也没有接入聚合反演攻击。
+`TrainingSpec.algorithm` 是唯一的高层联邦算法字段。[core/aggregation.py](../core/aggregation.py) 中的算法对象统一决定客户端计算与上传、加权聚合以及全局模型更新，同时仍把这些阶段保留为可检查的方法。`fedsgd` 上传并聚合单步梯度，再应用 `-lr`；`fedavg` 上传并聚合本地模型 delta，再直接加到全局参数。显式 factory 是后续加入其他联邦算法的唯一入口。
+
+`simulate_secure_aggregation()` 只是同一模型 fingerprint 下的数值平均工具，不是密码学实现，也没有接入聚合反演攻击。
 
 模型与观测使用 JSON + safetensors 保存。加载时会检查模型 fingerprint、观测元数据 digest、更新文件 SHA-256 和参数名集合。
 
@@ -537,7 +539,7 @@ $PY -m core.commands doctor --config configs/qwen2_5_vl.yaml \
 - 本地训练仅实现普通 SGD，无 optimizer state；
 - 一个 local step 对应 Batch 中一个不同的连续样本片段；
 - capture 对 image 去重，同图多问题不会同时进入一个观测；
-- `fedavg` 攻击条件表示单客户端多步 delta，而不是安全聚合更新；
+- `fed=fedavg` 预设同时选择 FedAvg 服务器规则和单客户端多步 delta 观测，后者不是安全聚合更新；
 - 防御后的攻击仍使用 defense-unaware 原始更新重放；
 - 多样本匹配成本混合了图像 MSE 和私有文本 edit distance；
 - VQA-RAD/SLAKE 只有单参考答案时，utility 退化为 exact match；

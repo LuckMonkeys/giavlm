@@ -20,6 +20,12 @@ def canonical_probabilities(probs: torch.Tensor, eos: int, pad: int):
 
 
 class VLMAdapter(nn.Module, ABC):
+    """Uniform, differentiable VLM interface for training and inversion.
+
+    Subclasses expose model-specific embeddings, parameter ownership and logits.
+    This base class provides the shared text/batch protocol, loss and generation,
+    trainable-parameter selection, LoRA setup and artifact metadata.
+    """
     protocol_version = "fixed-block-eos-v1"
 
     def __init__(self, spec: ModelSpec, training: TrainingSpec):
@@ -31,16 +37,20 @@ class VLMAdapter(nn.Module, ABC):
         self.position_gradient_names = []
         self.tokenizer = None
 
+    # Model-family hooks used by the shared training and attack code.
     @abstractmethod
     def embedding(self):
+        """Return the language model's token embedding module."""
         raise NotImplementedError
 
     @abstractmethod
     def is_language(self, name):
+        """Return whether a named parameter belongs to the language model."""
         raise NotImplementedError
 
     @abstractmethod
     def target_logits(self, images, questions, targets):
+        """Return target-position logits from images and token probabilities."""
         raise NotImplementedError
 
     @property
@@ -63,6 +73,7 @@ class VLMAdapter(nn.Module, ABC):
     def pad(self):
         return self.tokenizer.pad_token_id
 
+    # Shared fixed-length token and batch representation.
     def encode(self, texts: list[str], length: int):
         result = []
         for text in texts:
@@ -91,6 +102,7 @@ class VLMAdapter(nn.Module, ABC):
                      self.encode(questions, self.spec.question_length),
                      self.encode(targets, self.spec.target_length))
 
+    # Training modes differ only in which adapter parameters require gradients.
     def trainable(self):
         return {name: p for name, p in self.named_parameters() if p.requires_grad}
 
@@ -110,6 +122,7 @@ class VLMAdapter(nn.Module, ABC):
             config = LoraConfig(r=self.training_spec.lora_rank,
                                 lora_alpha=self.training_spec.lora_alpha,
                                 lora_dropout=0.0, bias="none", target_modules=names)
+            #! 添加LoRA的方式是这样吗？
             inject_adapter_in_model(config, self)
         self.eval()
         for module in self.modules():
@@ -119,6 +132,7 @@ class VLMAdapter(nn.Module, ABC):
             raise ValueError("Empty trainable parameter set")
 
     def forward(self, images, questions, targets):
+        #! 这个forward函数正确吗？
         q = self.probabilities(questions)
         raw_targets = self.probabilities(targets)
         q, _ = canonical_probabilities(q, self.eos, self.pad)
@@ -144,6 +158,7 @@ class VLMAdapter(nn.Module, ABC):
                 ended |= next_id == self.eos
             return self.decode(ids)
 
+    # Stable model identity and metadata for observations and saved artifacts.
     def fingerprint(self):
         h = hashlib.sha256()
         for name, value in self.state_dict().items():
