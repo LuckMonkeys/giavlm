@@ -248,14 +248,21 @@ def capture(args):
 
 
 def attack(args):
+    """Reconstruct private inputs from one validated public observation."""
     from attacks.factory import create_attacker
-    from core.knowledge import AdversaryKnowledge
     from core.aggregation import create_federated_algorithm
     from core.fl import load_observation, restore_model
+    from core.knowledge import AdversaryKnowledge
+    from core.types import Reconstruction
+
     cfg = configuration(args)
     public, output = Path(args.observation), Path(args.output)
+
+    # The observation is authoritative for the victim model and upload protocol.
     obs = load_observation(public, args.device or cfg.model.device)
     meta = read_json(public / "observation.json")
+
+    # Resume only the same observation, attack configuration, and source state.
     signature = digest({"observation_id": meta["observation_id"], "attack": asdict(cfg.attack),
                         "source_sha256": source_fingerprint(),
                         "upload_sha256": file_hash(public / "upload.json")
@@ -263,6 +270,7 @@ def attack(args):
                         "wrong_observation": file_hash(Path(args.wrong_observation) / "update.safetensors")
                         if args.wrong_observation else None})
     result_file = output / "result.json"
+
     if result_file.exists():
         result = read_json(result_file)
         if args.resume and result.get("run_signature") == signature:
@@ -271,19 +279,25 @@ def attack(args):
         raise FileExistsError("Result already exists; choose another output or resume the exact run")
     if output.exists() and any(output.iterdir()) and not args.resume:
         raise FileExistsError("Partial attack output exists; use --resume")
+
+    # Restore the exact global model state that produced the observed upload.
     model_path = args.model or (public / "model")
     if not args.model and (public / "model_ref.json").exists():
         model_path = read_json(public / "model_ref.json")["path"]
     adapter = restore_model(model_path, obs.model.device)
     adapter.training_spec = obs.training
+
+    # The wrong-update control changes only the tensors, not model or protocol.
     if args.wrong_observation:
         wrong = load_observation(args.wrong_observation, obs.model.device)
-        if wrong.model_fingerprint != obs.model_fingerprint or asdict(wrong.training) != asdict(obs.training):
+        if (wrong.model_fingerprint != obs.model_fingerprint
+                or asdict(wrong.training) != asdict(obs.training)):
             raise ValueError("Wrong-gradient control requires an independent observation under the same protocol/state")
         if file_hash(Path(args.wrong_observation) / "update.safetensors") == meta["update_sha256"]:
             raise ValueError("Wrong-gradient control was given the original update")
         obs.tensors = wrong.tensors
-    from core.types import Reconstruction
+
+    # Attackers receive only the public update, protocol, and declared knowledge.
     try:
         result = create_attacker(adapter, cfg.attack).attack(
             obs.tensors, obs, AdversaryKnowledge(obs.training.knowledge),
@@ -294,6 +308,8 @@ def attack(args):
         result = Reconstruction("resource_unavailable", f"Out of memory: {error}")
     except (FileNotFoundError, ImportError, OSError) as error:
         result = Reconstruction("resource_unavailable", str(error))
+
+    # Keep image tensors separate from JSON metadata and reconstructed text.
     info = {k: v for k, v in asdict(result).items() if k != "images"}
     info.update({"observation_id": meta["observation_id"], "run_signature": signature,
                  "condition": {"model": obs.model.name, "revision": obs.model.revision,
@@ -308,18 +324,23 @@ def attack(args):
                                "model_protocol_hash": digest({k: v for k, v in asdict(obs.model).items()
                                                                if k not in {"device", "device_map", "max_memory"}}),
                                "local_lr": obs.training.lr, "lora_alpha": obs.training.lora_alpha,
-                               "attack_protocol_hash": digest({k: v for k, v in asdict(cfg.attack).items() if k != "seed"}),
+                               "attack_protocol_hash": digest({
+                                   k: v for k, v in asdict(cfg.attack).items() if k != "seed"}),
                                "control": "wrong_update" if args.wrong_observation else "none"},
                  "environment": environment()})
+
     if (public / "upload.json").exists():
         info["condition"].update(read_json(public / "upload.json"))
+
     if result.images is not None:
         write_tensors(output / "images.safetensors", {"images": result.images})
         from PIL import Image
         import numpy as np
+
         for index, image in enumerate(result.images):
             pixels = (image.permute(1, 2, 0).float().numpy() * 255).round().astype(np.uint8)
             Image.fromarray(pixels).save(output / f"image-{index:03d}.png")
+
     write_json(result_file, info)
     emit({"status": result.status, "reason": result.reason, "costs": result.costs, "output": str(output)})
 
