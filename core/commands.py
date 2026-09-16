@@ -71,25 +71,32 @@ def inject_canaries(args):
 
 
 def train(args):
+    """Run serial federated rounds and persist each recoverable global state."""
     import numpy as np
     from core.aggregation import create_federated_algorithm
     from core.data import load_batch, read_manifest
     from core.fl import restore_model, save_model
     from core.vlm_wrapper import build_model
+
     cfg = configuration(args)
     output = Path(args.output)
     initial_model = getattr(args, "initial_model", None)
+
+    # Bind resume state to the exact configuration, data, source, and warm start.
     initial_hashes = {}
     if initial_model:
         initial_model = Path(initial_model)
         for name in ["model.json", "model.safetensors"]:
             initial_hashes[name] = file_hash(initial_model / name)
+
     signature = digest({"config": asdict(cfg), "data_sha256": file_hash(args.data),
                         "initial_model_hashes": initial_hashes,
                         "source_sha256": source_fingerprint()})
     pointer = output / "training.json"
     start = 0
     history = []
+
+    # Continue a run, import a compatible snapshot, or build round zero.
     if pointer.exists():
         if not args.resume:
             raise FileExistsError("Training output exists; use --resume with the same configuration")
@@ -108,36 +115,49 @@ def train(args):
     else:
         adapter = build_model(cfg.model, cfg.training)
         initialization = {"kind": "model_config", "fingerprint": adapter.fingerprint()}
+
+    # Materialize the client partition once; rounds only sample within each client.
     clients = {}
     for row in read_manifest(args.data, cfg.training.task, "train"):
         clients.setdefault(row["client"], []).append(row)
+
     if len(clients) < cfg.training.clients_per_round:
         raise ValueError("Too few nonempty training clients in the prepared manifest")
     if any(client >= cfg.training.clients for client in clients):
         raise ValueError("Prepared manifest has more clients than the training protocol")
+
     algorithm = create_federated_algorithm(cfg.training)
     count = cfg.training.batch_size * cfg.training.local_steps
+
+    # Commit round zero before any global-model mutation.
     if start == 0 and not pointer.exists():
         save_model(output / "round-0000", adapter,
                    {"round": 0, "config_hash": signature, "initialization": initialization})
         write_json(pointer, {"signature": signature, "round": 0, "checkpoint": "round-0000",
                              "history": [], "initialization": initialization})
+
     for round_id in range(start + 1, cfg.training.rounds + 1):
+        # Round-specific RNG makes client and sample selection resume-stable.
         rng = np.random.default_rng(cfg.training.seed + round_id)
         selected = rng.choice(sorted(clients), cfg.training.clients_per_round, replace=False)
         batches, weights = [], []
+
         for client in selected:
             rows = clients[client]
             indices = rng.choice(len(rows), count, replace=len(rows) < count)
             batches.append(load_batch([rows[i] for i in indices], adapter))
             weights.append(len(rows))
+
+        # Every client starts from the unchanged global model for this round.
         client_updates = (algorithm.client_update(adapter, batch) for batch in batches)
         server_update = algorithm.aggregate(client_updates, weights)
         algorithm.apply(adapter, server_update)
+
         with torch.no_grad():
             loss = sum(adapter(b.images, b.questions, b.targets).item() for b in batches) / len(batches)
         history.append({"round": round_id, "mean_selected_client_loss": loss,
                         "client_count": len(selected), "algorithm": algorithm.name})
+
         # Commit every round to make interruption recovery exact; published snapshots are flagged.
         checkpoint = (f"round-{round_id:04d}" if round_id in cfg.training.snapshots
                       else f"latest-{round_id % 2}")
@@ -149,20 +169,26 @@ def train(args):
                              "checkpoint": checkpoint, "history": history,
                              "initialization": initialization})
         emit(history[-1])
+
     write_json(output / "environment.json", environment())
     emit({"status": "completed", "rounds": cfg.training.rounds, "output": str(output)})
 
 
 def capture(args):
+    """Capture one client's upload and separate public input from private truth."""
     from core.data import load_batch, read_manifest
     from core.fl import capture as capture_update, restore_model, save_model, save_observation
     from core.vlm_wrapper import build_model
+
     cfg = configuration(args)
     output = Path(args.output)
+
     if args.client < 0 or args.client >= cfg.training.clients or args.offset < 0:
         raise ValueError("Invalid client index or negative sample offset")
     if output.exists() and any(output.iterdir()):
         raise FileExistsError("Capture output is nonempty; choose a new directory")
+
+    # Restore the observed global state, then adopt the requested upload protocol.
     if args.model:
         adapter = restore_model(args.model, cfg.model.device)
         if asdict(adapter.spec) != asdict(cfg.model):
@@ -174,18 +200,27 @@ def capture(args):
         adapter.training_spec = cfg.training
     else:
         adapter = build_model(cfg.model, cfg.training)
+
+    # Select exactly batch_size * local_steps unique-image records.
     rows = read_manifest(args.data, cfg.training.task, args.split, args.client, unique_images=True)
     count = cfg.training.batch_size * cfg.training.local_steps
     rows = rows[args.offset:args.offset + count]
     if len(rows) != count:
-        raise ValueError(f"Need {count} unique-image records for client={args.client}, split={args.split}; got {len(rows)}")
+        raise ValueError(
+            f"Need {count} unique-image records for client={args.client}, "
+            f"split={args.split}; got {len(rows)}")
+
     batch = load_batch(rows, adapter)
     observation = capture_update(adapter, batch,
                                  adapter.decode(batch.questions), adapter.decode(batch.targets))
+
+    # Defenses transform the upload after the client algorithm computes it.
     defense_config = getattr(args, "defense_config", None)
     if defense_config is not None:
         from defenses.factory import create_defense
         observation.tensors = create_defense(defense_config).apply(observation.tensors)
+
+    # Public artifacts are the attacker's complete input surface.
     observation_id = save_observation(output / "public", observation)
     if defense_config is not None:
         write_json(output / "public" / "upload.json", {
@@ -194,15 +229,19 @@ def capture(args):
         write_json(output / "public" / "model_ref.json", {"path": str(Path(args.model).resolve())})
     else:
         save_model(output / "public" / "model", adapter)
+
+    # Private references are consumed only by evaluation after reconstruction.
     write_tensors(output / "private" / "images.safetensors", {"images": batch.images})
     for row, q, y in zip(rows, adapter.decode(batch.questions), adapter.decode(batch.targets)):
         row["model_question"], row["model_target"] = q, y
+
     write_json(output / "private" / "truth.json", {"observation_id": observation_id,
                                                   "training": asdict(cfg.training), "samples": rows})
     write_json(output / "private" / "capture.json", {"config": asdict(cfg),
                                                      "data_sha256": file_hash(args.data),
                                                      "split": args.split, "client": args.client,
                                                      "offset": args.offset, "environment": environment()})
+
     emit({"status": "captured", "observation_id": observation_id, "output": str(output),
           "uploaded_parameters": len(observation.tensors),
           "communication_bytes": sum(t.numel() * t.element_size() for t in observation.tensors.values())})
