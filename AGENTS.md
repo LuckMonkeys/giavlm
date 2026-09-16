@@ -36,9 +36,9 @@
 - Uploaded defenses currently use defense-unaware raw-update matching; this
   must remain explicit in the output condition. Gaussian perturbation is not
   a certified DP implementation: no privacy accountant or epsilon is provided.
-- Never silently change batch size, update mode, local steps, dtype, task or
-  knowledge while recovering from OOM. Save failure state and retry a bounded
-  number of times with the same protocol.
+- Runs execute serially. On any exception, save the failed run state and re-raise
+  immediately so the experiment stops; do not automatically retry OOM failures or
+  alter batch size, update mode, local steps, dtype, task, or knowledge.
 - Preserve deterministic image-group splits and shared initial LoRA bases.
   Numerical secure aggregation is not cryptography, nor aggregate inversion.
 - Select candidates using observable update/prior scores, never reference metrics.

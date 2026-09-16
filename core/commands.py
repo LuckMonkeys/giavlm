@@ -35,6 +35,20 @@ def configuration(args):
     return load_config(getattr(args, "config", None), getattr(args, "set", []))
 
 
+def restore_compatible_model(directory, cfg):
+    """Restore a checkpoint whose architecture and trainable layout match cfg."""
+    from core.fl import restore_model
+    adapter = restore_model(directory, cfg.model.device)
+    if asdict(adapter.spec) != asdict(cfg.model):
+        raise ValueError("Model checkpoint specification differs from training configuration")
+    old = adapter.training_spec
+    if (old.mode, old.lora_rank, old.lora_alpha) != (
+            cfg.training.mode, cfg.training.lora_rank, cfg.training.lora_alpha):
+        raise ValueError("Checkpoint trainable parameterization differs from training configuration")
+    adapter.training_spec = cfg.training
+    return adapter
+
+
 def prepare_data(args):
     from core.data import prepare_coco, prepare_medical_vqa, synthetic
     if args.synthetic:
@@ -63,7 +77,14 @@ def train(args):
     from core.vlm_wrapper import build_model
     cfg = configuration(args)
     output = Path(args.output)
+    initial_model = getattr(args, "initial_model", None)
+    initial_hashes = {}
+    if initial_model:
+        initial_model = Path(initial_model)
+        for name in ["model.json", "model.safetensors"]:
+            initial_hashes[name] = file_hash(initial_model / name)
     signature = digest({"config": asdict(cfg), "data_sha256": file_hash(args.data),
+                        "initial_model_hashes": initial_hashes,
                         "source_sha256": source_fingerprint()})
     pointer = output / "training.json"
     start = 0
@@ -76,8 +97,16 @@ def train(args):
             raise ValueError("Training resume configuration or data changed")
         adapter = restore_model(output / saved["checkpoint"], cfg.model.device)
         start, history = saved["round"], saved["history"]
+        initialization = saved["initialization"]
+    elif initial_model:
+        source = read_json(initial_model / "model.json")
+        adapter = restore_compatible_model(initial_model, cfg)
+        initialization = {"kind": "snapshot", "fingerprint": source["fingerprint"],
+                          "source_round": source.get("round"),
+                          "artifact_hashes": initial_hashes}
     else:
         adapter = build_model(cfg.model, cfg.training)
+        initialization = {"kind": "model_config", "fingerprint": adapter.fingerprint()}
     clients = {}
     for row in read_manifest(args.data, cfg.training.task, "train"):
         clients.setdefault(row["client"], []).append(row)
@@ -87,8 +116,10 @@ def train(args):
         raise ValueError("Prepared manifest has more clients than the training protocol")
     count = cfg.training.batch_size * cfg.training.local_steps
     if start == 0 and not pointer.exists():
-        save_model(output / "round-0000", adapter, {"round": 0, "config_hash": signature})
-        write_json(pointer, {"signature": signature, "round": 0, "checkpoint": "round-0000", "history": []})
+        save_model(output / "round-0000", adapter,
+                   {"round": 0, "config_hash": signature, "initialization": initialization})
+        write_json(pointer, {"signature": signature, "round": 0, "checkpoint": "round-0000",
+                             "history": [], "initialization": initialization})
     for round_id in range(start + 1, cfg.training.rounds + 1):
         rng = np.random.default_rng(cfg.training.seed + round_id)
         selected = rng.choice(sorted(clients), cfg.training.clients_per_round, replace=False)
@@ -108,9 +139,11 @@ def train(args):
                       else f"latest-{round_id % 2}")
         save_model(output / checkpoint, adapter,
                    {"round": round_id, "config_hash": signature,
-                    "published_snapshot": round_id in cfg.training.snapshots})
+                    "published_snapshot": round_id in cfg.training.snapshots,
+                    "initialization": initialization})
         write_json(pointer, {"signature": signature, "round": round_id,
-                             "checkpoint": checkpoint, "history": history})
+                             "checkpoint": checkpoint, "history": history,
+                             "initialization": initialization})
         emit(history[-1])
     write_json(output / "environment.json", environment())
     emit({"status": "completed", "rounds": cfg.training.rounds, "output": str(output)})
@@ -406,6 +439,8 @@ def build_parser():
     p = command("train", train, True)
     p.add_argument("--data", required=True)
     p.add_argument("--output", required=True)
+    p.add_argument("--initial-model",
+                   help="Checkpoint used as round 0 of a new federation")
     p.add_argument("--resume", action="store_true")
     p = command("capture", capture, True)
     p.add_argument("--data", required=True)

@@ -33,7 +33,7 @@ These synthetic runs test execution and contracts, not pretrained-model privacy.
   of the former `src/giavlm/` layer, which has since been removed entirely;
   new tests cover Hydra groups/presets, run-ID resume, protocol
   mismatch rejection, shared model snapshots, pre-capture federated training,
-  bounded OOM recovery, named aggregation, defense metadata and paired controls.
+  fail-fast error persistence, named aggregation, defense metadata and paired controls.
 - Executed both jobs in `run_yaml/tiny_smoke.yaml`: full/FedSGD/private and
   LoRA/FedAvg/private. Both completed reconstruction and evaluation. Resuming a
   completed Hydra experiment preserved its result artifacts.
@@ -46,10 +46,11 @@ These synthetic runs test execution and contracts, not pretrained-model privacy.
 - CPU validation artifacts are in `/tmp/giavlm-layout-validation` and
   `/tmp/giavlm-layout-legacy-smoke`; they contain synthetic fixtures only.
 
-OOM tests inject `torch.OutOfMemoryError`; they do not demonstrate recovery from
-a physical GPU allocation failure. The existing GPU/pretrained limitations below
-remain unchanged. Reorganization changes the source fingerprint, so pre-migration
-checkpoints are preserved but cannot be resumed under a different implementation.
+Failure tests inject exceptions, including `torch.OutOfMemoryError`, and verify
+that one failed attempt is persisted before the serial experiment stops. The
+existing GPU/pretrained limitations below remain unchanged. Reorganization changes
+the source fingerprint, so pre-migration checkpoints are preserved but cannot be
+resumed under a different implementation.
 
 ## Real-Model and Real-Data Validation (2026-09-08)
 

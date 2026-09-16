@@ -68,7 +68,8 @@ CUDA stack. `model=qwen_vl` selects Qwen2.5-VL, not the original Qwen-VL model.
 
 Run IDs select distinct client batches. `num_runs` is the exclusive stop ID,
 not a count of extra runs. Resume requires the same output directory and exact
-protocol/source/data; batch size and dtype never change automatically after OOM:
+protocol/source/data. Runs execute serially; any exception is recorded and stops
+the experiment immediately so the failed run can be debugged:
 
 ```bash
 python examples/run_attack.py num_runs=3 output_dir=outputs/repeated
@@ -82,8 +83,10 @@ Use Hydra's default per-job output directories for sweeps, not one shared explic
 `output_dir`. The YAML scheduler is sequential and dry-run by default. GPU use is
 explicit via `--gpu-ids 0,1`; it has no background occupancy behavior.
 
-`fed.rounds=0` captures the initial model. Set `fed.rounds>0` to train first, or
-set `model_snapshot=/path/to/round-0010` to capture from an existing checkpoint.
+`fed.rounds=0` captures the initial model. Set `fed.rounds>0` to train first.
+`model_snapshot=/path/to/round-0010` selects an existing checkpoint; when combined
+with `fed.rounds=N`, that checkpoint becomes the new federation's round 0 and `N`
+additional rounds run before capture.
 `defense={none,clipping,gaussian_dp,topk_sparsify,sign_sgd}` transforms the upload;
 current attacks are explicitly **defense-unaware**. `gaussian_dp` provides client
 clipping plus Gaussian noise, not an epsilon/delta guarantee or privacy accountant.
@@ -154,14 +157,17 @@ use float32 weights/updates, and require cached weights. Populate the HF cache s
 ```bash
 python -m core.commands doctor --config configs/llava.yaml --probe --output runs/llava-probe.json
 python -m core.commands train --config configs/llava.yaml --data data/coco-vqa/samples.jsonl --output runs/federation
+python -m core.commands train --config configs/llava.yaml --initial-model runs/federation/round-0010 --data data/coco-vqa/samples.jsonl --output runs/warm-start
 python -m core.commands capture --config configs/llava.yaml --model runs/federation/round-0010 --data data/coco-vqa/samples.jsonl --client 0 --output runs/round10/capture
 python -m core.commands utility --model runs/federation/round-0010 --data data/coco-vqa/samples.jsonl --device cuda:0 --output runs/round10/utility.json
 ```
 
 Training uses functional SGD, weighted FedAvg, no momentum/weight decay, disabled
 dropout, and the versioned `fixed-block-eos-v1` format. It stores rounds 0/10/20
-and two rotating recovery checkpoints. `train --resume` restores model state
-and deterministic round sampling. Caption runs should set `training.task=caption`
+and two rotating recovery checkpoints. `--initial-model` starts a new federation
+whose round 0 is the supplied compatible checkpoint; `training.rounds` counts new
+rounds. Repeat `--initial-model` when using `train --resume`, which restores model
+state and deterministic round sampling. Caption runs should set `training.task=caption`
 and `model.target_length=64` on real models. Set `training.observation=client_delta`
 with `training.local_steps=5` to train/capture five local steps.
 

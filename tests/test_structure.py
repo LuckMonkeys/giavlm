@@ -79,32 +79,42 @@ def test_federated_training_in_hydra_entry(tmp_path):
     assert read_json(tmp_path / "federation/training.json")["round"] == 1
 
 
-def test_oom_retries_exact_run_and_saves_failure(tmp_path, monkeypatch):
-    runner = ExperimentRunner(configuration(tmp_path))
-    original = runner._run_one
+def test_hydra_federation_can_start_from_snapshot(tmp_path):
+    source_output = tmp_path / "source"
+    run_experiment(configuration(source_output))
+    snapshot = source_output / "model"
+
+    warm_output = tmp_path / "warm"
+    config = configuration(warm_output, "fed.rounds=1")
+    config.model_snapshot = str(snapshot)
+    result = run_experiment(config)
+
+    training = read_json(warm_output / "federation/training.json")
+    source = read_json(snapshot / "model.json")
+    imported = read_json(warm_output / "federation/round-0000/model.json")
+    trained = read_json(warm_output / "federation" / training["checkpoint"] / "model.json")
+    assert result["runs"][0]["status"] == "completed"
+    assert training["round"] == 1
+    assert training["initialization"]["kind"] == "snapshot"
+    assert training["initialization"]["fingerprint"] == source["fingerprint"]
+    assert imported["fingerprint"] == source["fingerprint"]
+    assert trained["fingerprint"] != source["fingerprint"]
+
+
+def test_run_failure_is_saved_once_and_stops_experiment(tmp_path, monkeypatch):
+    runner = ExperimentRunner(configuration(tmp_path, "num_runs=2"))
     attempts = []
 
-    def fail_once(run_id):
+    def fail(run_id):
         attempts.append(run_id)
-        if len(attempts) == 1:
-            raise torch.OutOfMemoryError("injected OOM")
-        return original(run_id)
+        raise RuntimeError("injected failure")
 
-    monkeypatch.setattr(runner, "_run_one", fail_once)
-    result = runner.run_experiments()
-    assert attempts == [0, 0]
-    assert result["runs"][0]["oom_retries"] == 1
-    assert runner.protocol.training.batch_size == 1
-
-    runner = ExperimentRunner(configuration(tmp_path / "failed"))
-
-    def fail_always(run_id):
-        raise torch.OutOfMemoryError("injected persistent OOM")
-
-    monkeypatch.setattr(runner, "_run_one", fail_always)
-    with pytest.raises(torch.OutOfMemoryError):
+    monkeypatch.setattr(runner, "_run_one", fail)
+    with pytest.raises(RuntimeError, match="injected failure"):
         runner.run_experiments()
-    assert read_json(tmp_path / "failed/experiment.json")["runs"][0]["status"] == "oom"
+    assert attempts == [0]
+    assert read_json(tmp_path / "experiment.json")["runs"] == [
+        {"run_id": 0, "status": "error", "reason": "injected failure"}]
 
 
 def test_named_alignment_is_atomic():
@@ -192,7 +202,7 @@ def test_hydra_config_roundtrip(tmp_path):
     assert protocol_config(roundtrip) == protocol_config(config)
 
 
-def test_attack_oom_reaches_runner_without_terminal_result(tmp_path, monkeypatch):
+def test_attack_oom_is_recorded_and_stops_experiment(tmp_path, monkeypatch):
     from attacks.base import OptimizationAttacker
 
     def fail(*args, **kwargs):
@@ -200,8 +210,8 @@ def test_attack_oom_reaches_runner_without_terminal_result(tmp_path, monkeypatch
 
     monkeypatch.setattr(OptimizationAttacker, "attack", fail)
     with pytest.raises(torch.OutOfMemoryError):
-        run_experiment(configuration(tmp_path, "oom_recovery.max_retries=0"))
-    assert read_json(tmp_path / "experiment.json")["runs"][0]["status"] == "oom"
+        run_experiment(configuration(tmp_path))
+    assert read_json(tmp_path / "experiment.json")["runs"][0]["status"] == "error"
     assert not (tmp_path / "run-00000/attack/result.json").exists()
 
 

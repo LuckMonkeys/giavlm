@@ -84,8 +84,9 @@ private evaluation -> per-run result and experiment state.
 
 `fed=fedavg` means observing a client's multi-step delta. It does not mean
 observing a secure sum of several clients. `fed.rounds>0` additionally trains
-a federation before capture; `model_snapshot=...` selects an existing checkpoint
-instead. These two options cannot be combined.
+a federation before capture. `model_snapshot=...` selects an existing checkpoint;
+when both are set, the snapshot is recorded as the new federation's round 0 and
+`fed.rounds` counts the additional rounds before capture.
 
 Each run owns `capture/public/`, `capture/private/`, and `attack/`. Shared model
 weights live once at experiment level. `experiment.json` indexes stable run IDs;
@@ -96,7 +97,7 @@ checkpoints include optimizer state, candidate state, RNG and budget counters.
 
 - Runnable: existing VLM adaptations, both update modes, full/LLM-full/LoRA,
   private/question-known/text-known, five post-update defenses, Hydra repeats,
-  resume, bounded OOM recovery, and the legacy staged workflows.
+  fail-fast serial execution, resume, and the legacy staged workflows.
 - `fed.upload_parameters` selects which trainable parameters the client uploads,
   as fnmatch patterns resolved against the model at capture time. The resolved
   names are what travels, an unmatched pattern is an error, and the attacker

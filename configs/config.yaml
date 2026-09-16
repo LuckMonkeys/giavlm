@@ -14,9 +14,6 @@ resume: false
 output_dir: null
 model_snapshot: null
 threads: 1
-oom_recovery:
-  enabled: true
-  max_retries: 1
 
 hydra:
   job:

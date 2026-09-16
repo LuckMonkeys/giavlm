@@ -460,9 +460,9 @@ python examples/run_attack.py \
   <与原实验相同的协议 override>
 ```
 
-恢复签名覆盖解析后的配置、数据 manifest SHA-256、模型快照哈希和 Python 源码 fingerprint。输出目录、run 范围和 OOM retry 控制不属于研究协议，可以变化；协议、数据、模型或源码变化会拒绝恢复。
+恢复签名覆盖解析后的配置、数据 manifest SHA-256、模型快照哈希和 Python 源码 fingerprint。输出目录和 run 范围不属于研究协议，可以变化；协议、数据、模型或源码变化会拒绝恢复。
 
-OOM 恢复只会释放对象、执行 GC/清空 CUDA cache，再以完全相同的 batch、dtype 和协议做有界重试，不会自动降低实验规模。完成 run 的 `result.json` 和 `evaluation.json` 会再次校验哈希后才跳过。
+run 按 ID 串行执行。任意异常（包括 OOM）都会先记录当前 run 的 `error` 状态，再立即抛出并终止整个 experiment，不做自动重试。完成 run 的 `result.json` 和 `evaluation.json` 会再次校验哈希后才跳过。
 
 ## 11. 测试结构与推荐流程
 
@@ -474,7 +474,7 @@ OOM 恢复只会释放对象、执行 GC/清空 CUDA cache，再以完全相同�
 | `test_hf_adapters.py` | 小型真实 HF LLaVA/BLIP-2/Qwen2.5-VL 架构、LoRA、多步重放、Qwen patchification |
 | `test_data_metrics.py` | 数据分组、医疗数据、canary、文本/图像指标、Hungarian 配对、bootstrap |
 | `test_priors.py` | 图像先验可微性和 GradViT 外部 BN 先验路径 |
-| `test_structure.py` | Hydra 组合、恢复/OOM、factory/registry、防御、调度器、prior-only 对照 |
+| `test_structure.py` | Hydra 组合、失败落盘与停止、factory/registry、防御、调度器、prior-only 对照 |
 | `test_workflows.py` | train/capture/utility、suite 完整性和资源缺失状态 |
 
 推荐从快到慢执行：

@@ -1,6 +1,5 @@
 """Canonical Hydra lifecycle, with immutable protocol and run-ID based recovery."""
 from dataclasses import asdict
-import gc
 from pathlib import Path
 import shutil
 from types import SimpleNamespace
@@ -44,13 +43,11 @@ def protocol_config(config: DictConfig) -> Config:
 class ExperimentRunner:
     def __init__(self, config: DictConfig):
         self.config = config
+
+        # Get verifed config
         self.protocol = protocol_config(config)
         if not 0 <= config.start_run_id < config.num_runs:
             raise ValueError("Require 0 <= start_run_id < num_runs (exclusive stop run ID)")
-        if config.oom_recovery.max_retries < 0:
-            raise ValueError("oom_recovery.max_retries must be nonnegative")
-        if config.model_snapshot and self.protocol.training.rounds:
-            raise ValueError("Choose model_snapshot or fed.rounds, not both")
         if config.output_dir:
             self.output = Path(to_absolute_path(config.output_dir))
         elif HydraConfig.initialized():
@@ -61,8 +58,19 @@ class ExperimentRunner:
         self.results = {}
 
     def _prepare(self):
+        """Prepare experiment-wide inputs and restore resumable state.
+
+        This runs once before the run-ID loop. It resolves the shared data
+        manifest, verifies that every requested run has a deterministic sample
+        window, computes the experiment identity used for safe resume, and
+        restores the index of completed runs. Model preparation and all
+        private/public capture work happen later.
+        """
         from core.data import synthetic
         data = self.config.data
+
+        # Synthetic data is a self-contained correctness fixture. Real datasets
+        # must already be normalized into the benchmark's JSONL manifest format.
         if data.name == "synthetic":
             if self.protocol.model.family != "tiny":
                 raise ValueError("Synthetic fixture is restricted to the tiny model")
@@ -75,6 +83,9 @@ class ExperimentRunner:
             manifest = Path(to_absolute_path(data.manifest))
         else:
             raise ValueError(f"Unknown dataset: {data.name}")
+
+        # A run consumes a fixed, non-overlapping window of unique images. Check
+        # the full requested ID range now so a sweep cannot fail halfway through.
         from core.data import read_manifest
         rows = read_manifest(manifest, self.protocol.training.task, data.split,
                              data.client, unique_images=True)
@@ -83,17 +94,26 @@ class ExperimentRunner:
             raise ValueError("Invalid data client or offset")
         if len(rows) < data.offset + self.config.num_runs * count:
             raise ValueError("Not enough unique-image records for requested run IDs")
+
+        # The signature identifies the scientific condition, not its scheduling.
+        # Excluding run controls permits extending num_runs or resuming at another
+        # run ID without allowing protocol, data, weights, or source code to drift.
         frozen = OmegaConf.to_container(self.config, resolve=True)
-        for key in ["output_dir", "num_runs", "start_run_id", "resume", "oom_recovery"]:
+        for key in ["output_dir", "num_runs", "start_run_id", "resume"]:
             frozen.pop(key, None)
         snapshot_hashes = {}
         if self.config.model_snapshot:
+            # Hash contents as well as retaining the configured path, so replacing
+            # files in-place is detected during resume.
             snapshot = Path(to_absolute_path(self.config.model_snapshot))
             for name in ["model.json", "model.safetensors"]:
                 snapshot_hashes[name] = file_hash(snapshot / name)
         signature = digest({"config": frozen, "data_sha256": file_hash(manifest),
                             "snapshot_hashes": snapshot_hashes,
                             "source_sha256": source_fingerprint()})
+
+        # Existing output is reusable only when explicitly requested and when it
+        # belongs to this exact experiment identity.
         state = self.output / "experiment.json"
         if state.exists():
             saved = read_json(state)
@@ -102,6 +122,9 @@ class ExperimentRunner:
             if saved["signature"] != signature:
                 raise ValueError("Resume protocol, data, or source changed")
             self.results = {r["run_id"]: r for r in saved["runs"]}
+
+        # Persist provenance before the first run so failures still leave enough
+        # state to diagnose and safely resume the experiment.
         self.manifest, self.signature = manifest, signature
         write_json(self.output / "config.resolved.json", OmegaConf.to_container(self.config, resolve=True))
         self._save()
@@ -146,13 +169,16 @@ class ExperimentRunner:
                 "evaluation_sha256": file_hash(reconstruction / "evaluation.json")}
 
     def _prepare_model(self, config_path):
-        if self.config.model_snapshot:
-            return to_absolute_path(self.config.model_snapshot)
         if self.protocol.training.rounds:
             directory = self.output / "federation"
+            initial_model = (to_absolute_path(self.config.model_snapshot)
+                             if self.config.model_snapshot else None)
             commands.train(SimpleNamespace(config=config_path, set=[], data=self.manifest,
-                                            output=directory, resume=True))
+                                            output=directory, resume=True,
+                                            initial_model=initial_model))
             return directory / read_json(directory / "training.json")["checkpoint"]
+        if self.config.model_snapshot:
+            return to_absolute_path(self.config.model_snapshot)
         from core.fl import save_model
         from core.vlm_wrapper import build_model
         directory = self.output / "model"
@@ -165,9 +191,10 @@ class ExperimentRunner:
         return directory
 
     def run_experiments(self):
-        torch.set_num_threads(self.config.threads)
+        torch.set_num_threads(self.config.threads) # Really Needed?
         self._prepare()
         for run_id in range(self.config.start_run_id, self.config.num_runs):
+            # Reuse completed runs only after verifying their committed artifacts.
             saved = self.results.get(run_id)
             if saved and saved["status"] not in {"oom", "error"}:
                 result_path = self.output / saved["result"]
@@ -175,29 +202,13 @@ class ExperimentRunner:
                         file_hash(result_path.with_name("evaluation.json")) != saved["evaluation_sha256"]):
                     raise ValueError("Completed run artifact integrity check failed")
                 continue
-            retries = 0
-            while True:
-                retry = False
-                try:
-                    self.results[run_id] = {**self._run_one(run_id), "oom_retries": retries}
-                except torch.OutOfMemoryError as error:
-                    self.results[run_id] = {"run_id": run_id, "status": "oom", "reason": str(error),
-                                            "oom_retries": retries}
-                    self._save()
-                    if not self.config.oom_recovery.enabled or retries >= self.config.oom_recovery.max_retries:
-                        raise
-                    retries += 1
-                    retry = True
-                except Exception as error:
-                    self.results[run_id] = {"run_id": run_id, "status": "error", "reason": str(error)}
-                    self._save()
-                    raise
-                # Release the exception traceback before retrying the exact same protocol.
-                gc.collect()
-                if torch.cuda.is_available():
-                    torch.cuda.empty_cache()
-                if not retry:
-                    break
+
+            try:
+                self.results[run_id] = self._run_one(run_id)
+            except Exception as error:
+                self.results[run_id] = {"run_id": run_id, "status": "error", "reason": str(error)}
+                self._save()
+                raise
             self._save()
         return read_json(self.output / "experiment.json")
 

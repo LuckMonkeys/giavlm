@@ -36,6 +36,29 @@ def test_train_restore_capture_and_utility(tmp_path):
     assert 0 <= read_json(utility_output)["metrics"]["vqa_soft_accuracy"] <= 1
 
 
+def test_train_warm_start_and_resume_signature(tmp_path):
+    manifest = synthetic(tmp_path / "data", 20, clients=1)
+    source_output = tmp_path / "source"
+    common = ["--set", "training.clients=1", "--set", "training.clients_per_round=1",
+              "--set", "training.rounds=1", "--set", "training.snapshots=[0,1]"]
+    command("train", "--data", str(manifest), "--output", str(source_output), *common)
+    source_snapshot = source_output / "round-0001"
+
+    warm_output = tmp_path / "warm"
+    command("train", "--data", str(manifest), "--output", str(warm_output),
+            "--initial-model", str(source_snapshot), *common)
+    state = read_json(warm_output / "training.json")
+    assert state["initialization"]["kind"] == "snapshot"
+    assert (read_json(warm_output / "round-0000/model.json")["fingerprint"] ==
+            read_json(source_snapshot / "model.json")["fingerprint"])
+
+    command("train", "--data", str(manifest), "--output", str(warm_output), "--resume",
+            "--initial-model", str(source_snapshot), *common)
+    with pytest.raises(ValueError, match="resume configuration"):
+        command("train", "--data", str(manifest), "--output", str(warm_output), "--resume",
+                "--initial-model", str(source_output / "round-0000"), *common)
+
+
 def test_suite_materialization_and_data_integrity(tmp_path):
     manifest = synthetic(tmp_path / "data", 20, clients=1)
     config = tmp_path / "tiny.json"
