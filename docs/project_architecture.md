@@ -107,7 +107,7 @@ python -m utils.run_cmds --cmd-config-yaml run_yaml/tiny_smoke.yaml --execute
 
 ## 4. Hydra 配置系统
 
-### 4.1 七个配置组
+### 4.1 八个配置组
 
 [configs/config.yaml](../configs/config.yaml) 组合以下配置组：
 
@@ -117,7 +117,8 @@ python -m utils.run_cmds --cmd-config-yaml run_yaml/tiny_smoke.yaml --execute
 | `model` | VLM 及加载方式 | `family/checkpoint/revision/device/dtype/image_size` |
 | `attack` | 攻击与资源预算 | `name/text_method/iterations/restarts/lr/seconds` |
 | `defense` | 上传前变换 | `name/max_norm/noise_multiplier/ratio` |
-| `fed` | 本地更新和联邦训练 | `mode/observation/batch_size/local_steps/lr/rounds` |
+| `fed` | 本地更新和联邦训练 | `algorithm/local_optimizer/local_steps/gradient_accumulation_steps/lr/rounds` |
+| `tuning` | FedVLMBench 微调策略 | `fine_tuning_strategy/two_stage_connector_rounds` |
 | `knowledge` | 攻击者知识 | `private/question_known/text_known` |
 | `evaluation` | 可选评估器 | `lpips/clip/clip_model/clip_revision` |
 
@@ -125,7 +126,7 @@ python -m utils.run_cmds --cmd-config-yaml run_yaml/tiny_smoke.yaml --execute
 
 ```bash
 python examples/run_attack.py \
-  data=vqa_rad model=qwen2_5_vl_3b fed=fedavg fed.mode=lora_llm \
+  data=vqa_rad model=qwen2_5_vl_3b fed=fedavg tuning=f_cl \
   attack=ig_adapted knowledge=private defense=none \
   data.manifest=/path/to/vqa_rad/samples.jsonl
 ```
@@ -142,6 +143,7 @@ Hydra data.task         -> TrainingSpec.task
 Hydra knowledge.name    -> TrainingSpec.knowledge
 Hydra attack.name       -> AttackSpec.method
 Hydra fed.*             -> TrainingSpec.*
+Hydra tuning.*          -> TrainingSpec.*
 ```
 
 严格协议由 `ModelSpec`、`TrainingSpec`、`AttackSpec` 和 `EvalSpec` 构成。所有枚举型配置选项集中定义在 `core/config.py` 顶部的有序 tuple 中，便于统一查看和修改。`core.config.validate()` 只负责所有实验路径共享的核心约束，并按 model/training/attack/cross-component 四层组织；dtype、device placement、LoRA 参数、patch 尺寸以及 checkpoint/prior interval 等实现细节，由模型 Adapter 或攻击引擎在实际消费处校验。落盘的 `run-NNNNN/protocol.json` 使用这一格式。
@@ -193,7 +195,7 @@ manifest 是 JSONL，每行至少包含：
 | `Support` | `supported/not_applicable/not_implemented` 能力结果 |
 | `Reconstruction` | 重构状态、图像、问题、回答、成本、历史和来源 |
 
-若 `N = batch_size × local_steps`，则主要 tensor 形状是：
+若 `N = batch_size × local_steps × gradient_accumulation_steps`，则主要 tensor 形状是：
 
 ```text
 Batch.images                [N, 3, H, W]
@@ -217,7 +219,7 @@ Observation.tensors         {parameter_name: parameter-shaped tensor}
 
 - 固定长度编码、EOS/padding 规范化；
 - 图像和文本构造 `Batch`；
-- full、仅语言模型 full、LoRA 三种可训练参数配置；
+- F-C、F-L、F-CL、F-2stage 四种 FedVLMBench 可训练参数配置；
 - response-only 自回归交叉熵；
 - 贪心生成、模型 fingerprint 与结构描述。
 
@@ -230,7 +232,7 @@ Observation.tensors         {parameter_name: parameter-shaped tensor}
 | `blip2` | `Blip2Adapter` | vision encoder → Q-Former → language projection |
 | `qwen2_5_vl` | `QwenVLAdapter` | 官方风格 patchification → visual encoder + mRoPE |
 
-[core/adapters/hf.py](../core/adapters/hf.py) 负责共享的 Hugging Face 加载、tokenizer、图像标准化和固定 prompt 拼接。当前训练格式是项目自定义的固定块协议：视觉嵌入、问题和回答片段被直接拼到 `inputs_embeds`，不是逐模型调用其原生 chat template。
+[core/adapters/hf.py](../core/adapters/hf.py) 负责共享的 Hugging Face 加载、tokenizer、模型原生公开 prompt 片段和图像预处理。私有问题和回答仍使用固定最大槽位，避免公开真实长度与 loss mask。
 
 训练 loss 只覆盖 target token，包含 EOS，排除 padding 和 EOS 之后的位置：
 
@@ -240,11 +242,11 @@ L = Σ_i mask_i · CE(target_i, logits_i) / Σ_i mask_i
 
 这使真实 token 和攻击中的软 token 使用同一条可微路径，但也意味着结果只代表该固定训练协议。
 
-LoRA 只注入语言侧 attention projection 中名为 `q_proj/k_proj/v_proj/o_proj/out_proj` 的线性层，dropout 被设为 0，模型处于 eval 模式。这些都属于实验定义，而不是所有 FedVLM 训练的默认行为。
+F-C 只训练 connector；F-L 只训练语言侧 LoRA；F-CL 联合训练二者；F-2stage 根据公开 `server_round` 先训练 connector，再训练 LoRA。LoRA 注入语言模型全部 `Linear`，但排除输出头、视觉塔、Q-Former 和 connector；dropout 为 0。
 
 ### 5.4 客户端更新与服务器聚合：`core/fl.py`、`core/aggregation.py`
 
-[core/fl.py](../core/fl.py) 使用 `torch.func.functional_call` 重放本地 SGD。
+[core/fl.py](../core/fl.py) 使用 `torch.func.functional_call` 重放本地 SGD 或 AdamW。
 
 FedSGD 单步观测：
 
@@ -261,7 +263,7 @@ upload = selected(g)
 upload = selected(Δθ)
 ```
 
-一个 `Batch` 被按 `batch_size` 切成 `local_steps` 个连续片段，每步恰好消费一个片段。当前未模拟 momentum、Adam、学习率调度、重复 epoch 或 DataLoader shuffle。
+`local_steps` 表示 optimizer steps；每步连续消费 `gradient_accumulation_steps` 个 minibatch 并平均梯度。AdamW moments 在每个客户端每轮从零初始化，bias 与 normalization 参数不衰减。当前不模拟跨轮 optimizer state、学习率调度、重复 epoch 或 DataLoader shuffle。
 
 `TrainingSpec.upload_parameters` 是 `fnmatch` 模式列表。算法计算本地 update 后把模式解析成显式参数名，再只上传这些 tensor；未命中的模式会报错。攻击重放使用同一算法，因此只返回并匹配公开子集。
 
@@ -416,7 +418,7 @@ output_dir/
 
 ```json
 {
-  "schema_version": 1,
+  "schema_version": 3,
   "model": {},
   "training": {},
   "model_fingerprint": "...",
@@ -533,10 +535,10 @@ $PY -m core.commands doctor --config configs/qwen2_5_vl.yaml \
 
 以下内容目前是明确的实现选择，后续应优先确认是否符合论文目标：
 
-- 固定块 prompt/response 协议，而不是各 VLM 原生 chat template；
+- 模型原生公开 prompt 与固定私有文本槽位的组合；
 - response-only loss、eval mode、dropout=0；
-- LoRA 只覆盖语言 attention projection；
-- 本地训练仅实现普通 SGD，无 optimizer state；
+- F-C/F-L/F-CL/F-2stage 决定 connector 与语言 LoRA 的训练和上传集合；
+- 本地训练实现 SGD 和每客户端每轮重置状态的 AdamW；
 - 一个 local step 对应 Batch 中一个不同的连续样本片段；
 - capture 对 image 去重，同图多问题不会同时进入一个观测；
 - `fed=fedavg` 预设同时选择 FedAvg 服务器规则和单客户端多步 delta 观测，后者不是安全聚合更新；

@@ -5,7 +5,7 @@
 Run `pytest -q` for protocol, data, metrics and model-adapter tests. The offline
 suite requires no pretrained weights or network access. It checks:
 
-- Single-step delta/gradient equivalence for full, LLM-full and LoRA modes.
+- Single-step delta/gradient equivalence for F-C, F-L, F-CL and F-2stage.
 - Functional multistep replay against actual `torch.optim.SGD`.
 - Explicit FedSGD/FedAvg rules, weighted updates from a common initial state,
   fail-before-mutation application and LoRA-only parameter exposure.
@@ -17,15 +17,15 @@ suite requires no pretrained weights or network access. It checks:
 - EOS, repeated-token metrics, complete-pair Hungarian matching, image-group
   bootstrap and preservation of non-completed status counts.
 - Candidate/optimizer checkpoint resume and finite attack results.
-- Actual small Transformers LLaVA, BLIP-2 and Qwen2.5-VL architectures in full and
-  LoRA modes, multistep LoRA replay, and Qwen patchification parity with the official processor.
+- Actual small Transformers LLaVA, BLIP-2 and Qwen2.5-VL architectures under all
+  four strategies, multistep LoRA replay, and Qwen patchification parity with the official processor.
 - External GradViT BN and patch priors preserve image gradients; the second-half
   prior schedule is exercised with explicitly synthetic test-only weights.
 - Training/checkpoint/capture/utility workflows, sealed suite inputs, and actual
   interrupted optimization resume compared against a continuous run.
 
 `python -m core.commands smoke` additionally executes prepare/capture/attack/evaluate/report in
-separate Python processes across eight task/training/upload combinations.
+separate Python processes across 24 task/strategy/upload combinations.
 These synthetic runs test execution and contracts, not pretrained-model privacy.
 
 ## Hydra Layout Validation (2026-09-08)
@@ -35,11 +35,11 @@ These synthetic runs test execution and contracts, not pretrained-model privacy.
   new tests cover Hydra groups/presets, run-ID resume, protocol
   mismatch rejection, shared model snapshots, pre-capture federated training,
   fail-fast error persistence, named federated algorithms, defense metadata and paired controls.
-- Executed both jobs in `run_yaml/tiny_smoke.yaml`: full/FedSGD/private and
-  LoRA/FedAvg/private. Both completed reconstruction and evaluation. Resuming a
+- Executed both jobs in `run_yaml/tiny_smoke.yaml`: F-L/FedSGD/private and
+  F-CL/FedAvg/private. Both completed reconstruction and evaluation. Resuming a
   completed Hydra experiment preserved its result artifacts.
-- Re-executed all eight legacy subprocess smoke cases after migration: both
-  tasks, full/LoRA, and FedSGD/FedAvg uploads. All eight reports completed.
+- The subprocess smoke matrix now covers both tasks, all four tuning strategies,
+  and FedSGD/FedAvg-SGD/FedAvg-AdamW uploads.
 - Built an offline wheel and checked that it includes implementation, canonical
   entry and Hydra YAML data groups. The installed console entry resolves configs
   from outside the checkout. `uv lock --check --offline` and shell syntax checks
@@ -64,7 +64,7 @@ Medical VQA ingestion, run on the real corpora rather than a fixture:
 Second-order probe on a real pretrained VLM, CPU only:
 
 - `doctor --probe` passed on Qwen2.5-VL-3B-Instruct (3.76B parameters, float32,
-  CPU, 112px, `lora_llm`) in 98s. `replay_max_error` was exactly 0.0 and the
+  CPU, 112px, F-L) in 98s. `replay_max_error` was exactly 0.0 and the
   candidate gradient norms were finite and nonzero for images (114.8), questions
   (1.92) and targets (1.89). The `pixel_values -> loss` path is therefore
   differentiable end to end through a current `transformers` VLM; both LLaVA and
@@ -81,7 +81,7 @@ Second-order probe on a real pretrained VLM, CPU only:
 
 Attack cost on the same model, measured not estimated:
 
-- `ig_adapted` on a real VQA-RAD/SLAKE image, CPU, float32, 112px, `lora_llm`:
+- `ig_adapted` on a real VQA-RAD/SLAKE image, CPU, float32, 112px, F-L:
   10 iterations in 228s, i.e. **22.8s per iteration**. Extrapolating, the
   `iterations: 1000` in `configs/qwen2_5_vl.yaml` is 6.3 hours per sample per
   restart, and 24000 iterations is 152 hours. Ten iterations recovered nothing

@@ -1,6 +1,7 @@
 defaults:
   - _self_
   - fed: fedsgd
+  - tuning: f_l
   - data: synthetic
   - model: tiny_llava
   - attack: ig_adapted
@@ -19,7 +20,7 @@ hydra:
   job:
     chdir: false
   run:
-    dir: ./outputs/${attack.name}_${knowledge.name}_${defense.name}_${model.name}_${data.name}_${fed.algorithm}_${now:%Y-%m-%d_%H-%M-%S}
+    dir: ./outputs/${attack.name}_${knowledge.name}_${defense.name}_${model.name}_${data.name}_${tuning.name}_${fed.name}_${now:%Y-%m-%d_%H-%M-%S}
   sweep:
     dir: ./outputs/multirun/${now:%Y-%m-%d_%H-%M-%S}
     subdir: ${hydra.job.num}

@@ -1,14 +1,14 @@
 output_root: ../outputs/batch_smoke
 jobs:
-  - name: tiny_full_private
+  - name: tiny_fl_private
     config_name: synthetic_tiny_llava_ig_private
     overrides:
       - attack.iterations=2
       - attack.checkpoint_interval=1
-  - name: tiny_lora_fedavg
+  - name: tiny_fcl_fedavg
     config_name: config
     overrides:
       - fed=fedavg
-      - fed.mode=lora_llm
+      - tuning=f_cl
       - attack.iterations=2
       - attack.checkpoint_interval=1

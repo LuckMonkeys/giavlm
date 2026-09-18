@@ -6,7 +6,8 @@ The server passively observes an individual client's uploaded update and the
 current model. No template, crop location, private sample ID, source file path,
 question/answer length, optimizer hidden state, or ground-truth image is given
 to the attack. Model architecture/weights, tokenizer, task, fixed slot lengths,
-preprocessing, SGD learning rate, batch size and local step count are public.
+preprocessing, optimizer hyperparameters, batch size, accumulation count and
+local optimizer step count are public.
 The fixture seed initializes only synthetic data and is not part of an attack
 initialization heuristic. Benchmark data are treated as private observations
 even though the underlying research datasets are publicly downloadable.
@@ -22,14 +23,14 @@ Knowledge conditions:
 Public text is the decoded sequence actually used by the model, after truncation.
 It is excluded from recovery scores. Model utility may use all task annotations.
 
-## Fixed-Block Training
+## Native SFT V2
 
-`fixed-block-eos-v1` is a controlled, deterministic fine-tuning format, not a
-claim of native LLaVA/Qwen instruction-tuning reproduction. Image features,
-fixed public prompt fragments, question slots (VQA only), an answer separator,
-and autoregressively shifted target slots are concatenated. Language attention
-is causal. All question slots occupy fixed positions; slots after EOS contain
-padding. Target loss includes EOS and excludes padding/positions after EOS.
+`native-sft-v2` uses family-specific LLaVA, BLIP-2 and Qwen2.5-VL public prompt
+fragments and each checkpoint's image processor. Private question and response
+content still occupies fixed maximum slots so true lengths and loss masks are
+not exposed. Response-only causal loss includes EOS and excludes the prompt,
+image positions, padding and positions after EOS. Hard one-hot and soft-token
+candidates share this path.
 
 For soft candidates, a token probability distribution supplies both input
 embeddings and shifted soft target labels. EOS survival is differentiable and
@@ -43,12 +44,32 @@ the pretrained visual module and mRoPE positions computed from public structural
 tokens. BLIP-2 keeps the visual and Q-Former paths differentiable even when their
 parameters are frozen. All model families use eager attention.
 
+## FedVLMBench Fine-Tuning Strategies
+
+Fine-tuning strategy is independent of the federated algorithm. The `tuning`
+Hydra group selects the trainable and uploaded parameter surface:
+
+| Strategy | Active parameters |
+|---|---|
+| `f_c` | Multimodal connector only |
+| `f_l` | LoRA parameters in language-model linear layers only |
+| `f_cl` | Connector and language-model LoRA parameters concurrently |
+| `f_2stage` | Connector first, then language-model LoRA |
+
+The vision encoder, Q-Former where present, and language-model base weights stay
+frozen in all four strategies. LoRA excludes the connector and `lm_head`. For
+`f_2stage`, `server_round` is public protocol state: rounds below
+`two_stage_connector_rounds` use the connector phase and later rounds use the
+LLM-LoRA phase. The round recorded in an Observation therefore determines the
+exact trainable and uploaded parameter set an attacker must replay.
+
 ## Upload Semantics
 
 - `gradient`: mean supervised loss over one minibatch, differentiated with
   respect to exactly the trainable parameters.
-- `client_delta`: theta_after - theta_before for the public SGD rule. There is
-  one candidate minibatch per local step. For single-step SGD, delta = -lr * grad.
+- `client_delta`: theta_after - theta_before for the public SGD or AdamW rule.
+  `local_steps` counts optimizer steps, each averaging
+  `gradient_accumulation_steps` microbatches. For single-step SGD, delta = -lr * grad.
 - Multistep reconstruction does not know the true slot ordering. It optimizes
   an ordered slot sequence to reproduce local training; evaluation treats the
   recovered image/text tuples as a set. Repeated actual training examples remain
@@ -59,12 +80,12 @@ parameters are frozen. All model families use eager attention.
   and uploads one-step gradients, averages them, and applies `-lr`; FedAvg computes
   and uploads local deltas, averages them, and adds them to the global model. Both
   use local dataset sizes as weights and the same initial global state for selected
-  clients. LoRA aggregation stays in A/B
+  clients. FedAvg optimizer moments reset for every client and round. LoRA aggregation stays in A/B
   parameter space rather than substituting the product BA.
 
 ## Artifact Boundary
 
-`Observation` contains model/training specifications, model fingerprint, named
+Schema-v3 `Observation` contains model/training specifications, model fingerprint, named
 update tensors and only explicitly public text. Loading verifies an allowlist,
 metadata digest, tensor-file hash and parameter names. Model checkpoints use
 safetensors and their own weight fingerprint. Attack callbacks do not receive
@@ -80,8 +101,8 @@ external job logs are the source of truth for total billed wall time.
 
 ## Experimental Boundaries
 
-No secure aggregation, malicious model modification, hidden Adam state, clipping,
-DP guarantee, QLoRA, stochastic augmentation or unknown optimizer is modeled.
+No secure aggregation, malicious model modification, persistent Adam state, clipping,
+DP guarantee, QLoRA, stochastic augmentation, LR scheduling or unknown optimizer is modeled.
 No differential privacy claim follows from adding arbitrary Gaussian noise.
 No natural-image benchmark proves OCR/sensitive-field recovery. Adding that
 claim requires an independently labeled text-rich dataset and an OCR track.

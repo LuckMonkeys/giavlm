@@ -28,17 +28,18 @@ class Observation:
     public_targets: list[str] = field(default_factory=list)
     public_question_ids: list[list[int]] = field(default_factory=list)
     public_target_ids: list[list[int]] = field(default_factory=list)
-    schema_version: int = 1
+    schema_version: int = 3
 
     @property
     def sample_count(self):
-        return self.training.batch_size * self.training.local_steps
+        return self.training.sample_count
 
     def validate(self):
         from core.config import Config, validate
         validate(Config(model=self.model, training=self.training))
-        if self.schema_version != 1:
-            raise ValueError("Unsupported observation schema")
+        if self.schema_version != 3:
+            raise ValueError(
+                f"Unsupported observation schema v{self.schema_version}; expected schema v3")
         if not self.tensors or any(not torch.isfinite(x).all() for x in self.tensors.values()):
             raise ValueError("Missing or nonfinite observed update")
         if self.training.knowledge == "private" and (self.public_questions or self.public_targets

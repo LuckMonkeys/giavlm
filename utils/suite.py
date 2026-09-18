@@ -20,6 +20,9 @@ def materialize(args):
     output.mkdir(parents=True, exist_ok=True)
     data = str(Path(args.data).resolve())
     data_hash = file_hash(data)
+    accumulation = getattr(args, "gradient_accumulation_steps", 1)
+    if accumulation <= 0:
+        raise ValueError("Gradient accumulation steps must be positive")
     jobs = []
     for path in args.configs:
         base = load_config(path, args.set)
@@ -28,19 +31,26 @@ def materialize(args):
             clients = {}
             for row in rows:
                 clients.setdefault(row["client"], []).append(row)
-            for algorithm in args.algorithms:
-                local_steps = 1 if algorithm == "fedsgd" else args.local_steps
-                slots = args.batch_size * local_steps
+            for protocol in args.algorithms:
+                if protocol == "fedsgd":
+                    algorithm, optimizer, local_steps, local_accumulation = "fedsgd", "sgd", 1, 1
+                elif protocol == "fedavg_sgd":
+                    algorithm, optimizer = "fedavg", "sgd"
+                    local_steps, local_accumulation = args.local_steps, accumulation
+                else:
+                    algorithm, optimizer = "fedavg", "adamw"
+                    local_steps, local_accumulation = args.local_steps, accumulation
+                slots = args.batch_size * local_steps * local_accumulation
                 batches = [(client, offset) for client in sorted(clients)
                            for offset in range(0, len(clients[client]) - slots + 1, slots)]
                 required = (args.samples + slots - 1) // slots
                 if len(batches) < required:
                     raise ValueError(
-                        f"Need {required} complete within-client batches for {task}/{algorithm}; "
+                        f"Need {required} complete within-client batches for {task}/{protocol}; "
                         f"found {len(batches)}")
                 # Stable interleaving avoids placing the entire subset on the first client.
                 batches.sort(key=lambda pair: (pair[1], pair[0]))
-                for mode in args.modes:
+                for strategy in args.strategies:
                     for knowledge in args.knowledge:
                         if task == "caption" and knowledge == "question_known":
                             continue
@@ -49,10 +59,14 @@ def materialize(args):
                             model=replace(base.model, target_length=64)
                             if task == "caption" and base.model.family != "tiny"
                             else replace(base.model),
-                            training=replace(base.training, task=task, mode=mode,
+                            training=replace(base.training, task=task,
+                                             fine_tuning_strategy=strategy,
                                              knowledge=knowledge, algorithm=algorithm,
+                                             local_optimizer=optimizer,
                                              batch_size=args.batch_size,
-                                             local_steps=local_steps))
+                                             local_steps=local_steps,
+                                             gradient_accumulation_steps=local_accumulation,
+                                             lr=2e-5 if protocol == "fedavg" else base.training.lr))
                         validate(cfg)
                         model_cfg = replace(
                             cfg, training=replace(cfg.training, knowledge="private", rounds=0,
@@ -107,12 +121,15 @@ def materialize(args):
               "shared_models": len({j["model_key"] for j in jobs}),
               "samples_requested_per_condition": args.samples,
               "samples_actual_per_condition": {
-                  algorithm: ((args.samples + args.batch_size
-                               * (1 if algorithm == "fedsgd" else args.local_steps) - 1)
-                              // (args.batch_size
-                                  * (1 if algorithm == "fedsgd" else args.local_steps)))
-                  * args.batch_size * (1 if algorithm == "fedsgd" else args.local_steps)
-                  for algorithm in args.algorithms},
+                  protocol: ((args.samples + args.batch_size
+                              * (1 if protocol == "fedsgd" else args.local_steps)
+                              * (1 if protocol == "fedsgd" else accumulation) - 1)
+                             // (args.batch_size
+                                 * (1 if protocol == "fedsgd" else args.local_steps)
+                                 * (1 if protocol == "fedsgd" else accumulation)))
+                  * args.batch_size * (1 if protocol == "fedsgd" else args.local_steps)
+                  * (1 if protocol == "fedsgd" else accumulation)
+                  for protocol in args.algorithms},
               "manifest_sha256": file_hash(manifest), "data_sha256": data_hash,
               "attack_wall_hours_cap": sum(j["max_attack_seconds"] for j in jobs) / 3600,
               "gpus_per_run": args.gpus_per_run,

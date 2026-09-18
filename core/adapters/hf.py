@@ -1,4 +1,4 @@
-"""Shared Hugging Face loading and fixed-block causal text protocol."""
+"""Shared Hugging Face loading and native fixed-slot SFT protocol."""
 import torch
 from core.vlm_wrapper import VLMAdapter
 
@@ -56,6 +56,27 @@ class HFAdapter(VLMAdapter):
             return name.startswith(("backend.model.", "backend.lm_head."))
         return name.startswith("backend.language_model.")
 
+    def is_connector(self, name):
+        prefixes = {
+            "llava": ("backend.multi_modal_projector.",),
+            "blip2": ("backend.language_projection.",),
+            "qwen2_5_vl": ("backend.visual.merger.",),
+        }
+        return name.startswith(prefixes[self.spec.family])
+
+    def prepare_image(self, image):
+        """Use the checkpoint processor while retaining a fixed RGB tensor view."""
+        if self.spec.family == "qwen2_5_vl" or not hasattr(self.processor.image_processor, "preprocess"):
+            return super().prepare_image(image)
+        values = self.processor.image_processor.preprocess(
+            images=image, return_tensors="pt", do_normalize=False)["pixel_values"][0].float()
+        expected = (3, self.spec.image_size, self.spec.image_size)
+        if tuple(values.shape) != expected:
+            raise ValueError(f"Image processor produced {tuple(values.shape)}, expected {expected}")
+        if values.max() > 1:
+            values = values / 255
+        return values.clamp(0, 1)
+
     def public_embeddings(self, text, batch_size):
         ids = torch.tensor(self.tokenizer.encode(text, add_special_tokens=False),
                            device=self.device, dtype=torch.long)
@@ -86,30 +107,47 @@ class HFAdapter(VLMAdapter):
         visual, grid = self.visual_embeddings(images)
         embedding = self.embedding().weight
         visual = visual.to(embedding.device)
-        instruction = "Describe the image." if self.training_spec.task == "caption" else "Question: "
-        prefix = "USER: " if self.spec.family == "llava" else ""
-        before = self.public_embeddings(prefix, b)
-        after = self.public_embeddings("\n" + instruction, b)
-        pieces = [before, visual, after]
-        if self.training_spec.task == "vqa":
-            pieces.append(q.to(embedding.device) @ embedding)
-        pieces.extend([self.public_embeddings("\nAnswer: ", b), y[:, :-1].to(embedding.device) @ embedding])
-        embeds = torch.cat(pieces, 1)
+        question = q.to(embedding.device) @ embedding
+        response = y[:, :-1].to(embedding.device) @ embedding
+
         if self.spec.family == "qwen2_5_vl":
-            # Use structural IDs only to calculate mRoPE; text content cannot affect positions.
+            before = self.public_embeddings(
+                "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n"
+                "<|im_start|>user\n", b)
             start = self.public_embeddings("<|vision_start|>", b)
             end = self.public_embeddings("<|vision_end|>", b)
-            embeds = torch.cat([start, visual, end, *pieces[2:]], 1)
+            instruction = (self.public_embeddings("\nDescribe the image.", b)
+                           if self.training_spec.task == "caption"
+                           else torch.cat([self.public_embeddings("\n", b), question], 1))
+            assistant = self.public_embeddings(
+                "<|im_end|>\n<|im_start|>assistant\n", b)
+            embeds = torch.cat([before, start, visual, end, instruction, assistant, response], 1)
+
+            # Only public structural IDs are needed for mRoPE; private text stays embedded.
             cfg = self.backend.config
             structure = torch.zeros(embeds.shape[:2], dtype=torch.long, device=self.device)
-            structure[:, 0] = cfg.vision_start_token_id
-            structure[:, 1:1 + visual.shape[1]] = cfg.image_token_id
-            structure[:, 1 + visual.shape[1]] = cfg.vision_end_token_id
+            vision_start = before.shape[1]
+            structure[:, vision_start] = cfg.vision_start_token_id
+            structure[:, vision_start + 1:vision_start + 1 + visual.shape[1]] = cfg.image_token_id
+            structure[:, vision_start + 1 + visual.shape[1]] = cfg.vision_end_token_id
             positions, _ = self.backend.get_rope_index(structure, image_grid_thw=grid)
             hidden = self.backend.model(inputs_embeds=embeds, position_ids=positions,
                                         use_cache=False, return_dict=True).last_hidden_state
             logits = self.backend.lm_head(hidden[:, -y.shape[1]:])
         else:
+            if self.spec.family == "llava":
+                instruction = (self.public_embeddings("\nDescribe the image.", b)
+                               if self.training_spec.task == "caption"
+                               else torch.cat([self.public_embeddings("\n", b), question], 1))
+                pieces = [self.public_embeddings("USER: ", b), visual, instruction,
+                          self.public_embeddings(" ASSISTANT: ", b), response]
+            else:
+                instruction = (self.public_embeddings("Describe the image.", b)
+                               if self.training_spec.task == "caption"
+                               else torch.cat([self.public_embeddings("Question: ", b), question,
+                                               self.public_embeddings(" Answer: ", b)], 1))
+                pieces = [visual, instruction, response]
+            embeds = torch.cat(pieces, 1)
             logits = self.backend.language_model(inputs_embeds=embeds, use_cache=False,
                                                  return_dict=True).logits[:, -y.shape[1]:]
         return logits

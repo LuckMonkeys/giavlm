@@ -15,3 +15,4 @@ artifacts/
 
 # Vendored reference project (has its own .git)
 GI-DQA-Gradient-Inversion-of-Multimodal-Models/
+FedVLMBench/

@@ -46,8 +46,8 @@ under `/tmp` and does not survive a reboot; recreate it with the commands above
 in a durable path before relying on it. The Conda environment `gia`
 (torch 2.6.0+cu124, transformers 4.49.0, peft 0.14.0) also runs the full suite
 and is the one to use once GPUs are available.
-`smoke` runs each stage in a separate process and covers both tasks, full/LoRA,
-and FedSGD/FedAvg uploads. Use `--quick` for one pipeline.
+`smoke` runs each stage in a separate process and covers both tasks, all four
+FedVLMBench tuning strategies, and FedSGD/FedAvg uploads. Use `--quick` for one pipeline.
 
 ## Run One Experiment
 
@@ -58,7 +58,7 @@ the attack, and evaluates committed output:
 ```bash
 python examples/run_attack.py --cfg job --resolve
 python examples/run_attack.py attack.iterations=20 output_dir=outputs/toy
-python examples/run_attack.py fed=fedavg fed.mode=lora_llm knowledge=question_known defense=clipping
+python examples/run_attack.py fed=fedavg tuning=f_cl knowledge=question_known defense=clipping
 python examples/run_attack.py --config-name vqav2_llava_ig_private data.manifest=/datasets/prepared/samples.jsonl
 ```
 
@@ -149,7 +149,7 @@ private lengths, EOS locations and padding masks are never exported.
 ## Pretrained Models and Federation
 
 Recipes are `configs/llava.yaml`, `configs/blip2.yaml`, and
-`configs/qwen2_5_vl.yaml`. They pin checkpoint hashes, start with LLM-only LoRA,
+`configs/qwen2_5_vl.yaml`. They pin checkpoint hashes, default to F-L,
 use float32 weights/updates, and require cached weights. Populate the HF cache separately, or explicitly set
 `model.local_files_only=false` for the initial model download. Set a writable
 `HF_HOME` and `TORCH_HOME` when running in a restricted container.
@@ -162,21 +162,24 @@ python -m core.commands capture --config configs/llava.yaml --model runs/federat
 python -m core.commands utility --model runs/federation/round-0010 --data data/coco-vqa/samples.jsonl --device cuda:0 --output runs/round10/utility.json
 ```
 
-Training uses functional client SGD and an explicit high-level `fedsgd` or weighted
-`fedavg` algorithm, with no momentum/weight decay, disabled dropout, and the
-versioned `fixed-block-eos-v1` format. The algorithm fixes client computation,
+Training uses functional client SGD or AdamW and an explicit high-level `fedsgd`
+or weighted `fedavg` algorithm, with disabled dropout and the versioned
+`native-sft-v2` format. The algorithm fixes client computation,
 uploaded update type, server aggregation, and global-model application. Training stores rounds 0/10/20
 and two rotating recovery checkpoints. `--initial-model` starts a new federation
 whose round 0 is the supplied compatible checkpoint; `training.rounds` counts new
 rounds. Repeat `--initial-model` when using `train --resume`, which restores model
 state and deterministic round sampling. Caption runs should set `training.task=caption`
-and `model.target_length=64` on real models. Set `training.algorithm=fedavg`
-with `training.local_steps=5` to train/capture a five-step client delta.
+and `model.target_length=64` on real models. Hydra `fed=fedavg` selects AdamW
+(`lr=2e-5`), while `fed=fedavg_sgd` preserves functional SGD. `local_steps`
+counts optimizer steps and `gradient_accumulation_steps` counts microbatches per step.
 
-`training.mode=full` trains every model parameter; `llm_full` trains the language
-model only; `lora_llm` trains Q/K/V/O LoRA A/B parameters only. LoRA defaults to
-rank 8, alpha 16, zero dropout and PEFT's standard initialization. Every client
-starts from the same global A/B state; updates and aggregation stay in A/B space.
+`tuning=f_c` trains and shares only the multimodal connector. `tuning=f_l` trains
+and shares language-side LoRA, while `tuning=f_cl` trains and shares both.
+`tuning=f_2stage` trains the connector until `two_stage_connector_rounds`, then
+switches to LoRA; `server_round` records the public phase. LoRA covers every
+language-side Linear except the output head and excludes vision, Q-Former and
+connector modules. It uses rank 8, alpha 16 and zero dropout.
 
 Independent experiments can run on separate GPUs. Experimental within-model
 placement uses `model.device_map=balanced` and

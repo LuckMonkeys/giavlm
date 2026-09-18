@@ -32,12 +32,23 @@ def configuration(tmp_path, *overrides, name="config"):
 @pytest.mark.parametrize("model,family", [("tiny_llava", "tiny"), ("llava", "llava"),
                                           ("blip2", "blip2"), ("qwen_vl", "qwen2_5_vl")])
 def test_hydra_model_composition(tmp_path, model, family):
-    config = configuration(tmp_path, f"model={model}", "fed=fedavg", "fed.mode=lora_llm")
+    config = configuration(tmp_path, f"model={model}", "fed=fedavg", "tuning=f_cl")
     protocol = protocol_config(config)
     assert protocol.model.family == family
     assert protocol.training.algorithm == "fedavg"
+    assert protocol.training.local_optimizer == "adamw"
+    assert protocol.training.lr == 2e-5
     assert protocol.training.local_steps == 2
-    assert protocol.training.mode == "lora_llm"
+    assert protocol.training.fine_tuning_strategy == "f_cl"
+
+
+def test_hydra_fedavg_sgd_preset(tmp_path):
+    protocol = protocol_config(configuration(tmp_path, "fed=fedavg_sgd"))
+    assert protocol.training.algorithm == "fedavg"
+    assert protocol.training.local_optimizer == "sgd"
+    assert protocol.training.local_steps == 2
+    assert protocol.training.training_protocol == "native-sft-v2"
+    assert protocol.training.fine_tuning_strategy == "f_l"
 
 
 def test_preset_and_knowledge_validation(tmp_path):
@@ -74,11 +85,28 @@ def test_hydra_run_resume_and_integrity(tmp_path):
 
 
 def test_federated_training_in_hydra_entry(tmp_path):
-    result = run_experiment(configuration(tmp_path, "fed.rounds=1", "fed=fedavg", "fed.mode=lora_llm"))
+    result = run_experiment(configuration(
+        tmp_path, "fed.rounds=1", "fed=fedavg", "tuning=f_cl"))
     assert result["runs"][0]["status"] == "completed"
     state = read_json(tmp_path / "federation/training.json")
     assert state["round"] == 1
     assert state["history"][0]["algorithm"] == "fedavg"
+    assert state["history"][0]["fine_tuning_strategy"] == "f_cl"
+
+
+def test_two_stage_federation_switches_parameter_groups(tmp_path):
+    run_experiment(configuration(
+        tmp_path, "fed.rounds=2", "fed=fedavg", "tuning=f_2stage",
+        "tuning.two_stage_connector_rounds=1"))
+    state = read_json(tmp_path / "federation/training.json")
+    assert [row["fine_tuning_stage"] for row in state["history"]] == ["connector", "llm"]
+    model = read_json(tmp_path / "federation" / state["checkpoint"] / "model.json")
+    assert model["training"]["server_round"] == 2
+    assert model["training"]["fine_tuning_strategy"] == "f_2stage"
+    observation = read_json(tmp_path / "run-00000/capture/public/observation.json")
+    assert observation["training"]["server_round"] == 2
+    assert observation["training"]["fine_tuning_strategy"] == "f_2stage"
+    assert all("lora_" in name for name in observation["parameter_names"])
 
 
 def test_hydra_federation_can_start_from_snapshot(tmp_path):

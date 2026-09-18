@@ -26,13 +26,16 @@ class VLMAdapter(nn.Module, ABC):
     This base class provides the shared text/batch protocol, loss and generation,
     trainable-parameter selection, LoRA setup and artifact metadata.
     """
-    protocol_version = "fixed-block-eos-v1"
+    protocol_version = "native-sft-v2"
 
     def __init__(self, spec: ModelSpec, training: TrainingSpec):
         super().__init__()
         for field in ["image_size", "question_length", "target_length"]:
             if getattr(spec, field) <= 0:
                 raise ValueError(f"model.{field} must be positive")
+        if training.training_protocol != self.protocol_version:
+            raise ValueError(
+                f"Adapter requires {self.protocol_version}, got {training.training_protocol}")
         self.spec, self.training_spec = spec, training
         self.position_gradient_names = []
         self.tokenizer = None
@@ -46,6 +49,11 @@ class VLMAdapter(nn.Module, ABC):
     @abstractmethod
     def is_language(self, name):
         """Return whether a named parameter belongs to the language model."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def is_connector(self, name):
+        """Return whether a named parameter belongs to the multimodal connector."""
         raise NotImplementedError
 
     @abstractmethod
@@ -102,34 +110,86 @@ class VLMAdapter(nn.Module, ABC):
                      self.encode(questions, self.spec.question_length),
                      self.encode(targets, self.spec.target_length))
 
-    # Training modes differ only in which adapter parameters require gradients.
+    def prepare_image(self, image):
+        """Create the fixed public RGB view reconstructed by the benchmark."""
+        import numpy as np
+        from PIL import Image, ImageOps
+
+        image = ImageOps.fit(image, (self.spec.image_size, self.spec.image_size),
+                             method=Image.Resampling.BICUBIC, centering=(0.5, 0.5))
+        return torch.from_numpy(np.array(image, dtype=np.float32).copy()).permute(2, 0, 1) / 255
+
+    # Fine-tuning strategies determine the complete client/server parameter surface.
     def trainable(self):
         return {name: p for name, p in self.named_parameters() if p.requires_grad}
 
+    def decay_parameter_names(self):
+        """Return trainable weights decayed by Trainer-style AdamW grouping."""
+        normalization_types = (nn.LayerNorm, nn.BatchNorm1d, nn.BatchNorm2d,
+                               nn.BatchNorm3d, nn.GroupNorm, nn.InstanceNorm1d,
+                               nn.InstanceNorm2d, nn.InstanceNorm3d)
+        try:
+            from transformers.pytorch_utils import ALL_LAYERNORM_LAYERS
+            normalization_types += tuple(ALL_LAYERNORM_LAYERS)
+        except ImportError:
+            pass
+        no_decay = set()
+        for module_name, module in self.named_modules():
+            is_normalization = (isinstance(module, normalization_types)
+                                or module.__class__.__name__.lower().endswith("rmsnorm"))
+            if is_normalization:
+                for name, _ in module.named_parameters(recurse=False):
+                    no_decay.add(f"{module_name}.{name}" if module_name else name)
+        return {name for name in self.trainable()
+                if name not in no_decay and not name.endswith(".bias")}
+
     def configure_training(self):
-        mode = self.training_spec.mode
-        for name, p in self.named_parameters():
-            p.requires_grad_(mode == "full" or (mode == "llm_full" and self.is_language(name)))
-        if mode == "lora_llm":
+        strategy = self.training_spec.fine_tuning_strategy
+        uses_lora = strategy in {"f_l", "f_cl", "f_2stage"}
+        for parameter in self.parameters():
+            parameter.requires_grad_(False)
+        if uses_lora:
             if self.training_spec.lora_rank <= 0 or self.training_spec.lora_alpha <= 0:
                 raise ValueError("LoRA rank and alpha must be positive")
             from peft import LoraConfig, inject_adapter_in_model
             names = [name for name, module in self.named_modules()
                      if isinstance(module, nn.Linear) and self.is_language(name)
-                     and name.rsplit(".", 1)[-1] in {"q_proj", "k_proj", "v_proj", "o_proj", "out_proj"}]
+                     and name.rsplit(".", 1)[-1] not in {"lm_head", "head"}]
             if not names:
-                raise ValueError("No language attention projections found for LoRA")
+                raise ValueError("No language Linear modules found for LoRA")
+            forbidden = ("vision", "visual", "qformer", "q_former", "multi_modal_projector",
+                         "multimodal_projector", "language_projection", "lm_head")
+            if any(any(part in name.lower() for part in forbidden) for name in names):
+                raise ValueError("LoRA target resolution crossed a non-language module boundary")
             config = LoraConfig(r=self.training_spec.lora_rank,
                                 lora_alpha=self.training_spec.lora_alpha,
                                 lora_dropout=0.0, bias="none", target_modules=names)
             #! 添加LoRA的方式是这样吗？
             inject_adapter_in_model(config, self)
+        self.set_training_spec(self.training_spec)
         self.eval()
         for module in self.modules():
             if isinstance(module, nn.Dropout):
                 module.p = 0.0
         if not self.trainable():
             raise ValueError("Empty trainable parameter set")
+
+    def set_training_spec(self, training: TrainingSpec):
+        """Activate the parameter group selected by the public strategy and round."""
+        self.training_spec = training
+        strategy, stage = training.fine_tuning_strategy, training.fine_tuning_stage
+        if strategy not in {"f_c", "f_l", "f_cl", "f_2stage"}:
+            raise ValueError(f"Unknown fine-tuning strategy: {strategy}")
+        train_connector = strategy in {"f_c", "f_cl"} or (
+            strategy == "f_2stage" and stage == "connector")
+        train_lora = strategy in {"f_l", "f_cl"} or (
+            strategy == "f_2stage" and stage == "llm")
+        for name, parameter in self.named_parameters():
+            parameter.requires_grad_(
+                (train_connector and self.is_connector(name))
+                or (train_lora and ".lora_" in name))
+        if not self.trainable():
+            raise ValueError(f"Strategy {strategy} selected no trainable parameters")
 
     def forward(self, images, questions, targets):
         #! 这个forward函数正确吗？
@@ -144,7 +204,7 @@ class VLMAdapter(nn.Module, ABC):
         return (loss * weights).sum() / weights.sum().clamp_min(1e-6)
 
     def generate(self, images, questions):
-        """Greedy output under this adapter's fixed-block training format."""
+        """Greedy output under this adapter's fixed-slot native prompt."""
         with torch.no_grad():
             q = self.probabilities(questions)
             q, _ = canonical_probabilities(q, self.eos, self.pad)

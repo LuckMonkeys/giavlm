@@ -268,8 +268,6 @@ def load_batch(rows, adapter):
     for row in rows:
         with Image.open(row["image"]) as source:
             source = ImageOps.exif_transpose(source).convert("RGB")
-            # Fixed square view prevents private aspect ratios leaking via public grid metadata.
-            image = ImageOps.fit(source, (adapter.spec.image_size, adapter.spec.image_size),
-                                 method=Image.Resampling.BICUBIC, centering=(0.5, 0.5))
-            images.append(torch.from_numpy(np.array(image, dtype=np.float32).copy()).permute(2, 0, 1) / 255)
+            # The adapter owns the model-native fixed view and keeps its geometry public.
+            images.append(adapter.prepare_image(source))
     return adapter.batch(torch.stack(images), [r["question"] for r in rows], [r["target"] for r in rows])

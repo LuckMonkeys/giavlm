@@ -116,7 +116,9 @@ class AttackRunner:
         """
         self.check_budget()
         self.evaluations += 1
-        self.local_backward_evaluations += self.observation.training.local_steps
+        self.local_backward_evaluations += (
+            self.observation.training.local_steps
+            * self.observation.training.gradient_accumulation_steps)
         update = simulate_update(self.adapter, batch, self.observation.training, differentiable)
         return {name: update[name] for name in self.observation.tensors}
 
@@ -187,7 +189,8 @@ class AttackRunner:
         tensors["rng.cpu"] = torch.get_rng_state()
         if self.adapter.device.type == "cuda":
             tensors["rng.cuda"] = torch.cuda.get_rng_state(self.adapter.device)
-        meta = {"signature": signature, "restart": restart, "iteration": iteration,
+        meta = {"schema_version": 3, "signature": signature,
+                "restart": restart, "iteration": iteration,
                 "iterations_completed": self.iterations_completed,
                 "restarts_started": self.restarts_started,
                 "evaluations": self.evaluations, "local_backward_evaluations": self.local_backward_evaluations,
@@ -199,7 +202,8 @@ class AttackRunner:
         meta["optimizer"] = _pack(optimizer.state_dict(), tensors)
         write_tensors(generation / "state.safetensors", tensors)
         write_json(generation / "state.json", meta)
-        write_json(Path(directory) / "checkpoint.json", {"generation": generation.name})
+        write_json(Path(directory) / "checkpoint.json",
+                   {"schema_version": 3, "generation": generation.name})
 
     def run(self, directory=None, resume=False):
         support = supports(self.spec.method, self.adapter, self.observation)
@@ -238,8 +242,13 @@ class AttackRunner:
         saved = None
         pointer = Path(directory) / "checkpoint.json" if directory else None
         if resume and pointer and pointer.exists():
-            generation = Path(directory) / "checkpoints" / read_json(pointer)["generation"]
+            checkpoint = read_json(pointer)
+            if checkpoint.get("schema_version") != 3:
+                raise ValueError("Unsupported attack checkpoint schema; expected schema v3")
+            generation = Path(directory) / "checkpoints" / checkpoint["generation"]
             saved = read_json(generation / "state.json")
+            if saved.get("schema_version") != 3:
+                raise ValueError("Unsupported attack state schema; expected schema v3")
             if saved["signature"] != signature:
                 raise ValueError("Resume configuration/observation differs from checkpoint")
             state = read_tensors(generation / "state.safetensors", str(self.adapter.device))

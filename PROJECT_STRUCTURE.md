@@ -18,7 +18,7 @@ giavlm/
     experiment.py             ExperimentRunner, run_experiment, @hydra.main
     vlm_wrapper.py            Abstract VLMAdapter, model factory
     adapters/
-      hf.py                   Shared HF loading and fixed-block causal protocol
+      hf.py                   Shared HF loading and native fixed-slot SFT protocol
       llava.py                LLaVA visual feature adapter
       blip2.py                BLIP-2 OPT/Q-Former adapter
       qwen_vl.py              Qwen2.5-VL adapter, not original Qwen-VL
@@ -57,7 +57,7 @@ giavlm/
     cost.py                   Wall time, evaluations and per-GPU peak memory
   configs/
     config.yaml               Hydra defaults and run/sweep output routing
-    data/ model/ attack/ defense/ fed/ knowledge/ evaluation/
+    data/ model/ attack/ defense/ fed/ tuning/ knowledge/ evaluation/
     <data>_<model>_<attack>_<knowledge>.yaml
     tiny.yaml, llava.yaml, ... Legacy flat configs for the staged CLI only
   examples/run_attack.py      Canonical experiment entry
@@ -74,6 +74,7 @@ giavlm/
   tests/                      Legacy regression + new Hydra/protocol tests
   docs/                       Detailed protocol/baselines/validation notes
   GI-DQA-Gradient-Inversion-of-Multimodal-Models/  Untouched reference
+  FedVLMBench/                Ignored local reference; never imported at runtime
 ```
 
 ## Data Flow
@@ -83,8 +84,8 @@ shared initial model or resumable federation -> per-run client update ->
 upload defense -> public observation -> attacker -> committed reconstruction ->
 private evaluation -> per-run result and experiment state.
 
-The `fed=fedavg` preset selects one high-level algorithm that computes and uploads
-multi-step client deltas, averages them by client data size, and applies the result
+The `fed=fedavg` preset selects AdamW local training; `fed=fedavg_sgd` selects SGD.
+Both compute and upload multi-step client deltas, average them by client data size, and apply the result
 to the global model. `fedsgd` instead uploads one-step gradients, averages them,
 and applies `-lr`. Neither means observing a secure sum of several clients.
 `fed.rounds>0` trains before capture. `model_snapshot=...`
@@ -98,7 +99,7 @@ checkpoints include optimizer state, candidate state, RNG and budget counters.
 
 ## Implemented Versus Planned
 
-- Runnable: existing VLM adaptations, both federated algorithms, full/LLM-full/LoRA,
+- Runnable: existing VLM adaptations, both federated algorithms, F-C/F-L/F-CL/F-2stage,
   explicit FedSGD/FedAvg update semantics, private/question-known/text-known,
   five post-update defenses, Hydra repeats, fail-fast serial execution, resume,
   and the legacy staged workflows.
@@ -107,7 +108,7 @@ checkpoints include optimizer state, candidate state, RNG and budget counters.
   names are what travels, an unmatched pattern is an error, and the attacker
   matches on exactly the uploaded subset. With no mask the observation must still
   equal the full trainable set, so a silently shrunk upload is rejected.
-- Helpers only: named full/LoRA aggregation, numerical secure-aggregation mean,
+- Helpers only: named connector/LoRA aggregation, numerical secure-aggregation mean,
   tokenizer-ID set F1. Aggregate observations fail closed in the experiment entry
   until attribution is implemented. `token_set_f1` is not wired into reports
   because the attack writes decoded strings rather than token IDs.
@@ -133,6 +134,6 @@ checkpoints include optimizer state, candidate state, RNG and budget counters.
 
 The new structure follows the active Hydra/runner/factory conventions of
 `../llm_privacy_eval`, not its obsolete structure document. Name-based LoRA
-alignment and run-ID recovery follow that project's patterns; full-tuning
-support, fail-before-mutation model updates, and no-reference attacker contracts
+alignment and run-ID recovery follow that project's patterns; strategy-scoped
+updates, fail-before-mutation model updates, and no-reference attacker contracts
 are benchmark-specific adjustments.

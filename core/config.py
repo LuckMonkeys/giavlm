@@ -11,8 +11,10 @@ from omegaconf import OmegaConf
 MODEL_FAMILIES = ("tiny", "llava", "blip2", "qwen2_5_vl")
 MODEL_DTYPES = ("float32", "bfloat16", "float64")
 MODEL_DEVICE_MAPS = ("", "auto", "balanced")
-TRAINING_MODES = ("full", "llm_full", "lora_llm")
+FINE_TUNING_STRATEGIES = ("f_c", "f_l", "f_cl", "f_2stage")
 FEDERATED_ALGORITHMS = ("fedsgd", "fedavg")
+LOCAL_OPTIMIZERS = ("sgd", "adamw")
+TRAINING_PROTOCOLS = ("native-sft-v2",)
 KNOWLEDGE_CONDITIONS = ("private", "question_known", "text_known")
 TASK_TYPES = ("vqa", "caption")
 TEXT_METHODS = ("none", "tag_adapted", "lamp_adapted")
@@ -38,24 +40,47 @@ class ModelSpec:
 
 @dataclass
 class TrainingSpec:
-    mode: str = "full"
+    fine_tuning_strategy: str = "f_l"
     algorithm: str = "fedsgd"
     task: str = "vqa"
     knowledge: str = "private"
     batch_size: int = 1
     local_steps: int = 1
+    gradient_accumulation_steps: int = 1
     lr: float = 0.01
+    local_optimizer: str = "sgd"
+    weight_decay: float = 0.0
+    adam_beta1: float = 0.9
+    adam_beta2: float = 0.999
+    adam_epsilon: float = 1e-8
+    training_protocol: str = "native-sft-v2"
     lora_rank: int = 8
     lora_alpha: int = 16
     clients: int = 10
     clients_per_round: int = 2
     rounds: int = 20
+    server_round: int = 0
+    two_stage_connector_rounds: int = 1
     snapshots: list[int] = field(default_factory=lambda: [0, 10, 20])
     seed: int = 42
     # fnmatch patterns selecting which trainable parameters the client uploads.
     # Empty means the whole trainable set. Resolved against the model at capture
     # time and recorded there, so the wire stays an explicit allowlist.
     upload_parameters: list[str] = field(default_factory=list)
+
+    @property
+    def sample_count(self) -> int:
+        """Number of examples consumed by one client update."""
+        return self.batch_size * self.local_steps * self.gradient_accumulation_steps
+
+    @property
+    def fine_tuning_stage(self) -> str:
+        """Active parameter group for the next client update."""
+        if self.fine_tuning_strategy == "f_2stage":
+            return ("connector" if self.server_round < self.two_stage_connector_rounds
+                    else "llm")
+        return {"f_c": "connector", "f_l": "llm", "f_cl": "joint"}[
+            self.fine_tuning_strategy]
 
 
 @dataclass
@@ -120,19 +145,34 @@ def validate_model_config(model: ModelSpec) -> None:
 
 def validate_training_config(training: TrainingSpec) -> None:
     """Validate the minimal local/federated training protocol."""
-    _require_choice("training mode", training.mode, TRAINING_MODES)
+    _require_choice("fine-tuning strategy", training.fine_tuning_strategy,
+                    FINE_TUNING_STRATEGIES)
     _require_choice("federated algorithm", training.algorithm, FEDERATED_ALGORITHMS)
+    _require_choice("local optimizer", training.local_optimizer, LOCAL_OPTIMIZERS)
+    _require_choice("training protocol", training.training_protocol, TRAINING_PROTOCOLS)
     _require_choice("knowledge condition", training.knowledge, KNOWLEDGE_CONDITIONS)
     _require_choice("task", training.task, TASK_TYPES)
-    for name in ["batch_size", "local_steps", "clients", "clients_per_round"]:
+    for name in ["batch_size", "local_steps", "gradient_accumulation_steps",
+                 "clients", "clients_per_round"]:
         _require_positive(f"training.{name}", getattr(training, name))
     _require_positive("training.lr", training.lr)
-    if training.rounds < 0:
-        raise ValueError(f"training.rounds must be nonnegative, got {training.rounds}")
+    _require_positive("training.adam_epsilon", training.adam_epsilon)
+    if training.weight_decay < 0:
+        raise ValueError("training.weight_decay must be nonnegative")
+    if not 0 <= training.adam_beta1 < 1 or not 0 <= training.adam_beta2 < 1:
+        raise ValueError("Adam betas must be in [0, 1)")
+    if training.rounds < 0 or training.server_round < 0:
+        raise ValueError("Training rounds must be nonnegative")
+    if training.two_stage_connector_rounds <= 0:
+        raise ValueError("training.two_stage_connector_rounds must be positive")
     if training.clients_per_round > training.clients:
         raise ValueError("training.clients_per_round cannot exceed training.clients")
-    if training.algorithm == "fedsgd" and training.local_steps != 1:
-        raise ValueError("FedSGD requires training.local_steps=1")
+    if training.algorithm == "fedsgd" and (
+            training.local_optimizer != "sgd" or training.local_steps != 1
+            or training.gradient_accumulation_steps != 1 or training.weight_decay != 0):
+        raise ValueError(
+            "FedSGD requires local_optimizer=sgd, local_steps=1, "
+            "gradient_accumulation_steps=1, and weight_decay=0")
 
 
 def validate_attack_config(attack: AttackSpec) -> None:

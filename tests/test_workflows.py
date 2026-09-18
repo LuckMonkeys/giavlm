@@ -18,7 +18,8 @@ def test_train_restore_capture_and_utility(tmp_path):
     manifest = synthetic(tmp_path / "data", 40, clients=2)
     train_output = tmp_path / "federation"
     overrides = ["--set", "training.clients=2", "--set", "training.rounds=2",
-                 "--set", "training.snapshots=[0,1,2]", "--set", "training.mode=lora_llm"]
+                 "--set", "training.snapshots=[0,1,2]",
+                 "--set", "training.fine_tuning_strategy=f_cl"]
     command("train", "--data", str(manifest), "--output", str(train_output), *overrides)
     before = read_json(train_output / "training.json")
     command("train", "--data", str(manifest), "--output", str(train_output), "--resume", *overrides)
@@ -65,7 +66,8 @@ def test_suite_materialization_and_data_integrity(tmp_path):
     write_json(config, {"training": {"clients": 1, "clients_per_round": 1},
                         "attack": {"iterations": 2}})
     args = SimpleNamespace(output=str(tmp_path / "suite"), data=str(manifest), configs=[str(config)],
-                            set=[], tasks=["vqa"], modes=["full"], knowledge=["private", "text_known"],
+                            set=[], tasks=["vqa"], strategies=["f_l"],
+                            knowledge=["private", "text_known"],
                             samples=1, batch_size=1, local_steps=1, gpus_per_run=1, split="eval",
                             algorithms=["fedsgd"], methods=["ig_adapted", "random"], seeds=[0, 1],
                             pilot_seconds=1.0)

@@ -29,6 +29,9 @@ def protocol_config(config: DictConfig) -> Config:
     fed.pop("name")
     if fed.pop("secure_aggregation"):
         raise NotImplementedError("Aggregate inversion is not an individual-client observation")
+    tuning = dict(value["tuning"])
+    tuning.pop("name")
+    fed.update(tuning)
     fed.update(task=value["data"]["task"], knowledge=knowledge.name)
     attack = dict(value["attack"])
     attack["method"] = attack.pop("name")
@@ -89,7 +92,7 @@ class ExperimentRunner:
         from core.data import read_manifest
         rows = read_manifest(manifest, self.protocol.training.task, data.split,
                              data.client, unique_images=True)
-        count = self.protocol.training.batch_size * self.protocol.training.local_steps
+        count = self.protocol.training.sample_count
         if data.offset < 0 or data.client < 0 or data.client >= self.protocol.training.clients:
             raise ValueError("Invalid data client or offset")
         if len(rows) < data.offset + self.config.num_runs * count:
@@ -146,7 +149,7 @@ class ExperimentRunner:
             # Only this runner's uncommitted staging directory may be discarded.
             if staging.exists():
                 shutil.rmtree(staging)
-            count = self.protocol.training.batch_size * self.protocol.training.local_steps
+            count = self.protocol.training.sample_count
             commands.capture(SimpleNamespace(
                 config=config_path, set=[], output=staging, data=self.manifest,
                 model=model_path,

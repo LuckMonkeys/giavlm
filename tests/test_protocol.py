@@ -9,23 +9,26 @@ from attacks import AttackRunner, Candidate, matching_loss, supports
 from core.aggregation import apply_server_update, create_federated_algorithm
 from core.config import AttackSpec, ModelSpec, TrainingSpec, load_config
 from core.fl import (capture, load_observation, mask_upload, resolve_upload,
-                     save_observation, simulate_update)
+                     restore_model, save_model, save_observation, simulate_update)
 from core.vlm_wrapper import build_model
 
 
-def fixture(mode="full", algorithm="fedsgd", steps=1, task="vqa", knowledge="private"):
-    training = TrainingSpec(mode=mode, algorithm=algorithm, local_steps=steps,
-                            task=task, knowledge=knowledge)
-    adapter = build_model(ModelSpec(), training)
-    batch = adapter.batch(torch.rand(steps, 3, 8, 8),
-                          ["what color is the object"] * steps, ["red blue"] * steps)
+def fixture(strategy="f_l", algorithm="fedsgd", steps=1, task="vqa", knowledge="private",
+            optimizer="sgd", accumulation=1, weight_decay=0.0, dtype="float32"):
+    training = TrainingSpec(fine_tuning_strategy=strategy, algorithm=algorithm, local_steps=steps,
+                            local_optimizer=optimizer, gradient_accumulation_steps=accumulation,
+                            weight_decay=weight_decay, task=task, knowledge=knowledge)
+    adapter = build_model(ModelSpec(dtype=dtype), training)
+    batch = adapter.batch(torch.rand(training.sample_count, 3, 8, 8),
+                          ["what color is the object"] * training.sample_count,
+                          ["red blue"] * training.sample_count)
     return adapter, batch
 
 
-@pytest.mark.parametrize("mode", ["full", "llm_full", "lora_llm"])
+@pytest.mark.parametrize("strategy", ["f_c", "f_l", "f_cl", "f_2stage"])
 @pytest.mark.parametrize("task", ["vqa", "caption"])
-def test_one_step_sgd_identity_and_input_gradients(mode, task):
-    adapter, batch = fixture(mode=mode, task=task)
+def test_one_step_sgd_identity_and_input_gradients(strategy, task):
+    adapter, batch = fixture(strategy=strategy, task=task)
     gradient = simulate_update(adapter, batch, adapter.training_spec)
     spec = replace(adapter.training_spec, algorithm="fedavg")
     delta = simulate_update(adapter, batch, spec)
@@ -37,16 +40,16 @@ def test_one_step_sgd_identity_and_input_gradients(mode, task):
     loss = matching_loss(fake, delta, "l2")
     gradients = torch.autograd.grad(loss, tuple(candidate.parameters()))
     assert all(torch.isfinite(g).all() and g.norm() > 0 for g in gradients)
-    if mode == "lora_llm":
+    if strategy == "f_l":
         assert all("lora_" in name and "language" in name for name in gradient)
         assert all(g.count_nonzero() == 0 for name, g in gradient.items() if "lora_A" in name)
         assert any(g.count_nonzero() > 0 for name, g in gradient.items() if "lora_B" in name)
         assert supports("april_adapted", adapter, obs).status == "not_applicable"
 
 
-@pytest.mark.parametrize("mode", ["full", "lora_llm"])
-def test_multistep_matches_actual_optimizer(mode):
-    adapter, batch = fixture(mode, "fedavg", steps=3)
+@pytest.mark.parametrize("strategy", ["f_c", "f_l", "f_cl", "f_2stage"])
+def test_multistep_matches_actual_optimizer(strategy):
+    adapter, batch = fixture(strategy, "fedavg", steps=3)
     before = {k: v.detach().clone() for k, v in adapter.trainable().items()}
     observed = simulate_update(adapter, batch, adapter.training_spec)
     optimizer = torch.optim.SGD(adapter.trainable().values(), lr=adapter.training_spec.lr)
@@ -59,9 +62,77 @@ def test_multistep_matches_actual_optimizer(mode):
         torch.testing.assert_close(value - before[name], observed[name], atol=1e-7, rtol=1e-5)
 
 
+@pytest.mark.parametrize("strategy", ["f_c", "f_l", "f_cl", "f_2stage"])
+def test_adamw_accumulation_matches_actual_optimizer(strategy):
+    adapter, batch = fixture(strategy, "fedavg", steps=2, optimizer="adamw", accumulation=2,
+                             weight_decay=0.1, dtype="float64")
+    spec = adapter.training_spec
+    before = {name: value.detach().clone() for name, value in adapter.trainable().items()}
+    observed = simulate_update(adapter, batch, spec)
+    parameters, decay = adapter.trainable(), adapter.decay_parameter_names()
+    optimizer = torch.optim.AdamW([
+        {"params": [value for name, value in parameters.items() if name in decay],
+         "weight_decay": spec.weight_decay},
+        {"params": [value for name, value in parameters.items() if name not in decay],
+         "weight_decay": 0.0},
+    ], lr=spec.lr, betas=(spec.adam_beta1, spec.adam_beta2), eps=spec.adam_epsilon,
+        foreach=False, fused=False)
+
+    for step in range(spec.local_steps):
+        optimizer.zero_grad(set_to_none=True)
+        for accumulation_id in range(spec.gradient_accumulation_steps):
+            index = (step * spec.gradient_accumulation_steps + accumulation_id) * spec.batch_size
+            chunk = batch.slice(index, index + spec.batch_size)
+            (adapter(chunk.images, chunk.questions, chunk.targets)
+             / spec.gradient_accumulation_steps).backward()
+        optimizer.step()
+
+    for name, value in adapter.trainable().items():
+        torch.testing.assert_close(value - before[name], observed[name], atol=1e-11, rtol=1e-7)
+    assert all(not name.endswith(".bias") for name in decay)
+    assert all("norm" not in name for name in decay)
+
+
+def test_delta_aggregation_equals_parameter_averaging():
+    adapter, batch = fixture("f_cl", "fedavg", steps=2)
+    algorithm = create_federated_algorithm(adapter.training_spec)
+    initial = {name: value.detach().clone() for name, value in adapter.trainable().items()}
+    first = algorithm.client_update(adapter, batch)
+    second = algorithm.client_update(adapter, replace(batch, images=1 - batch.images))
+    delta = algorithm.aggregate(iter([first, second]), [2, 3])
+    for name in initial:
+        averaged_parameters = ((initial[name] + first[name]) * 2 / 5
+                               + (initial[name] + second[name]) * 3 / 5)
+        torch.testing.assert_close(initial[name] + delta[name], averaged_parameters)
+
+
+@pytest.mark.parametrize("strategy,stage,connector,lora", [
+    ("f_c", "connector", True, False),
+    ("f_l", "llm", False, True),
+    ("f_cl", "joint", True, True),
+    ("f_2stage", "connector", True, False),
+])
+def test_fedvlm_fine_tuning_parameter_surfaces(strategy, stage, connector, lora):
+    adapter, _ = fixture(strategy=strategy)
+    names = set(adapter.trainable())
+    assert adapter.training_spec.fine_tuning_stage == stage
+    assert any(adapter.is_connector(name) for name in names) == connector
+    assert any(".lora_" in name for name in names) == lora
+    assert all(adapter.is_connector(name) or ".lora_" in name for name in names)
+
+
+def test_two_stage_switches_from_connector_to_lora():
+    adapter, _ = fixture(strategy="f_2stage")
+    assert adapter.training_spec.fine_tuning_stage == "connector"
+    assert all(adapter.is_connector(name) for name in adapter.trainable())
+    adapter.set_training_spec(replace(adapter.training_spec, server_round=1))
+    assert adapter.training_spec.fine_tuning_stage == "llm"
+    assert adapter.trainable() and all(".lora_" in name for name in adapter.trainable())
+
+
 @pytest.mark.parametrize("method", ["fedsgd", "fedavg"])
 def test_federated_algorithms_use_same_initial_state_and_weights(method):
-    adapter, batch = fixture("lora_llm", "fedavg", steps=2)
+    adapter, batch = fixture("f_l", "fedavg", steps=2)
     training = replace(adapter.training_spec, algorithm=method,
                        local_steps=1 if method == "fedsgd" else 2)
     algorithm = create_federated_algorithm(training)
@@ -120,6 +191,25 @@ def test_observation_allowlist_and_integrity(tmp_path):
         load_observation(tmp_path)
 
 
+def test_schema_v2_artifacts_are_rejected(tmp_path):
+    adapter, batch = fixture()
+    observation_dir = tmp_path / "observation"
+    save_observation(observation_dir, capture(adapter, batch, [], []))
+    meta = read_json(observation_dir / "observation.json")
+    meta["schema_version"] = 2
+    (observation_dir / "observation.json").write_text(json.dumps(meta))
+    with pytest.raises(ValueError, match="schema v2"):
+        load_observation(observation_dir)
+
+    model_dir = tmp_path / "model"
+    save_model(model_dir, adapter)
+    model_meta = read_json(model_dir / "model.json")
+    model_meta["schema_version"] = 2
+    (model_dir / "model.json").write_text(json.dumps(model_meta))
+    with pytest.raises(ValueError, match="schema v2"):
+        restore_model(model_dir)
+
+
 @pytest.mark.parametrize("knowledge", ["private", "question_known", "text_known"])
 def test_known_text_is_not_optimized(knowledge):
     adapter, batch = fixture(knowledge=knowledge)
@@ -157,11 +247,26 @@ def test_budget_and_checkpoint_resume(tmp_path):
         AttackRunner(adapter, obs, replace(spec, seed=50)).run(tmp_path, resume=True)
 
 
+def test_attack_checkpoint_schema_v2_is_rejected(tmp_path):
+    adapter, batch = fixture()
+    observation = capture(adapter, batch, [], [])
+    spec = AttackSpec(iterations=2, checkpoint_interval=1, max_evaluations=20)
+    AttackRunner(adapter, observation, spec).run(tmp_path)
+    pointer = read_json(tmp_path / "checkpoint.json")
+    pointer["schema_version"] = 2
+    (tmp_path / "checkpoint.json").write_text(json.dumps(pointer))
+    with pytest.raises(ValueError, match="checkpoint schema"):
+        AttackRunner(adapter, observation, spec).run(tmp_path, resume=True)
+
+
 @pytest.mark.parametrize("method", ["dlg_adapted", "april_adapted", "gi_dqa_adapted", "random", "prior_only"])
 def test_attack_variants_run(method):
     adapter, batch = fixture()
     obs = capture(adapter, batch, [], [])
     result = AttackRunner(adapter, obs, AttackSpec(method=method, iterations=4, checkpoint_interval=2)).run()
+    if method == "april_adapted":
+        assert result.status == "not_applicable"
+        return
     assert result.status == "completed"
     assert torch.isfinite(result.images).all()
     if method in {"random", "prior_only"}:
@@ -189,11 +294,11 @@ def test_validation_rejects_ambiguous_protocol():
 
 def test_implementation_specific_validation_is_owned_by_consumer():
     """Core config ignores inactive details; their owning runtime validates them."""
-    full = TrainingSpec(mode="full", lora_rank=0, lora_alpha=0)
-    assert build_model(ModelSpec(), full).training_spec == full
+    connector = TrainingSpec(fine_tuning_strategy="f_c", lora_rank=0, lora_alpha=0)
+    assert build_model(ModelSpec(), connector).training_spec == connector
 
     with pytest.raises(ValueError, match="LoRA rank"):
-        build_model(ModelSpec(), TrainingSpec(mode="lora_llm", lora_rank=0))
+        build_model(ModelSpec(), TrainingSpec(fine_tuning_strategy="f_l", lora_rank=0))
     with pytest.raises(ValueError, match="dtype"):
         build_model(ModelSpec(dtype="float16"), TrainingSpec())
     with pytest.raises(ValueError, match="divisible"):
@@ -248,8 +353,8 @@ def test_lora_a_carries_no_signal_at_initialization():
     moves off zero. Locking this in because it bounds what a first-round attack
     on a LoRA upload can possibly recover.
     """
-    training = TrainingSpec(mode="lora_llm")
-    model, batch = fixture(mode="lora_llm")
+    training = TrainingSpec(fine_tuning_strategy="f_l")
+    model, batch = fixture(strategy="f_l")
     update = simulate_update(model, batch, training)
     a_names = [n for n in update if "lora_A" in n]
     b_names = [n for n in update if "lora_B" in n]
@@ -284,8 +389,8 @@ def test_upload_patterns_resolve_to_an_explicit_allowlist():
 
 def test_masked_upload_shrinks_the_observation_and_still_inverts(tmp_path):
     """A client that uploads only grad(B) hands the attacker strictly less."""
-    training = TrainingSpec(mode="lora_llm", upload_parameters=["*lora_B*"])
-    model, batch = fixture(mode="lora_llm")
+    training = TrainingSpec(fine_tuning_strategy="f_l", upload_parameters=["*lora_B*"])
+    model, batch = fixture(strategy="f_l")
     model.training_spec = training
 
     full = simulate_update(model, batch, replace(training, upload_parameters=[]))
@@ -303,7 +408,7 @@ def test_masked_upload_shrinks_the_observation_and_still_inverts(tmp_path):
 
 def test_subset_observation_without_a_declared_mask_is_rejected():
     """Silently dropping parameters would misreport what the client uploaded."""
-    model, batch = fixture(mode="lora_llm")
+    model, batch = fixture(strategy="f_l")
     observation = capture(model, batch, model.decode(batch.questions), model.decode(batch.targets))
     dropped = sorted(observation.tensors)[0]
     observation.tensors = {k: v for k, v in observation.tensors.items() if k != dropped}

@@ -23,7 +23,7 @@
 
 | 状态 | 内容 |
 |---|---|
-| 已接通 | Hydra 实验循环、FedSGD/客户端多步 delta、full/LLM-full/LoRA、上传参数掩码、恢复与防御接口 |
+| 已接通 | Hydra 实验循环、FedSGD/客户端多步 delta、F-C/F-L/F-CL/F-2stage、上传参数掩码、恢复与防御接口 |
 | 已有实现 | VLM 适配版优化攻击、图像和文本联合重构、COCO/VQAv2、医疗 VQA 导入、canary 注入及评估 |
 | 有条件运行 | LLaVA、BLIP-2、Qwen2.5-VL，以及需要外部权重的先验、LPIPS、CLIP |
 | 尚未实现 | 闭式 APRIL、iDLG、DAGER、H3 两阶段恢复、恶意服务器攻击、聚合更新反演等 |
@@ -70,7 +70,7 @@
 验收清单：
 
 - [ ] 能解释 prompt、response、EOS、padding 在 loss 中的作用。
-- [ ] 能列出 full、llm_full、lora_llm 的可训练参数和实际上传参数。
+- [ ] 能列出 F-C、F-L、F-CL、F-2stage 的可训练参数和实际上传参数。
 - [ ] 能解释上传参数掩码与冻结参数的区别。
 - [ ] 确认当前是 SGD 重放，每个 local step 使用一个候选 batch，而不是任意优化器或任意本地训练过程。
 - [ ] 能区分客户端多步 delta、多个客户端的聚合结果和联邦训练轮数。
@@ -146,14 +146,14 @@ $PY -m core.commands smoke --output outputs/learning_smoke
 | 评估输出 | `attack/evaluation.json`；关注实验条件、样本匹配、各指标及失败状态 |
 | 实验状态 | `experiment.json` 记录各 run 状态；`config.resolved.json` 和每个 run 的 `protocol.json` 用于核对配置 |
 
-这里 `N = batch_size × local_steps`，`L` 是配置中的文本槽位长度，`V` 是词表大小。图像和更新 tensor 使用 safetensors 保存，不应尝试将其当作 JSON 或 pickle 读取。
+这里 `N = batch_size × local_steps × gradient_accumulation_steps`，`L` 是配置中的文本槽位长度，`V` 是词表大小。图像和更新 tensor 使用 safetensors 保存，不应尝试将其当作 JSON 或 pickle 读取。
 
 Python 接口边界不是文件系统隔离。需要更强保证时，应让攻击进程运行在无法读取私有目录的独立用户或容器中。
 
 ## 6. 优先核对的研究假设
 
 - **威胁模型**：private 是否仍隐含你不接受的已知信息？text_known 应作为强知识对照，不能与未知 QA 混为一谈。
-- **训练协议**：固定块 prompt、文本截断、response-only loss、关闭 dropout 和 LoRA 范围，是否符合目标训练场景？
+- **训练协议**：模型原生公开 prompt、固定私有文本槽位、response-only loss、关闭 dropout 和语言全线性 LoRA 范围，是否符合目标训练场景？
 - **联邦设置**：`algorithm` 同时决定客户端计算、上传类型、服务器聚合和模型更新；`fedavg` 的单客户端 delta 不是安全聚合结果，默认 rounds=0 也没有先进行联邦训练。
 - **数据采样**：医疗数据会重新按图像划分，capture 会对图像去重；这是否符合目标任务的采样与评估标准？
 - **Canary**：注入位置是否仍属私有？实体是否被截断？tiny 的有限词表不能验证真实实体恢复，应使用真实 tokenizer。

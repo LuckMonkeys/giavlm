@@ -97,28 +97,74 @@ def simulate_secure_aggregation(client_updates, model_fingerprints):
     return dict(zip(first, mean))
 
 
-def _simulate_sgd_update(adapter, batch: Batch, spec: TrainingSpec, update_type: str,
-                         differentiable=False):
-    """Low-level SGD replay used by a high-level federated algorithm."""
-    if len(batch.images) != spec.batch_size * spec.local_steps:
-        raise ValueError("Each local step requires exactly batch_size candidate slots")
+def _accumulated_gradients(adapter, params, batch, start, spec, differentiable):
+    """Average microbatch gradients for one optimizer step."""
+    accumulated = {name: torch.zeros_like(param) for name, param in params.items()}
+    for accumulation_id in range(spec.gradient_accumulation_steps):
+        offset = start + accumulation_id * spec.batch_size
+        chunk = batch.slice(offset, offset + spec.batch_size)
+        loss = functional_call(adapter, params, (chunk.images, chunk.questions, chunk.targets))
+        grads = torch.autograd.grad(loss, tuple(params.values()), create_graph=differentiable,
+                                    allow_unused=True)
+        for (name, _), grad in zip(params.items(), grads, strict=True):
+            if grad is not None:
+                accumulated[name] = accumulated[name] + grad / spec.gradient_accumulation_steps
+    return accumulated
+
+
+def _adamw_step(params, gradients, moments, variances, decay_names, spec, step):
+    """Functional AdamW update matching torch.optim.AdamW's default rule."""
+    beta1, beta2 = spec.adam_beta1, spec.adam_beta2
+    next_params, next_moments, next_variances = {}, {}, {}
+    bias_correction1 = 1 - beta1 ** step
+    bias_correction2_sqrt = (1 - beta2 ** step) ** 0.5
+    for name, param in params.items():
+        grad = gradients[name]
+        moment = beta1 * moments[name] + (1 - beta1) * grad
+        variance = beta2 * variances[name] + (1 - beta2) * grad.square()
+        decayed = param * (1 - spec.lr * spec.weight_decay) if name in decay_names else param
+        # At an exactly zero moment, sqrt has an infinite derivative although the
+        # AdamW update is zero. Clamp only that underflow region so attack replay
+        # retains finite higher-order derivatives without changing nonzero steps.
+        stable_variance = variance.clamp_min(torch.finfo(variance.dtype).tiny)
+        denominator = stable_variance.sqrt() / bias_correction2_sqrt + spec.adam_epsilon
+        next_params[name] = decayed - (spec.lr / bias_correction1) * moment / denominator
+        next_moments[name], next_variances[name] = moment, variance
+    return next_params, next_moments, next_variances
+
+
+def _simulate_local_update(adapter, batch: Batch, spec: TrainingSpec, update_type: str,
+                           differentiable=False):
+    """Replay the public local optimizer without mutating the victim model."""
+    expected = spec.sample_count
+    if len(batch.images) != expected:
+        raise ValueError(f"Local update requires exactly {expected} candidate slots")
     initial = adapter.trainable()
     params = dict(initial)
+    moments = {name: torch.zeros_like(param) for name, param in params.items()}
+    variances = {name: torch.zeros_like(param) for name, param in params.items()}
+    decay_names = adapter.decay_parameter_names()
+
     for step in range(spec.local_steps):
-        start = step * spec.batch_size
-        chunk = batch.slice(start, start + spec.batch_size)
-        loss = functional_call(adapter, params, (chunk.images, chunk.questions, chunk.targets))
-        grads = torch.autograd.grad(loss, tuple(params.values()),
-                                    create_graph=differentiable, allow_unused=True)
-        updates = {name: torch.zeros_like(p) if grad is None else grad
-                   for (name, p), grad in zip(params.items(), grads)}
+        start = step * spec.batch_size * spec.gradient_accumulation_steps
+        updates = _accumulated_gradients(adapter, params, batch, start, spec, differentiable)
         if update_type == "gradient":
-            if spec.local_steps != 1:
+            if spec.local_steps != 1 or spec.gradient_accumulation_steps != 1:
                 raise ValueError("A gradient observation has exactly one step")
             return updates
-        params = {name: p - spec.lr * updates[name] for name, p in params.items()}
+
+        if spec.local_optimizer == "sgd":
+            params = {name: param - spec.lr * updates[name] for name, param in params.items()}
+        elif spec.local_optimizer == "adamw":
+            params, moments, variances = _adamw_step(
+                params, updates, moments, variances, decay_names, spec, step + 1)
+        else:
+            raise ValueError(f"Unsupported local optimizer: {spec.local_optimizer}")
+
         if not differentiable:
             params = {name: value.detach().requires_grad_(True) for name, value in params.items()}
+            moments = {name: value.detach() for name, value in moments.items()}
+            variances = {name: value.detach() for name, value in variances.items()}
     return {name: params[name] - initial[name] for name in initial}
 
 
@@ -148,7 +194,7 @@ def save_observation(directory, observation):
     if (directory / "observation.json").exists():
         raise FileExistsError(directory)
     observation.validate()
-    metadata = {"schema_version": 1, "model": asdict(observation.model),
+    metadata = {"schema_version": 3, "model": asdict(observation.model),
                 "training": asdict(observation.training),
                 "model_fingerprint": observation.model_fingerprint,
                 "public_questions": observation.public_questions,
@@ -167,6 +213,9 @@ def save_observation(directory, observation):
 def load_observation(directory, device=None):
     directory = Path(directory)
     meta = read_json(directory / "observation.json")
+    if meta.get("schema_version") != 3:
+        raise ValueError(
+            f"Unsupported observation schema v{meta.get('schema_version')}; expected schema v3")
     allowed = {"schema_version", "model", "training", "model_fingerprint", "public_questions",
                "public_targets", "public_question_ids", "public_target_ids",
                "parameter_names", "update_sha256", "observation_id"}
@@ -195,16 +244,19 @@ def load_observation(directory, device=None):
 def save_model(directory, adapter, metadata=None):
     directory = Path(directory)
     write_tensors(directory / "model.safetensors", adapter.state_dict())
-    write_json(directory / "model.json", {"model": asdict(adapter.spec),
+    write_json(directory / "model.json", {**(metadata or {}), "schema_version": 3,
+                                         "model": asdict(adapter.spec),
                                          "training": asdict(adapter.training_spec),
                                          "fingerprint": adapter.fingerprint(),
-                                         "description": adapter.description(), **(metadata or {})})
+                                         "description": adapter.description()})
 
 
 def restore_model(directory, device=None):
     from core.vlm_wrapper import build_model
     directory = Path(directory)
     meta = read_json(directory / "model.json")
+    if meta.get("schema_version") != 3:
+        raise ValueError(f"Unsupported model schema v{meta.get('schema_version')}; expected schema v3")
     spec = ModelSpec(**meta["model"])
     if device:
         spec.device = device

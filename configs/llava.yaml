@@ -10,7 +10,7 @@ model:
   target_length: 32
   local_files_only: true
 training:
-  mode: lora_llm
+  fine_tuning_strategy: f_l
   algorithm: fedsgd
   knowledge: private
   lr: 0.0001

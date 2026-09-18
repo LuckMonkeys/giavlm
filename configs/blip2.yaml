@@ -10,7 +10,7 @@ model:
   target_length: 32
   local_files_only: true
 training:
-  mode: lora_llm
+  fine_tuning_strategy: f_l
   lr: 0.0001
 attack:
   method: ig_adapted

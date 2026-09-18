@@ -1,7 +1,6 @@
 defaults:
   - fedsgd
-name: fedavg
+name: fedavg_sgd
 algorithm: fedavg
-local_optimizer: adamw
+local_optimizer: sgd
 local_steps: 2
-lr: 2.0e-5

@@ -5,7 +5,7 @@ model:
   question_length: 6
   target_length: 5
 training:
-  mode: full
+  fine_tuning_strategy: f_l
   algorithm: fedsgd
   knowledge: private
 attack:

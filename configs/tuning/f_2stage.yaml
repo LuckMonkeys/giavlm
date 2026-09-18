@@ -1,0 +1,3 @@
+name: f_2stage
+fine_tuning_strategy: f_2stage
+two_stage_connector_rounds: 10

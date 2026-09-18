@@ -1,5 +1,5 @@
 import argparse
-from dataclasses import asdict
+from dataclasses import asdict, replace
 import json
 import os
 from pathlib import Path
@@ -42,10 +42,11 @@ def restore_compatible_model(directory, cfg):
     if asdict(adapter.spec) != asdict(cfg.model):
         raise ValueError("Model checkpoint specification differs from training configuration")
     old = adapter.training_spec
-    if (old.mode, old.lora_rank, old.lora_alpha) != (
-            cfg.training.mode, cfg.training.lora_rank, cfg.training.lora_alpha):
+    if (old.fine_tuning_strategy, old.lora_rank, old.lora_alpha) != (
+            cfg.training.fine_tuning_strategy,
+            cfg.training.lora_rank, cfg.training.lora_alpha):
         raise ValueError("Checkpoint trainable parameterization differs from training configuration")
-    adapter.training_spec = cfg.training
+    adapter.set_training_spec(replace(cfg.training, server_round=old.server_round))
     return adapter
 
 
@@ -93,6 +94,8 @@ def train(args):
                         "initial_model_hashes": initial_hashes,
                         "source_sha256": source_fingerprint()})
     pointer = output / "training.json"
+    if not pointer.exists() and output.exists() and any(output.iterdir()):
+        raise FileExistsError("Training output is nonempty; choose a new directory")
     start = 0
     history = []
 
@@ -126,8 +129,10 @@ def train(args):
     if any(client >= cfg.training.clients for client in clients):
         raise ValueError("Prepared manifest has more clients than the training protocol")
 
-    algorithm = create_federated_algorithm(cfg.training)
-    count = cfg.training.batch_size * cfg.training.local_steps
+    count = cfg.training.sample_count
+    base_server_round = adapter.training_spec.server_round - start
+    if base_server_round < 0:
+        raise ValueError("Checkpoint server_round precedes its local training round")
 
     # Commit round zero before any global-model mutation.
     if start == 0 and not pointer.exists():
@@ -137,6 +142,10 @@ def train(args):
                              "history": [], "initialization": initialization})
 
     for round_id in range(start + 1, cfg.training.rounds + 1):
+        round_training = replace(cfg.training, server_round=base_server_round + round_id - 1)
+        adapter.set_training_spec(round_training)
+        algorithm = create_federated_algorithm(round_training)
+
         # Round-specific RNG makes client and sample selection resume-stable.
         rng = np.random.default_rng(cfg.training.seed + round_id)
         selected = rng.choice(sorted(clients), cfg.training.clients_per_round, replace=False)
@@ -152,11 +161,18 @@ def train(args):
         client_updates = (algorithm.client_update(adapter, batch) for batch in batches)
         server_update = algorithm.aggregate(client_updates, weights)
         algorithm.apply(adapter, server_update)
+        adapter.set_training_spec(replace(round_training,
+                                          server_round=round_training.server_round + 1))
 
         with torch.no_grad():
             loss = sum(adapter(b.images, b.questions, b.targets).item() for b in batches) / len(batches)
         history.append({"round": round_id, "mean_selected_client_loss": loss,
-                        "client_count": len(selected), "algorithm": algorithm.name})
+                        "client_count": len(selected), "algorithm": algorithm.name,
+                        "local_optimizer": cfg.training.local_optimizer,
+                        "fine_tuning_strategy": cfg.training.fine_tuning_strategy,
+                        "fine_tuning_stage": round_training.fine_tuning_stage,
+                        "server_round": round_training.server_round,
+                        "training_protocol": cfg.training.training_protocol})
 
         # Commit every round to make interruption recovery exact; published snapshots are flagged.
         checkpoint = (f"round-{round_id:04d}" if round_id in cfg.training.snapshots
@@ -194,16 +210,17 @@ def capture(args):
         if asdict(adapter.spec) != asdict(cfg.model):
             raise ValueError("Model checkpoint specification differs from capture configuration")
         old = adapter.training_spec
-        if (old.mode, old.lora_rank, old.lora_alpha) != (
-                cfg.training.mode, cfg.training.lora_rank, cfg.training.lora_alpha):
+        if (old.fine_tuning_strategy, old.lora_rank, old.lora_alpha) != (
+                cfg.training.fine_tuning_strategy,
+                cfg.training.lora_rank, cfg.training.lora_alpha):
             raise ValueError("Checkpoint trainable parameterization differs from capture configuration")
-        adapter.training_spec = cfg.training
+        adapter.set_training_spec(replace(cfg.training, server_round=old.server_round))
     else:
         adapter = build_model(cfg.model, cfg.training)
 
-    # Select exactly batch_size * local_steps unique-image records.
+    # Select one fixed sample slot for every local optimizer microbatch.
     rows = read_manifest(args.data, cfg.training.task, args.split, args.client, unique_images=True)
-    count = cfg.training.batch_size * cfg.training.local_steps
+    count = cfg.training.sample_count
     rows = rows[args.offset:args.offset + count]
     if len(rows) != count:
         raise ValueError(
@@ -236,7 +253,8 @@ def capture(args):
         row["model_question"], row["model_target"] = q, y
 
     write_json(output / "private" / "truth.json", {"observation_id": observation_id,
-                                                  "training": asdict(cfg.training), "samples": rows})
+                                                  "training": asdict(observation.training),
+                                                  "samples": rows})
     write_json(output / "private" / "capture.json", {"config": asdict(cfg),
                                                      "data_sha256": file_hash(args.data),
                                                      "split": args.split, "client": args.client,
@@ -285,7 +303,7 @@ def attack(args):
     if not args.model and (public / "model_ref.json").exists():
         model_path = read_json(public / "model_ref.json")["path"]
     adapter = restore_model(model_path, obs.model.device)
-    adapter.training_spec = obs.training
+    adapter.set_training_spec(obs.training)
 
     # The wrong-update control changes only the tensors, not model or protocol.
     if args.wrong_observation:
@@ -313,17 +331,28 @@ def attack(args):
     info = {k: v for k, v in asdict(result).items() if k != "images"}
     info.update({"observation_id": meta["observation_id"], "run_signature": signature,
                  "condition": {"model": obs.model.name, "revision": obs.model.revision,
-                               "mode": obs.training.mode, "task": obs.training.task,
+                               "fine_tuning_strategy": obs.training.fine_tuning_strategy,
+                               "fine_tuning_stage": obs.training.fine_tuning_stage,
+                               "server_round": obs.training.server_round,
+                               "task": obs.training.task,
                                "algorithm": obs.training.algorithm,
+                               "local_optimizer": obs.training.local_optimizer,
                                "client_update": create_federated_algorithm(obs.training).upload_type,
                                "knowledge": obs.training.knowledge, "batch_size": obs.training.batch_size,
                                "local_steps": obs.training.local_steps, "lora_rank": obs.training.lora_rank,
+                               "gradient_accumulation_steps": obs.training.gradient_accumulation_steps,
+                               "training_protocol": obs.training.training_protocol,
                                "model_state": obs.model_fingerprint, "method": cfg.attack.method,
                                "source_sha256": source_fingerprint(),
                                "text_method": cfg.attack.text_method, "seed": cfg.attack.seed,
                                "model_protocol_hash": digest({k: v for k, v in asdict(obs.model).items()
                                                                if k not in {"device", "device_map", "max_memory"}}),
-                               "local_lr": obs.training.lr, "lora_alpha": obs.training.lora_alpha,
+                               "local_lr": obs.training.lr,
+                               "weight_decay": obs.training.weight_decay,
+                               "adam_beta1": obs.training.adam_beta1,
+                               "adam_beta2": obs.training.adam_beta2,
+                               "adam_epsilon": obs.training.adam_epsilon,
+                               "lora_alpha": obs.training.lora_alpha,
                                "attack_protocol_hash": digest({
                                    k: v for k, v in asdict(cfg.attack).items() if k != "seed"}),
                                "control": "wrong_update" if args.wrong_observation else "none"},
@@ -379,7 +408,7 @@ def doctor(args):
         from core.vlm_wrapper import build_model
         from core.fl import capture as capture_update, simulate_update
         adapter = build_model(cfg.model, cfg.training)
-        n = cfg.training.batch_size * cfg.training.local_steps
+        n = cfg.training.sample_count
         g = torch.Generator(device=adapter.device).manual_seed(314)
         images = torch.rand(n, 3, cfg.model.image_size, cfg.model.image_size,
                             generator=g, device=adapter.device, dtype=adapter.dtype)
@@ -418,16 +447,23 @@ def smoke(args):
         subprocess.run(prefix + list(command), check=True, env=env)
 
     run("prepare-data", "--synthetic", "--count", "96", "--clients", "1", "--output", str(root / "data"))
-    modes = ["full"] if args.quick else ["full", "lora_llm"]
+    strategies = ["f_l"] if args.quick else ["f_c", "f_l", "f_cl", "f_2stage"]
     tasks = ["vqa"] if args.quick else ["vqa", "caption"]
-    for mode in modes:
+    protocols = ([('fedsgd', 'fedsgd', 'sgd', 1, 0.01)] if args.quick else [
+        ("fedsgd", "fedsgd", "sgd", 1, 0.01),
+        ("fedavg_sgd", "fedavg", "sgd", 2, 0.01),
+        ("fedavg", "fedavg", "adamw", 2, 2e-5),
+    ])
+    for strategy in strategies:
         for task in tasks:
-            for algorithm in (["fedsgd"] if args.quick else ["fedsgd", "fedavg"]):
-                folder = root / f"{mode}-{task}-{algorithm}"
-                overrides = [f"training.mode={mode}", f"training.task={task}",
+            for label, algorithm, optimizer, local_steps, lr in protocols:
+                folder = root / f"{strategy}-{task}-{label}"
+                overrides = [f"training.fine_tuning_strategy={strategy}",
+                             f"training.task={task}",
                              f"training.algorithm={algorithm}", "training.clients=1",
                              "training.clients_per_round=1",
-                             f"training.local_steps={2 if algorithm == 'fedavg' else 1}",
+                             f"training.local_optimizer={optimizer}",
+                             f"training.local_steps={local_steps}", f"training.lr={lr}",
                              "attack.iterations=12", "attack.checkpoint_interval=4",
                              "attack.max_evaluations=50"]
                 opts = [item for setting in overrides for item in ["--set", setting]]
@@ -555,15 +591,19 @@ def build_parser():
     p.add_argument("--samples", type=int, default=100)
     p.add_argument("--split", choices=["tune", "eval"], default="eval")
     p.add_argument("--tasks", nargs="+", choices=["vqa", "caption"], default=["vqa", "caption"])
-    p.add_argument("--modes", nargs="+", choices=["full", "llm_full", "lora_llm"], default=["full", "lora_llm"])
+    p.add_argument("--strategies", nargs="+", choices=["f_c", "f_l", "f_cl", "f_2stage"],
+                   default=["f_c", "f_l", "f_cl", "f_2stage"])
     p.add_argument("--knowledge", nargs="+", choices=["private", "question_known", "text_known"],
                    default=["private", "text_known"])
     p.add_argument("--methods", nargs="+", default=["dlg_adapted", "ig_adapted", "april_adapted",
                                                    "gradvit_adapted", "gi_dqa_adapted"])
     p.add_argument("--seeds", nargs="+", type=int, default=[0, 1, 2])
-    p.add_argument("--algorithms", nargs="+", choices=["fedsgd", "fedavg"], default=["fedsgd"])
+    p.add_argument("--algorithms", nargs="+", choices=["fedsgd", "fedavg_sgd", "fedavg"],
+                   default=["fedsgd"], help="Named local-update protocols; fedavg uses AdamW")
     p.add_argument("--local-steps", type=int, default=1,
                    help="FedAvg client steps; FedSGD always uses one step")
+    p.add_argument("--gradient-accumulation-steps", type=int, default=1,
+                   help="Microbatches per FedAvg optimizer step")
     p.add_argument("--batch-size", type=int, default=1)
     p.add_argument("--pilot-seconds", type=float)
     p.add_argument("--gpus-per-run", type=int, default=1)

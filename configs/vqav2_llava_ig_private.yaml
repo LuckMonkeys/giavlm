@@ -5,7 +5,6 @@ defaults:
   - override evaluation: full
   - _self_
 fed:
-  mode: lora_llm
   lr: 0.0001
 attack:
   iterations: 1000

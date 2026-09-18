@@ -63,9 +63,9 @@ class BaseFederatedAlgorithm(ABC):
     def compute_client_update(self, adapter, batch: Batch, differentiable=False):
         """Run the algorithm's local client computation before upload selection."""
         # Local import avoids a module cycle: core.fl exposes the public replay API.
-        from core.fl import _simulate_sgd_update
-        return _simulate_sgd_update(adapter, batch, self.training, self.upload_type,
-                                    differentiable)
+        from core.fl import _simulate_local_update
+        return _simulate_local_update(adapter, batch, self.training, self.upload_type,
+                                      differentiable)
 
     def prepare_upload(self, update):
         """Select the named tensors exposed to the server."""
@@ -105,8 +105,9 @@ class FedAvgAlgorithm(BaseFederatedAlgorithm):
 def create_federated_algorithm(training: TrainingSpec) -> BaseFederatedAlgorithm:
     """Construct the configured end-to-end federated rule."""
     if training.algorithm == "fedsgd":
-        if training.local_steps != 1:
-            raise ValueError("FedSGD requires local_steps=1")
+        if (training.local_optimizer != "sgd" or training.local_steps != 1
+                or training.gradient_accumulation_steps != 1 or training.weight_decay != 0):
+            raise ValueError("FedSGD requires plain single-minibatch SGD")
         return FedSGDAlgorithm(training)
     if training.algorithm == "fedavg":
         return FedAvgAlgorithm(training)

@@ -1,6 +1,6 @@
 # Baseline Fidelity and Applicability
 
-Every implementation in this package is an adaptation to the fixed-block VLM
+Every implementation in this package is an adaptation to the native-sft-v2 VLM
 protocol. Do not label an adapted score as a numerical reproduction of an
 original paper. Tune hyperparameters only on the designated tuning image groups.
 
@@ -61,4 +61,3 @@ audit before its numerical outputs can be compared with the new adapters.
 
 The adapters implement the described mathematical mechanisms independently;
 the original codebases are not copied into this package.
-

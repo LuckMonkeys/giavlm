@@ -79,6 +79,9 @@ class TinyAdapter(VLMAdapter):
     def is_language(self, name):
         return name.startswith("language.")
 
+    def is_connector(self, name):
+        return name.startswith("connector.")
+
     def target_logits(self, images, q, y):
         image = self.vision_patch(images).flatten(2).transpose(1, 2) + self.vision_position
         image = self.connector(image)
