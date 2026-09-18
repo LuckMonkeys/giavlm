@@ -1,0 +1,13 @@
+defaults:
+  - config
+  - override data: slake
+  - override model: llava
+  - override tuning: f_cl
+  - override fed: fedsgd
+  - override attack: dlg_adapted
+  - override knowledge: private
+  - _self_
+
+# The real-model inversion path needs the lower-memory numerical protocol.
+model:
+  dtype: bfloat16

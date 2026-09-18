@@ -133,6 +133,89 @@ def test_hard_response_loss_matches_labels_cross_entropy(family):
     torch.testing.assert_close(adapter(batch.images, batch.questions, batch.targets), expected)
 
 
+def _llava_native_forward(adapter, batch):
+    """Run the HF top-level forward with the adapter's exact fixed-slot layout."""
+    backend = adapter.backend
+    batch_size = len(batch.images)
+    device = batch.images.device
+
+    def public_ids(text):
+        return torch.tensor(adapter.tokenizer.encode(text, add_special_tokens=False),
+                            dtype=torch.long, device=device)
+
+    pixels = ((batch.images - adapter.image_mean) / adapter.image_std).to(adapter.dtype)
+    with torch.no_grad():
+        image_tokens = backend.get_image_features(
+            pixels, backend.config.vision_feature_layer,
+            backend.config.vision_feature_select_strategy).shape[1]
+
+    user = public_ids("USER: ")
+    assistant = public_ids(" ASSISTANT: ")
+    image_ids = torch.full((image_tokens,), backend.config.image_token_index,
+                           dtype=torch.long, device=device)
+    if adapter.training_spec.task == "caption":
+        instructions = [public_ids("\nDescribe the image.") for _ in range(batch_size)]
+    else:
+        newline = public_ids("\n")
+        instructions = [torch.cat([newline, batch.questions[row]])
+                        for row in range(batch_size)]
+    rows = [torch.cat([user, image_ids, instructions[row], assistant,
+                       batch.targets[row]]) for row in range(batch_size)]
+    input_ids = torch.stack(rows)
+    attention_mask = torch.ones_like(input_ids)
+
+    response_start = user.numel() + image_tokens + instructions[0].numel() + assistant.numel()
+    labels = torch.full_like(input_ids, -100)
+    labels[:, response_start:] = batch.targets
+    labels[:, response_start:][batch.targets == adapter.pad] = -100
+
+    output = backend(input_ids=input_ids, pixel_values=pixels,
+                     attention_mask=attention_mask, labels=labels,
+                     use_cache=False, return_dict=True)
+    target_logits = output.logits[:, response_start - 1:
+                                  response_start - 1 + batch.targets.shape[1]]
+    return output.loss, target_logits
+
+
+@pytest.mark.parametrize("task", ["vqa", "caption"])
+@pytest.mark.parametrize("strategy,server_round", [
+    ("f_c", 0), ("f_l", 0), ("f_cl", 0), ("f_2stage", 0), ("f_2stage", 1),
+])
+def test_llava_manual_path_matches_native_forward_and_fedsgd_upload(
+        strategy, server_round, task):
+    """Hard-token adapter replay must equal the native LLaVA client computation."""
+    adapter = hf_fixture("llava", strategy)
+    training = replace(adapter.training_spec, server_round=server_round, task=task)
+    adapter.set_training_spec(training)
+    batch = adapter.batch(torch.rand(1, 3, 8, 8, requires_grad=True),
+                          ["what color"], ["red"])
+
+    native_loss, native_logits = _llava_native_forward(adapter, batch)
+    manual_logits = adapter.target_logits(
+        batch.images, adapter.probabilities(batch.questions),
+        adapter.probabilities(batch.targets))
+    manual_loss = adapter(batch.images, batch.questions, batch.targets)
+
+    torch.testing.assert_close(manual_logits, native_logits)
+    torch.testing.assert_close(manual_loss, native_loss)
+
+    parameters = adapter.trainable()
+    gradient_inputs = (*parameters.values(), batch.images)
+    native_results = torch.autograd.grad(native_loss, gradient_inputs)
+    manual_results = torch.autograd.grad(manual_loss, gradient_inputs)
+    native_gradients, native_image_gradient = native_results[:-1], native_results[-1]
+    manual_gradients, manual_image_gradient = manual_results[:-1], manual_results[-1]
+    for native, manual in zip(native_gradients, manual_gradients, strict=True):
+        torch.testing.assert_close(manual, native)
+    torch.testing.assert_close(manual_image_gradient, native_image_gradient)
+
+    native_by_name = dict(zip(parameters, native_gradients, strict=True))
+    observation = capture(adapter, batch, [], [])
+    assert set(observation.tensors) == set(parameters)
+    for name, observed in observation.tensors.items():
+        torch.testing.assert_close(observed, native_by_name[name])
+
+
 @pytest.mark.parametrize("family", ["llava", "blip2", "qwen2_5_vl"])
 @pytest.mark.parametrize("optimizer", ["sgd", "adamw"])
 def test_hf_multistep_lora_replay(family, optimizer):

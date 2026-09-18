@@ -6,7 +6,7 @@ import re
 import torch
 from torch.func import functional_call
 
-from core.artifacts import read_json, read_tensors, write_json, write_tensors
+from core.artifacts import file_hash, read_json, read_tensors, write_json, write_tensors
 from core.config import ModelSpec, TrainingSpec, digest
 from core.types import Batch, Observation
 
@@ -243,25 +243,59 @@ def load_observation(directory, device=None):
 
 def save_model(directory, adapter, metadata=None):
     directory = Path(directory)
-    write_tensors(directory / "model.safetensors", adapter.state_dict())
-    write_json(directory / "model.json", {**(metadata or {}), "schema_version": 3,
-                                         "model": asdict(adapter.spec),
-                                         "training": asdict(adapter.training_spec),
-                                         "fingerprint": adapter.fingerprint(),
-                                         "description": adapter.description()})
+    tensors = adapter.federated_state()
+    tensor_path = directory / "model.safetensors"
+    write_tensors(tensor_path, tensors)
+    write_json(directory / "model.json", {
+        **(metadata or {}),
+        "schema_version": 4,
+        "state_scope": "strategy_mutable",
+        "model": asdict(adapter.spec),
+        "training": asdict(adapter.training_spec),
+        "parameter_names": list(tensors),
+        "state_sha256": file_hash(tensor_path),
+        "fingerprint": adapter.fingerprint(),
+        "description": adapter.description(),
+    })
 
 
 def restore_model(directory, device=None):
     from core.vlm_wrapper import build_model
     directory = Path(directory)
     meta = read_json(directory / "model.json")
-    if meta.get("schema_version") != 3:
-        raise ValueError(f"Unsupported model schema v{meta.get('schema_version')}; expected schema v3")
+    if meta.get("schema_version") != 4:
+        raise ValueError(f"Unsupported model schema v{meta.get('schema_version')}; expected schema v4")
+    required = {"state_scope", "model", "training", "parameter_names", "state_sha256",
+                "fingerprint", "description"}
+    missing = required - set(meta)
+    if missing:
+        raise ValueError(f"Model metadata is missing required fields: {sorted(missing)}")
+    if meta["state_scope"] != "strategy_mutable":
+        raise ValueError(f"Unsupported model state scope: {meta['state_scope']}")
+    tensor_path = directory / "model.safetensors"
+    if file_hash(tensor_path) != meta["state_sha256"]:
+        raise ValueError("Model state integrity check failed")
     spec = ModelSpec(**meta["model"])
     if device:
         spec.device = device
     adapter = build_model(spec, TrainingSpec(**meta["training"]))
-    adapter.load_state_dict(read_tensors(directory / "model.safetensors", "cpu"), strict=True)
+    expected = adapter.federated_state()
+    expected_names = list(expected)
+    if meta["parameter_names"] != expected_names:
+        raise ValueError("Model state parameter names differ from the configured strategy")
+    tensors = read_tensors(tensor_path, "cpu")
+    if list(sorted(tensors)) != expected_names:
+        raise ValueError("Model state tensor names differ from metadata")
+    with torch.no_grad():
+        for name in expected_names:
+            saved, current = tensors[name], expected[name]
+            if saved.shape != current.shape:
+                raise ValueError(f"Model state shape differs: {name}")
+            if saved.dtype != current.dtype:
+                raise ValueError(f"Model state dtype differs: {name}")
+            if not torch.isfinite(saved).all():
+                raise ValueError(f"Model state contains nonfinite values: {name}")
+            current.copy_(saved.to(current.device))
     if adapter.fingerprint() != meta["fingerprint"]:
         raise ValueError("Model fingerprint mismatch")
     return adapter

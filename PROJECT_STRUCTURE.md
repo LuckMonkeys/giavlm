@@ -58,6 +58,7 @@ giavlm/
   configs/
     config.yaml               Hydra defaults and run/sweep output routing
     data/ model/ attack/ defense/ fed/ tuning/ knowledge/ evaluation/
+      fed/base.yaml           Optimizer-independent federated defaults
     <data>_<model>_<attack>_<knowledge>.yaml
     tiny.yaml, llava.yaml, ... Legacy flat configs for the staged CLI only
   examples/run_attack.py      Canonical experiment entry
@@ -92,8 +93,9 @@ and applies `-lr`. Neither means observing a secure sum of several clients.
 selects an existing checkpoint; when both are set, the snapshot becomes the new
 federation's round 0 and `fed.rounds` counts the additional rounds before capture.
 
-Each run owns `capture/public/`, `capture/private/`, and `attack/`. Shared model
-weights live once at experiment level. `experiment.json` indexes stable run IDs;
+Each run owns `capture/public/`, `capture/private/`, and `attack/`. The shared
+strategy-mutable model overlay lives once at experiment level; the pinned public
+base checkpoint remains external. `experiment.json` indexes stable run IDs;
 completed result/evaluation hashes are checked before skipping a run. Attack
 checkpoints include optimizer state, candidate state, RNG and budget counters.
 

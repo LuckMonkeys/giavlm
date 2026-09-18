@@ -4,7 +4,7 @@ import json
 import pytest
 import torch
 
-from core.artifacts import read_json
+from core.artifacts import file_hash, read_json, read_tensors, write_json, write_tensors
 from attacks import AttackRunner, Candidate, matching_loss, supports
 from core.aggregation import apply_server_update, create_federated_algorithm
 from core.config import AttackSpec, ModelSpec, TrainingSpec, load_config
@@ -191,7 +191,7 @@ def test_observation_allowlist_and_integrity(tmp_path):
         load_observation(tmp_path)
 
 
-def test_schema_v2_artifacts_are_rejected(tmp_path):
+def test_legacy_artifact_schemas_are_rejected(tmp_path):
     adapter, batch = fixture()
     observation_dir = tmp_path / "observation"
     save_observation(observation_dir, capture(adapter, batch, [], []))
@@ -204,10 +204,120 @@ def test_schema_v2_artifacts_are_rejected(tmp_path):
     model_dir = tmp_path / "model"
     save_model(model_dir, adapter)
     model_meta = read_json(model_dir / "model.json")
-    model_meta["schema_version"] = 2
+    model_meta["schema_version"] = 3
     (model_dir / "model.json").write_text(json.dumps(model_meta))
-    with pytest.raises(ValueError, match="schema v2"):
+    with pytest.raises(ValueError, match="schema v3"):
         restore_model(model_dir)
+
+
+@pytest.mark.parametrize("strategy,connector,lora", [
+    ("f_c", True, False),
+    ("f_l", False, True),
+    ("f_cl", True, True),
+    ("f_2stage", True, True),
+])
+def test_model_snapshot_contains_only_strategy_mutable_state(
+        tmp_path, strategy, connector, lora):
+    adapter, batch = fixture(strategy=strategy)
+    directory = tmp_path / strategy
+    expected = adapter.federated_state()
+    fingerprint = adapter.fingerprint()
+    expected_update = simulate_update(adapter, batch, adapter.training_spec)
+
+    save_model(directory, adapter)
+    stored = read_tensors(directory / "model.safetensors")
+    meta = read_json(directory / "model.json")
+
+    assert meta["schema_version"] == 4
+    assert meta["state_scope"] == "strategy_mutable"
+    assert meta["parameter_names"] == list(expected)
+    assert meta["state_sha256"] == file_hash(directory / "model.safetensors")
+    assert set(stored) == set(expected)
+    assert any(adapter.is_connector(name) for name in stored) == connector
+    assert any(".lora_" in name for name in stored) == lora
+    assert all(adapter.is_connector(name) or ".lora_" in name for name in stored)
+    assert (directory / "model.safetensors").stat().st_size < sum(
+        value.numel() * value.element_size() for value in adapter.state_dict().values())
+
+    restored = restore_model(directory)
+    assert restored.fingerprint() == fingerprint
+    torch.testing.assert_close(
+        restored(batch.images, batch.questions, batch.targets),
+        adapter(batch.images, batch.questions, batch.targets))
+    restored_update = simulate_update(restored, batch, restored.training_spec)
+    assert restored_update.keys() == expected_update.keys()
+    for name in expected_update:
+        torch.testing.assert_close(restored_update[name], expected_update[name])
+
+
+def test_two_stage_snapshot_retains_connector_after_switch_to_lora(tmp_path):
+    adapter, batch = fixture(strategy="f_2stage")
+    connector_before = {name: value.detach().clone() for name, value in adapter.federated_state().items()
+                        if adapter.is_connector(name)}
+    algorithm = create_federated_algorithm(adapter.training_spec)
+    algorithm.apply(adapter, algorithm.client_update(adapter, batch))
+    connector_after = {name: value.detach().clone() for name, value in adapter.federated_state().items()
+                       if adapter.is_connector(name)}
+    assert any(not torch.equal(connector_after[name], connector_before[name])
+               for name in connector_before)
+
+    adapter.set_training_spec(replace(adapter.training_spec, server_round=1))
+    assert adapter.training_spec.fine_tuning_stage == "llm"
+    directory = tmp_path / "two-stage"
+    save_model(directory, adapter)
+    restored = restore_model(directory)
+
+    assert restored.training_spec.fine_tuning_stage == "llm"
+    restored_state = restored.federated_state()
+    for name, value in connector_after.items():
+        torch.testing.assert_close(restored_state[name], value)
+    assert any(".lora_" in name for name in restored_state)
+
+
+def test_model_snapshot_rejects_tensor_hash_mismatch(tmp_path):
+    adapter, _ = fixture(strategy="f_cl")
+    save_model(tmp_path, adapter)
+    tensors = read_tensors(tmp_path / "model.safetensors")
+    name = next(iter(tensors))
+    tensors[name] = tensors[name].clone()
+    tensors[name].view(-1)[0].add_(1)
+    write_tensors(tmp_path / "model.safetensors", tensors)
+    with pytest.raises(ValueError, match="integrity"):
+        restore_model(tmp_path)
+
+
+@pytest.mark.parametrize("corruption", ["missing", "extra", "shape", "dtype"])
+def test_model_snapshot_rejects_invalid_overlay(tmp_path, corruption):
+    adapter, _ = fixture(strategy="f_cl")
+    save_model(tmp_path, adapter)
+    tensors = read_tensors(tmp_path / "model.safetensors")
+    name = next(iter(tensors))
+    if corruption == "missing":
+        tensors.pop(name)
+    elif corruption == "extra":
+        tensors["unexpected.weight"] = torch.zeros(1)
+    elif corruption == "shape":
+        tensors[name] = tensors[name].reshape(-1)[:-1]
+    else:
+        tensors[name] = tensors[name].double()
+    write_tensors(tmp_path / "model.safetensors", tensors)
+    meta = read_json(tmp_path / "model.json")
+    meta["state_sha256"] = file_hash(tmp_path / "model.safetensors")
+    if corruption in {"missing", "extra"}:
+        meta["parameter_names"] = sorted(tensors)
+    write_json(tmp_path / "model.json", meta)
+    with pytest.raises(ValueError, match="parameter names|shape differs|dtype differs"):
+        restore_model(tmp_path)
+
+
+def test_model_snapshot_rejects_fingerprint_mismatch(tmp_path):
+    adapter, _ = fixture(strategy="f_cl")
+    save_model(tmp_path, adapter)
+    meta = read_json(tmp_path / "model.json")
+    meta["fingerprint"] = "0" * 64
+    write_json(tmp_path / "model.json", meta)
+    with pytest.raises(ValueError, match="fingerprint mismatch"):
+        restore_model(tmp_path)
 
 
 @pytest.mark.parametrize("knowledge", ["private", "question_known", "text_known"])

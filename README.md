@@ -174,6 +174,11 @@ and `model.target_length=64` on real models. Hydra `fed=fedavg` selects AdamW
 (`lr=2e-5`), while `fed=fedavg_sgd` preserves functional SGD. `local_steps`
 counts optimizer steps and `gradient_accumulation_steps` counts microbatches per step.
 
+Model snapshots store a lightweight strategy overlay instead of copying frozen
+pretrained weights into every checkpoint. They require the pinned base checkpoint
+in `model.name`/`model.revision` to remain available. F-C stores the connector,
+F-L stores LoRA, and F-CL/F-2stage store both.
+
 `tuning=f_c` trains and shares only the multimodal connector. `tuning=f_l` trains
 and shares language-side LoRA, while `tuning=f_cl` trains and shares both.
 `tuning=f_2stage` trains the connector until `two_stage_connector_rounds`, then

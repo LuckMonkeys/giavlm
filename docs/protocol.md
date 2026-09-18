@@ -87,10 +87,13 @@ exact trainable and uploaded parameter set an attacker must replay.
 
 Schema-v3 `Observation` contains model/training specifications, model fingerprint, named
 update tensors and only explicitly public text. Loading verifies an allowlist,
-metadata digest, tensor-file hash and parameter names. Model checkpoints use
-safetensors and their own weight fingerprint. Attack callbacks do not receive
-references. Evaluation verifies that its reference artifact has the same
-observation ID as the reconstruction.
+metadata digest, tensor-file hash and parameter names. Schema-v4 model checkpoints
+store only the strategy-owned mutable overlay in safetensors: connector for F-C,
+LoRA for F-L, and both for F-CL/F-2stage. Restoration reloads the pinned external
+base checkpoint, validates the overlay hash, names, shapes and dtypes, then verifies
+the complete model fingerprint. Attack callbacks do not receive references.
+Evaluation verifies that its reference artifact has the same observation ID as the
+reconstruction.
 
 Result artifacts include a method/config signature, model state, attack seed,
 actual update/local-backward/prior evaluation counts, runtime, memory, and status.

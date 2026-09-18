@@ -1,6 +1,11 @@
 defaults:
-  - fedsgd
+  - base
+  - _self_
+
 name: fedavg_sgd
 algorithm: fedavg
 local_optimizer: sgd
 local_steps: 2
+gradient_accumulation_steps: 1
+lr: 0.01
+weight_decay: 0.0

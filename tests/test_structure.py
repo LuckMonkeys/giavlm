@@ -43,12 +43,23 @@ def test_hydra_model_composition(tmp_path, model, family):
 
 
 def test_hydra_fedavg_sgd_preset(tmp_path):
-    protocol = protocol_config(configuration(tmp_path, "fed=fedavg_sgd"))
+    config = configuration(tmp_path, "fed=fedavg_sgd")
+    protocol = protocol_config(config)
     assert protocol.training.algorithm == "fedavg"
     assert protocol.training.local_optimizer == "sgd"
     assert protocol.training.local_steps == 2
     assert protocol.training.training_protocol == "native-sft-v2"
     assert protocol.training.fine_tuning_strategy == "f_l"
+    assert "adam_beta1" not in config.fed
+
+
+def test_optimizer_specific_hydra_fields(tmp_path):
+    fedsgd = configuration(tmp_path, "fed=fedsgd").fed
+    fedavg = configuration(tmp_path, "fed=fedavg").fed
+    assert "adam_beta1" not in fedsgd
+    assert fedavg.adam_beta1 == 0.9
+    assert fedavg.adam_beta2 == 0.999
+    assert fedavg.adam_epsilon == 1e-8
 
 
 def test_preset_and_knowledge_validation(tmp_path):
@@ -57,6 +68,17 @@ def test_preset_and_knowledge_validation(tmp_path):
     config.knowledge.name = "question_known"
     with pytest.raises(ValueError, match="Caption"):
         protocol_config(config)
+
+
+def test_slake_llava_dlg_preset_uses_bfloat16_fedsgd(tmp_path):
+    config = configuration(tmp_path, name="slake_llava_dlg_private")
+    protocol = protocol_config(config)
+    assert protocol.model.family == "llava"
+    assert protocol.model.dtype == "bfloat16"
+    assert protocol.training.task == "vqa"
+    assert protocol.training.fine_tuning_strategy == "f_cl"
+    assert protocol.training.algorithm == "fedsgd"
+    assert protocol.attack.method == "dlg_adapted"
 
 
 @pytest.mark.parametrize("override", ["fed.secure_aggregation=true",

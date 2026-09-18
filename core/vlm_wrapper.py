@@ -123,6 +123,24 @@ class VLMAdapter(nn.Module, ABC):
     def trainable(self):
         return {name: p for name, p in self.named_parameters() if p.requires_grad}
 
+    def federated_state(self):
+        """Return every parameter this fine-tuning strategy may mutate.
+
+        This surface is deliberately independent of the active F-2stage phase:
+        a checkpoint taken during LoRA training must retain the connector learned
+        in the preceding phase, and vice versa.
+        """
+        strategy = self.training_spec.fine_tuning_strategy
+        include_connector = strategy in {"f_c", "f_cl", "f_2stage"}
+        include_lora = strategy in {"f_l", "f_cl", "f_2stage"}
+        state = self.state_dict()
+        names = sorted(name for name in state
+                       if (include_connector and self.is_connector(name))
+                       or (include_lora and ".lora_" in name))
+        if not names:
+            raise ValueError(f"Strategy {strategy} selected no federated checkpoint state")
+        return {name: state[name] for name in names}
+
     def decay_parameter_names(self):
         """Return trainable weights decayed by Trainer-style AdamW grouping."""
         normalization_types = (nn.LayerNorm, nn.BatchNorm1d, nn.BatchNorm2d,
@@ -228,10 +246,13 @@ class VLMAdapter(nn.Module, ABC):
         return h.hexdigest()
 
     def description(self):
+        federated = self.federated_state()
         return {"protocol": self.protocol_version, "model": asdict(self.spec),
                 "parameters": sum(p.numel() for p in self.parameters()),
                 "trainable_parameters": sum(p.numel() for p in self.trainable().values()),
                 "trainable_names": list(self.trainable()),
+                "federated_state_parameters": sum(p.numel() for p in federated.values()),
+                "federated_state_names": list(federated),
                 "position_gradient_names": self.position_gradient_names}
 
 

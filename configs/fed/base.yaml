@@ -1,0 +1,12 @@
+batch_size: 1
+training_protocol: native-sft-v2
+lora_rank: 8
+lora_alpha: 16
+clients: 1
+clients_per_round: 1
+rounds: 0
+server_round: 0
+snapshots: [0]
+seed: 42
+secure_aggregation: false
+upload_parameters: []

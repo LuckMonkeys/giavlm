@@ -133,6 +133,10 @@ python examples/run_attack.py \
 
 顶层预设按 `<data>_<model>_<attack>_<knowledge>.yaml` 命名，可以通过 `--config-name` 选择。
 
+`configs/fed/base.yaml` 保存客户端数量、轮数、训练协议等公共字段；`fedsgd`、
+`fedavg_sgd` 和 `fedavg` 分别声明自己的优化器参数，因此 FedSGD 配置不会混入
+AdamW 的 beta 和 epsilon。
+
 ### 4.2 两层配置
 
 运行时配置是 Hydra `DictConfig`，包含数据路径、输出目录、防御和恢复控制等编排信息。`protocol_config()` 会把它转换成 [core/config.py](../core/config.py) 中的严格 dataclass：
@@ -391,7 +395,7 @@ output_dir/
     images/
   model/                       rounds=0 时共享的初始模型
     model.json
-    model.safetensors
+    model.safetensors          策略可变参数 overlay，不包含冻结的公开基座
   federation/                  rounds>0 时的联邦训练状态/快照
   run-00000/
     protocol.json              本 run 的严格协议
@@ -413,6 +417,17 @@ output_dir/
       checkpoint.json           最新 checkpoint 指针
       checkpoints/              不可变攻击状态 generation
 ```
+
+模型快照使用 schema v4。`model.safetensors` 只保存当前微调策略可能修改的
+参数：F-C 为 connector，F-L 为 LoRA，F-CL 和 F-2stage 为 connector +
+LoRA。F-2stage 的保存集合不随当前阶段收缩，因此进入 LLM 阶段后仍保留已经
+训练的 connector。`model.json` 记录 `state_scope=strategy_mutable`、精确参数名、
+tensor 文件哈希和完整模型 fingerprint。
+
+轻量快照不是独立的模型分发包。恢复时必须仍能通过 `model.name` 和固定
+`model.revision` 加载相同公开基座，再覆盖 overlay 并验证完整 fingerprint；
+本地 checkpoint 路径被移动或 Hugging Face 缓存缺失时会明确失败。schema v3
+完整模型快照保留原文件，但新代码不提供静默恢复。
 
 `observation.json` 是严格 allowlist，主要包含：
 
