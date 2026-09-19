@@ -1,4 +1,4 @@
 name: private
-token_lengths_known: false
+token_lengths_known: true
 template_known: false
 server: honest_but_curious

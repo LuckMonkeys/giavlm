@@ -20,7 +20,7 @@ hydra:
   job:
     chdir: false
   run:
-    dir: ./outputs/${attack.name}_${knowledge.name}_${defense.name}_${model.name}_${data.name}_${tuning.name}_${fed.name}_${now:%Y-%m-%d_%H-%M-%S}
+    dir: ./outputs/${attack.name}_${knowledge.name}_lengths-${knowledge.token_lengths_known}_${defense.name}_${model.name}_${data.name}_${tuning.name}_${fed.name}_${now:%Y-%m-%d_%H-%M-%S}
   sweep:
     dir: ./outputs/multirun/${now:%Y-%m-%d_%H-%M-%S}
     subdir: ${hydra.job.num}

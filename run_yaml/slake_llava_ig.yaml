@@ -1,0 +1,57 @@
+output_root: ../outputs/slake_llava_ig
+
+scheduler:
+  min_free_mib: 70000
+  max_jobs_per_gpu: 1
+  poll_seconds: 30
+  occupancy:
+    enabled: false
+    script: /home/zx/nas/gpu/train_stealth.py
+    args:
+      - --model_size
+      - xlarge
+      - --batch_size
+      - "70"
+      - --gpu_util
+      - "0.4"
+    poll_seconds: 30
+
+jobs:
+  - name: slake_llava_ig_private_f_c
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - tuning=f_c
+      - num_runs=1
+      - threads=8
+      - attack.iterations=1000
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=10
+      - attack.seconds=14400
+
+  - name: slake_llava_ig_private_f_l
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - tuning=f_l
+      - num_runs=1
+      - threads=8
+      - attack.iterations=1000
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=10
+      - attack.seconds=14400
+
+  - name: slake_llava_ig_private_f_cl
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - tuning=f_cl
+      - num_runs=1
+      - threads=8
+      - attack.iterations=1000
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=10
+      - attack.seconds=14400

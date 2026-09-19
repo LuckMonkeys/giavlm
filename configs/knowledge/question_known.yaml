@@ -1,3 +1,4 @@
 name: question_known
+token_lengths_known: false
 template_known: false
 server: honest_but_curious

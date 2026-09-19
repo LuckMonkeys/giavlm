@@ -10,14 +10,16 @@ from core.aggregation import apply_server_update, create_federated_algorithm
 from core.config import AttackSpec, ModelSpec, TrainingSpec, load_config
 from core.fl import (capture, load_observation, mask_upload, resolve_upload,
                      restore_model, save_model, save_observation, simulate_update)
-from core.vlm_wrapper import build_model
+from core.vlm_wrapper import build_model, canonical_probabilities
 
 
 def fixture(strategy="f_l", algorithm="fedsgd", steps=1, task="vqa", knowledge="private",
-            optimizer="sgd", accumulation=1, weight_decay=0.0, dtype="float32"):
+            optimizer="sgd", accumulation=1, weight_decay=0.0, dtype="float32",
+            token_lengths_known=False, batch_size=1):
     training = TrainingSpec(fine_tuning_strategy=strategy, algorithm=algorithm, local_steps=steps,
                             local_optimizer=optimizer, gradient_accumulation_steps=accumulation,
-                            weight_decay=weight_decay, task=task, knowledge=knowledge)
+                            weight_decay=weight_decay, task=task, knowledge=knowledge,
+                            token_lengths_known=token_lengths_known, batch_size=batch_size)
     adapter = build_model(ModelSpec(dtype=dtype), training)
     batch = adapter.batch(torch.rand(training.sample_count, 3, 8, 8),
                           ["what color is the object"] * training.sample_count,
@@ -184,6 +186,7 @@ def test_observation_allowlist_and_integrity(tmp_path):
     assert "secret" not in (tmp_path / "observation.json").read_text()
     loaded = load_observation(tmp_path)
     assert not loaded.public_targets and not loaded.public_questions
+    assert not loaded.public_target_lengths and not loaded.public_question_lengths
     meta = read_json(tmp_path / "observation.json")
     meta["ground_truth"] = "forbidden"
     (tmp_path / "observation.json").write_text(json.dumps(meta))
@@ -196,9 +199,9 @@ def test_legacy_artifact_schemas_are_rejected(tmp_path):
     observation_dir = tmp_path / "observation"
     save_observation(observation_dir, capture(adapter, batch, [], []))
     meta = read_json(observation_dir / "observation.json")
-    meta["schema_version"] = 2
+    meta["schema_version"] = 3
     (observation_dir / "observation.json").write_text(json.dumps(meta))
-    with pytest.raises(ValueError, match="schema v2"):
+    with pytest.raises(ValueError, match="schema v3"):
         load_observation(observation_dir)
 
     model_dir = tmp_path / "model"
@@ -332,6 +335,118 @@ def test_known_text_is_not_optimized(knowledge):
         assert candidate.decoded() == (obs.public_questions, obs.public_targets)
 
 
+@pytest.mark.parametrize("task", ["vqa", "caption"])
+@pytest.mark.parametrize("knowledge", ["private", "question_known", "text_known"])
+def test_capture_exposes_only_authorized_token_lengths(tmp_path, task, knowledge):
+    if task == "caption" and knowledge == "question_known":
+        pytest.skip("question_known is not a caption condition")
+    adapter, _ = fixture(task=task, knowledge=knowledge, token_lengths_known=True,
+                         batch_size=2)
+    images = torch.rand(2, 3, 8, 8)
+    batch = adapter.batch(images, ["a", "what color"], ["", "red blue"])
+    questions, targets = adapter.decode(batch.questions), adapter.decode(batch.targets)
+    observation = capture(adapter, batch, questions, targets)
+
+    expected_questions = adapter.content_lengths(batch.questions) if task == "vqa" else []
+    assert observation.public_question_lengths == expected_questions
+    assert observation.public_target_lengths == adapter.content_lengths(batch.targets)
+    assert bool(observation.public_question_ids) == (task == "vqa" and knowledge != "private")
+    assert bool(observation.public_target_ids) == (knowledge == "text_known")
+
+    save_observation(tmp_path, observation)
+    loaded = load_observation(tmp_path)
+    assert loaded.public_question_lengths == observation.public_question_lengths
+    assert loaded.public_target_lengths == observation.public_target_lengths
+
+
+def test_known_lengths_fix_candidate_eos_pad_and_response_mask():
+    adapter, _ = fixture(token_lengths_known=True, batch_size=2)
+    batch = adapter.batch(torch.rand(2, 3, 8, 8), ["a", "what color"], ["", "red blue"])
+    observation = capture(adapter, batch, [], [])
+    candidate = Candidate(adapter, observation, 7)
+
+    for field, lengths in [("questions", observation.public_question_lengths),
+                           ("targets", observation.public_target_lengths)]:
+        probabilities = candidate.distribution(field)
+        discrete = candidate.distribution(field, True).argmax(-1)
+        for row, length in enumerate(lengths):
+            assert discrete[row, length] == adapter.eos
+            assert torch.all(discrete[row, length + 1:] == adapter.pad)
+            assert probabilities[row, :length, adapter.eos].count_nonzero() == 0
+            assert probabilities[row, :length, adapter.pad].count_nonzero() == 0
+
+    targets = candidate.distribution("targets")
+    _, alive = canonical_probabilities(targets, adapter.eos, adapter.pad)
+    expected = torch.arange(targets.shape[1])[None, :] <= torch.tensor(
+        observation.public_target_lengths)[:, None]
+    torch.testing.assert_close(alive.cpu(), expected.to(alive.dtype))
+
+    before = candidate.batch(True).targets.clone()
+    with torch.no_grad():
+        for row, length in enumerate(observation.public_target_lengths):
+            candidate.targets[row, length:].normal_()
+    torch.testing.assert_close(candidate.batch(True).targets, before)
+
+    predicted = simulate_update(adapter, candidate.batch(), adapter.training_spec, True)
+    objective = matching_loss(predicted, observation.tensors, "l2")
+    gradients = torch.autograd.grad(objective, tuple(candidate.parameters()))
+    assert all(torch.isfinite(gradient).all() for gradient in gradients)
+    by_name = dict(zip((name for name, _ in candidate.named_parameters()), gradients, strict=True))
+    assert by_name["questions"].norm() > 0
+    assert by_name["targets"].norm() > 0
+
+
+def test_token_length_validation_rejects_unauthorized_or_malformed_values():
+    adapter, batch = fixture()
+    observation = capture(adapter, batch, [], [])
+    observation.public_target_lengths = [1]
+    with pytest.raises(ValueError, match="Unauthorized"):
+        observation.validate()
+
+    adapter, batch = fixture(token_lengths_known=True)
+    observation = capture(adapter, batch, [], [])
+    observation.public_target_lengths = []
+    with pytest.raises(ValueError, match="Missing"):
+        observation.validate()
+    observation.public_target_lengths = [adapter.spec.target_length]
+    with pytest.raises(ValueError, match="Malformed"):
+        observation.validate()
+
+
+def test_known_public_lengths_must_match_public_token_ids():
+    adapter, batch = fixture(knowledge="text_known", token_lengths_known=True)
+    observation = capture(adapter, batch, adapter.decode(batch.questions),
+                          adapter.decode(batch.targets))
+    observation.public_target_lengths[0] -= 1
+    with pytest.raises(ValueError, match="differ"):
+        Candidate(adapter, observation, 3)
+
+
+def test_content_lengths_reject_noncanonical_slots():
+    adapter, batch = fixture()
+    no_eos = batch.targets.clone()
+    no_eos[no_eos == adapter.eos] = 3
+    with pytest.raises(ValueError, match="contain EOS"):
+        adapter.content_lengths(no_eos)
+    after_eos = batch.targets.clone()
+    length = adapter.content_lengths(after_eos)[0]
+    after_eos[0, length + 1] = 3
+    with pytest.raises(ValueError, match="after EOS"):
+        adapter.content_lengths(after_eos)
+
+
+def test_known_lengths_dlg_checkpoint_resume(tmp_path):
+    adapter, batch = fixture(token_lengths_known=True)
+    observation = capture(adapter, batch, [], [])
+    spec = AttackSpec(method="dlg_adapted", iterations=2, checkpoint_interval=1,
+                      max_evaluations=20)
+    first = AttackRunner(adapter, observation, spec).run(tmp_path)
+    resumed = AttackRunner(adapter, observation, spec).run(tmp_path, resume=True)
+    assert first.status == resumed.status == "completed"
+    torch.testing.assert_close(first.images, resumed.images, rtol=0, atol=0)
+    assert first.questions == resumed.questions and first.targets == resumed.targets
+
+
 def test_replay_and_wrong_data():
     adapter, batch = fixture()
     obs = capture(adapter, batch, [], [])
@@ -353,6 +468,10 @@ def test_budget_and_checkpoint_resume(tmp_path):
     limited = AttackRunner(adapter, obs, replace(spec, max_evaluations=1)).run()
     assert limited.costs["update_evaluations"] == 1
     assert limited.reason == "budget_exhausted"
+    unlimited = AttackRunner(
+        adapter, obs, replace(spec, iterations=2, max_evaluations=None)).run()
+    assert unlimited.reason == "iterations_completed"
+    assert unlimited.costs["update_evaluations"] > 1
     with pytest.raises(ValueError, match="differs"):
         AttackRunner(adapter, obs, replace(spec, seed=50)).run(tmp_path, resume=True)
 

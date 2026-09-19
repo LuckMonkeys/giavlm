@@ -177,6 +177,10 @@ def simulate_update(adapter, batch: Batch, spec: TrainingSpec, differentiable=Fa
 def capture(adapter, batch, questions: list[str], targets: list[str]):
     spec = adapter.training_spec
     update = {k: v.detach().clone() for k, v in simulate_update(adapter, batch, spec).items()}
+    question_lengths = (adapter.content_lengths(batch.questions)
+                        if spec.token_lengths_known and spec.task == "vqa" else [])
+    target_lengths = (adapter.content_lengths(batch.targets)
+                      if spec.token_lengths_known else [])
     obs = Observation(model=replace(adapter.spec), training=replace(spec),
                       tensors=update,
                       model_fingerprint=adapter.fingerprint(),
@@ -184,7 +188,10 @@ def capture(adapter, batch, questions: list[str], targets: list[str]):
                       public_targets=list(targets) if spec.knowledge == "text_known" else [],
                       public_question_ids=batch.questions.detach().cpu().tolist()
                       if spec.knowledge != "private" and spec.task == "vqa" else [],
-                      public_target_ids=batch.targets.detach().cpu().tolist() if spec.knowledge == "text_known" else [])
+                      public_target_ids=batch.targets.detach().cpu().tolist()
+                      if spec.knowledge == "text_known" else [],
+                      public_question_lengths=question_lengths,
+                      public_target_lengths=target_lengths)
     obs.validate()
     return obs
 
@@ -194,13 +201,15 @@ def save_observation(directory, observation):
     if (directory / "observation.json").exists():
         raise FileExistsError(directory)
     observation.validate()
-    metadata = {"schema_version": 3, "model": asdict(observation.model),
+    metadata = {"schema_version": 4, "model": asdict(observation.model),
                 "training": asdict(observation.training),
                 "model_fingerprint": observation.model_fingerprint,
                 "public_questions": observation.public_questions,
                 "public_targets": observation.public_targets,
                 "public_question_ids": observation.public_question_ids,
                 "public_target_ids": observation.public_target_ids,
+                "public_question_lengths": observation.public_question_lengths,
+                "public_target_lengths": observation.public_target_lengths,
                 "parameter_names": sorted(observation.tensors)}
     write_tensors(directory / "update.safetensors", observation.tensors)
     from core.artifacts import file_hash
@@ -213,11 +222,12 @@ def save_observation(directory, observation):
 def load_observation(directory, device=None):
     directory = Path(directory)
     meta = read_json(directory / "observation.json")
-    if meta.get("schema_version") != 3:
+    if meta.get("schema_version") != 4:
         raise ValueError(
-            f"Unsupported observation schema v{meta.get('schema_version')}; expected schema v3")
+            f"Unsupported observation schema v{meta.get('schema_version')}; expected schema v4")
     allowed = {"schema_version", "model", "training", "model_fingerprint", "public_questions",
                "public_targets", "public_question_ids", "public_target_ids",
+               "public_question_lengths", "public_target_lengths",
                "parameter_names", "update_sha256", "observation_id"}
     if set(meta) != allowed:
         raise ValueError("Observation contains unknown or missing fields")
@@ -231,10 +241,18 @@ def load_observation(directory, device=None):
     model = ModelSpec(**meta["model"])
     if device:
         model.device = device
-    obs = Observation(model, TrainingSpec(**meta["training"]),
-                      read_tensors(directory / "update.safetensors", "cpu"),
-                      meta["model_fingerprint"], meta["public_questions"], meta["public_targets"],
-                      meta["public_question_ids"], meta["public_target_ids"], meta["schema_version"])
+    obs = Observation(
+        model=model,
+        training=TrainingSpec(**meta["training"]),
+        tensors=read_tensors(directory / "update.safetensors", "cpu"),
+        model_fingerprint=meta["model_fingerprint"],
+        public_questions=meta["public_questions"],
+        public_targets=meta["public_targets"],
+        public_question_ids=meta["public_question_ids"],
+        public_target_ids=meta["public_target_ids"],
+        public_question_lengths=meta["public_question_lengths"],
+        public_target_lengths=meta["public_target_lengths"],
+        schema_version=meta["schema_version"])
     if sorted(obs.tensors) != meta["parameter_names"]:
         raise ValueError("Observed parameter names differ from metadata")
     obs.validate()

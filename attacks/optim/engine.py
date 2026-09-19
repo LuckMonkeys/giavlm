@@ -30,9 +30,13 @@ class Candidate(nn.Module):
                                               generator=g, device=adapter.device, dtype=adapter.dtype))
         self.private_q = observation.training.task == "vqa" and observation.training.knowledge == "private"
         self.private_y = observation.training.knowledge != "text_known"
-        for field, length, private, public in [
-            ("questions", m.question_length, self.private_q, observation.public_questions),
-            ("targets", m.target_length, self.private_y, observation.public_targets)]:
+        self.known_lengths = {}
+        for field, length, private, public, known_lengths in [
+            ("questions", m.question_length, self.private_q, observation.public_questions,
+             observation.public_question_lengths),
+            ("targets", m.target_length, self.private_y, observation.public_targets,
+             observation.public_target_lengths)]:
+            self.known_lengths[field] = known_lengths
             if private:
                 values = torch.randn(n, length, adapter.vocab_size, generator=g,
                                      device=adapter.device, dtype=torch.float32) * 0.1
@@ -40,6 +44,8 @@ class Candidate(nn.Module):
             else:
                 public_ids = observation.public_question_ids if field == "questions" else observation.public_target_ids
                 ids = torch.tensor(public_ids, device=adapter.device, dtype=torch.long) if public_ids else adapter.encode(public or [""] * n, length)
+                if known_lengths and adapter.content_lengths(ids) != known_lengths:
+                    raise ValueError(f"Public {field} token lengths differ from public token IDs")
                 self.register_buffer(field, F.one_hot(ids, adapter.vocab_size).to(adapter.dtype))
         forbidden = sorted(set(adapter.tokenizer.all_special_ids) - {adapter.eos})
         self.register_buffer("forbidden", torch.tensor(forbidden, device=adapter.device, dtype=torch.long))
@@ -50,10 +56,27 @@ class Candidate(nn.Module):
         private = self.private_q if name == "questions" else self.private_y
         if private:
             value = value.index_fill(-1, self.forbidden, -1e4)
-            # A public maximum-length EOS, never the private stopping position.
-            last = value.new_full(value[:, -1:].shape, -1e4)
-            last[:, :, adapter.eos] = 0
-            value = torch.cat([value[:, :-1], last], dim=1).softmax(-1)
+            lengths = self.known_lengths[name]
+            if lengths:
+                # Known content lengths fix EOS and all following PAD positions.
+                value = value.clone()
+                value[..., adapter.eos] = -1e4
+                value[..., adapter.pad] = -1e4
+                value = value.softmax(-1)
+                positions = torch.arange(value.shape[1], device=value.device)[None, :]
+                ends = torch.tensor(lengths, device=value.device)[:, None]
+                content = positions < ends
+                eos = F.one_hot(torch.tensor(adapter.eos, device=value.device),
+                                adapter.vocab_size).to(value)
+                pad = F.one_hot(torch.tensor(adapter.pad, device=value.device),
+                                adapter.vocab_size).to(value)
+                fixed = torch.where((positions == ends)[..., None], eos, pad)
+                value = torch.where(content[..., None], value, fixed)
+            else:
+                # A public maximum-length EOS, never the private stopping position.
+                last = value.new_full(value[:, -1:].shape, -1e4)
+                last[:, :, adapter.eos] = 0
+                value = torch.cat([value[:, :-1], last], dim=1).softmax(-1)
         if discrete:
             value = F.one_hot(value.argmax(-1), adapter.vocab_size).to(adapter.dtype)
         value = value.to(adapter.dtype)
@@ -100,7 +123,10 @@ class AttackRunner:
             raise ValueError("attack.prior_interval must be positive for LAMP")
 
     def check_budget(self):
-        if self.evaluations >= self.spec.max_evaluations or self.elapsed() >= self.spec.seconds:
+        evaluations_exhausted = (
+            self.spec.max_evaluations is not None
+            and self.evaluations >= self.spec.max_evaluations)
+        if evaluations_exhausted or self.elapsed() >= self.spec.seconds:
             raise BudgetExhausted()
 
     def elapsed(self):
@@ -238,7 +264,9 @@ class AttackRunner:
                             "questions": self.observation.public_questions,
                             "targets": self.observation.public_targets,
                             "question_ids": self.observation.public_question_ids,
-                            "target_ids": self.observation.public_target_ids})
+                            "target_ids": self.observation.public_target_ids,
+                            "question_lengths": self.observation.public_question_lengths,
+                            "target_lengths": self.observation.public_target_lengths})
         saved = None
         pointer = Path(directory) / "checkpoint.json" if directory else None
         if resume and pointer and pointer.exists():

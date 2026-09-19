@@ -64,7 +64,7 @@ giavlm/
   examples/run_attack.py      Canonical experiment entry
   run_yaml/tiny_smoke.yaml    Example declarative job schedule
   utils/
-    run_cmds.py               Dry-run by default, opt-in sequential execution
+    run_cmds.py               Multi-YAML serial/GPU scheduling and opt-in occupancy
     suite.py                  Legacy shared-model multi-condition suite
   evaluation/
     reconstruction.py        Joint matching, reference evaluation, bootstrap

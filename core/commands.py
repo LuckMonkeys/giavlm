@@ -318,7 +318,9 @@ def attack(args):
     # Attackers receive only the public update, protocol, and declared knowledge.
     try:
         result = create_attacker(adapter, cfg.attack).attack(
-            obs.tensors, obs, AdversaryKnowledge(obs.training.knowledge),
+            obs.tensors, obs,
+            AdversaryKnowledge(name=obs.training.knowledge,
+                               token_lengths_known=obs.training.token_lengths_known),
             directory=output, resume=args.resume)
     except torch.OutOfMemoryError as error:
         if getattr(args, "raise_oom", False):
@@ -339,6 +341,7 @@ def attack(args):
                                "local_optimizer": obs.training.local_optimizer,
                                "client_update": create_federated_algorithm(obs.training).upload_type,
                                "knowledge": obs.training.knowledge, "batch_size": obs.training.batch_size,
+                               "token_lengths_known": obs.training.token_lengths_known,
                                "local_steps": obs.training.local_steps, "lora_rank": obs.training.lora_rank,
                                "gradient_accumulation_steps": obs.training.gradient_accumulation_steps,
                                "training_protocol": obs.training.training_protocol,

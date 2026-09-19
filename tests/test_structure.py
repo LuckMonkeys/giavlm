@@ -69,6 +69,10 @@ def test_preset_and_knowledge_validation(tmp_path):
     with pytest.raises(ValueError, match="Caption"):
         protocol_config(config)
 
+    known = protocol_config(configuration(tmp_path, "knowledge=private_lengths_known"))
+    assert known.training.knowledge == "private"
+    assert known.training.token_lengths_known is True
+
 
 def test_slake_llava_dlg_preset_uses_bfloat16_fedsgd(tmp_path):
     config = configuration(tmp_path, name="slake_llava_dlg_private")
@@ -79,6 +83,7 @@ def test_slake_llava_dlg_preset_uses_bfloat16_fedsgd(tmp_path):
     assert protocol.training.fine_tuning_strategy == "f_cl"
     assert protocol.training.algorithm == "fedsgd"
     assert protocol.attack.method == "dlg_adapted"
+    assert protocol.attack.max_evaluations is None
 
 
 @pytest.mark.parametrize("override", ["fed.secure_aggregation=true",
@@ -230,6 +235,9 @@ def test_factory_does_not_alias_closed_form_april():
     assert result.status == "not_implemented"
     with pytest.raises(ValueError, match="knowledge differs"):
         attacker.attack(observation.tensors, observation, AdversaryKnowledge("text_known"))
+    with pytest.raises(ValueError, match="token-length knowledge differs"):
+        attacker.attack(observation.tensors, observation,
+                        AdversaryKnowledge(token_lengths_known=True))
     with pytest.raises(ValueError, match="Unknown attack"):
         create_attacker(model, replace(AttackSpec(), method="typo"))
 

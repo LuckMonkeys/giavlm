@@ -90,6 +90,23 @@ class VLMAdapter(nn.Module, ABC):
             result.append(ids + [self.pad] * (length - len(ids)))
         return torch.tensor(result, device=self.device, dtype=torch.long)
 
+    def content_lengths(self, tokens: torch.Tensor):
+        """Return content-token counts for canonical hard token slots."""
+        if tokens.ndim != 2 or tokens.is_floating_point():
+            raise ValueError("Token lengths require a two-dimensional hard-token tensor")
+        lengths = []
+        for row in tokens.detach().cpu():
+            positions = (row == self.eos).nonzero(as_tuple=False).flatten()
+            if not len(positions):
+                raise ValueError("A fixed token slot must contain EOS")
+            length = int(positions[0])
+            if (row[:length] == self.pad).any():
+                raise ValueError("PAD before EOS is incompatible with contiguous token lengths")
+            if (row[length + 1:] != self.pad).any():
+                raise ValueError("Every token after EOS must be PAD")
+            lengths.append(length)
+        return lengths
+
     def decode(self, tokens: torch.Tensor):
         if tokens.ndim == 3:
             tokens = tokens.argmax(-1)

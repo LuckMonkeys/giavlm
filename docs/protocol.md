@@ -4,8 +4,9 @@
 
 The server passively observes an individual client's uploaded update and the
 current model. No template, crop location, private sample ID, source file path,
-question/answer length, optimizer hidden state, or ground-truth image is given
-to the attack. Model architecture/weights, tokenizer, task, fixed slot lengths,
+optimizer hidden state, or ground-truth image is given to the attack. Per-sample
+question/answer lengths are hidden unless `token_lengths_known` is enabled.
+Model architecture/weights, tokenizer, task, fixed slot lengths,
 preprocessing, optimizer hyperparameters, batch size, accumulation count and
 local optimizer step count are public.
 The fixture seed initializes only synthetic data and is not part of an attack
@@ -22,20 +23,27 @@ Knowledge conditions:
 
 Public text is the decoded sequence actually used by the model, after truncation.
 It is excluded from recovery scores. Model utility may use all task annotations.
+`token_lengths_known` is an independent capability: for VQA it publishes the
+post-truncation question and target content-token counts; for captioning it
+publishes only the target count. Counts exclude EOS/PAD. Since response-only loss
+is public and contiguous, the target count uniquely determines the private loss
+mask (content plus EOS); no mask is serialized.
 
 ## Native SFT V2
 
 `native-sft-v2` uses family-specific LLaVA, BLIP-2 and Qwen2.5-VL public prompt
 fragments and each checkpoint's image processor. Private question and response
-content still occupies fixed maximum slots so true lengths and loss masks are
-not exposed. Response-only causal loss includes EOS and excludes the prompt,
+content still occupies fixed maximum slots. True lengths remain hidden unless
+the explicit length capability is enabled. Response-only causal loss includes EOS and excludes the prompt,
 image positions, padding and positions after EOS. Hard one-hot and soft-token
 candidates share this path.
 
 For soft candidates, a token probability distribution supplies both input
 embeddings and shifted soft target labels. EOS survival is differentiable and
-comes from the candidate. The final slot is a public EOS bound; earlier EOS is
-unknown and optimized. Scoring/restart selection always replays **discrete**
+comes from the candidate. With unknown lengths, the final slot is a public EOS
+bound and earlier EOS is optimized. With known lengths, content positions remain
+trainable while EOS and subsequent PAD positions are fixed. Scoring/restart
+selection always replays **discrete**
 candidate tokens, rather than reporting a fractional-label gradient match as
 successful recovery. Pixel variables are constrained to [0,1].
 
@@ -85,7 +93,7 @@ exact trainable and uploaded parameter set an attacker must replay.
 
 ## Artifact Boundary
 
-Schema-v3 `Observation` contains model/training specifications, model fingerprint, named
+Schema-v4 `Observation` contains model/training specifications, model fingerprint, named
 update tensors and only explicitly public text. Loading verifies an allowlist,
 metadata digest, tensor-file hash and parameter names. Schema-v4 model checkpoints
 store only the strategy-owned mutable overlay in safetensors: connector for F-C,

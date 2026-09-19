@@ -96,14 +96,31 @@ python -m core.commands report ...
 
 ### 3.3 批量 Hydra 入口
 
-[utils/run_cmds.py](../utils/run_cmds.py) 读取 `run_yaml/*.yaml`。默认只打印即将执行的 argv，加入 `--execute` 后顺序运行：
+[utils/run_cmds.py](../utils/run_cmds.py) 读取 `run_yaml/*.yaml`。默认只打印完全展开的 argv；加入 `--execute` 且不指定 GPU 时顺序运行：
 
 ```bash
 python -m utils.run_cmds --cmd-config-yaml run_yaml/tiny_smoke.yaml
 python -m utils.run_cmds --cmd-config-yaml run_yaml/tiny_smoke.yaml --execute
+python -m utils.run_cmds --cmd-config-yaml run_yaml/a.yaml run_yaml/b.yaml \
+  --gpu-ids 0,1 --execute
 ```
 
-调度器不使用 shell 拼接，也不会启动 GPU 占用进程。指定 `--gpu-ids` 时，它用 `nvidia-smi` 检查显存并设置 `CUDA_VISIBLE_DEVICES`。
+指定 `--gpu-ids 0,1` 后，调度器会使用 `nvidia-smi` 轮询各卡可用显存，
+按 `resources.min_free_mib` 分配任务，并用 `max_jobs_per_gpu` 控制每卡并发数。
+没有满足条件的 GPU 时会持续等待。一个任务失败不会阻止其他任务，最终汇总文件
+`scheduler-results.json` 记录 argv、GPU、返回码、耗时和日志位置，只要有失败任务，
+调度器最终返回非零状态。
+
+`--cmd-config-yaml` 可一次接收多个文件，也兼容重复参数和逗号分隔路径。各文件
+按声明顺序合并，但必须具有相同的输出根目录和 scheduler 配置，且全局 job 名称
+不能重复；必要时用 `--output-root` 统一输出位置。
+
+现有 `name/config_name/overrides` job 仍固定进入 `examples.run_attack` 并自动获得独立
+输出目录。通用 job 使用互斥的 `module + args` 或 `script + args`。两种形式都通过
+argv 启动，不使用 shell 拼接、管道或 suffix。可在 `scheduler.occupancy` 显式配置
+Python 占用脚本；开启后，全部真实任务结束才会在每张 `--gpu-ids` 指定的卡上启动
+一个隔离进程，并持续监管到进程退出或 Ctrl+C。`{gpu}` 表示进程内的 `cuda:0`，
+`{physical_gpu}` 表示物理卡号。Ctrl+C 会终止所有子进程组。
 
 ## 4. Hydra 配置系统
 
@@ -119,7 +136,7 @@ python -m utils.run_cmds --cmd-config-yaml run_yaml/tiny_smoke.yaml --execute
 | `defense` | 上传前变换 | `name/max_norm/noise_multiplier/ratio` |
 | `fed` | 本地更新和联邦训练 | `algorithm/local_optimizer/local_steps/gradient_accumulation_steps/lr/rounds` |
 | `tuning` | FedVLMBench 微调策略 | `fine_tuning_strategy/two_stage_connector_rounds` |
-| `knowledge` | 攻击者知识 | `private/question_known/text_known` |
+| `knowledge` | 攻击者知识 | `name/token_lengths_known/template_known/server` |
 | `evaluation` | 可选评估器 | `lpips/clip/clip_model/clip_revision` |
 
 例如：
@@ -145,6 +162,7 @@ AdamW 的 beta 和 epsilon。
 Hydra model.checkpoint  -> ModelSpec.name
 Hydra data.task         -> TrainingSpec.task
 Hydra knowledge.name    -> TrainingSpec.knowledge
+Hydra knowledge.token_lengths_known -> TrainingSpec.token_lengths_known
 Hydra attack.name       -> AttackSpec.method
 Hydra fed.*             -> TrainingSpec.*
 Hydra tuning.*          -> TrainingSpec.*
@@ -236,7 +254,7 @@ Observation.tensors         {parameter_name: parameter-shaped tensor}
 | `blip2` | `Blip2Adapter` | vision encoder → Q-Former → language projection |
 | `qwen2_5_vl` | `QwenVLAdapter` | 官方风格 patchification → visual encoder + mRoPE |
 
-[core/adapters/hf.py](../core/adapters/hf.py) 负责共享的 Hugging Face 加载、tokenizer、模型原生公开 prompt 片段和图像预处理。私有问题和回答仍使用固定最大槽位，避免公开真实长度与 loss mask。
+[core/adapters/hf.py](../core/adapters/hf.py) 负责共享的 Hugging Face 加载、tokenizer、模型原生公开 prompt 片段和图像预处理。私有问题和回答仍使用固定最大槽位；默认不公开真实长度。`token_lengths_known=true` 时，Observation 仅公开截断后的内容 token 数，EOS/PAD 不计入长度，response mask 由公开的 response-only 规则推导而不单独保存。
 
 训练 loss 只覆盖 target token，包含 EOS，排除 padding 和 EOS 之后的位置：
 
@@ -355,7 +373,7 @@ upload = selected(Δθ)
 
 未知图像和未知文本通常交替更新；TAG 文本阶段使用 L2 + 0.01 L1 更新匹配。选择最佳迭代/重启时，统一使用离散候选的归一化更新残差和可选公开语言模型先验，不读取 reference 指标。LAMP 会周期性尝试 token 交换/移动，并用同一公开评分决定是否接受。
 
-预算同时限制 wall time 和 `max_evaluations`。成本输出区分优化迭代、候选更新重放、本地 backward 数、先验调用数、restart 和峰值 CUDA 显存。
+预算始终限制 wall time；`max_evaluations` 为非空整数时才额外限制候选更新重放次数，默认 `null`。成本输出仍区分优化迭代、候选更新重放、本地 backward 数、先验调用数、restart 和峰值 CUDA 显存。
 
 攻击 checkpoint 保存候选、优化器、CPU/CUDA RNG、最佳结果、历史和预算计数。恢复时会比较攻击配置、源码 fingerprint、模型、公开更新和公开文本，任一变化都会拒绝续跑。
 
@@ -433,7 +451,7 @@ tensor 文件哈希和完整模型 fingerprint。
 
 ```json
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "model": {},
   "training": {},
   "model_fingerprint": "...",
@@ -441,6 +459,8 @@ tensor 文件哈希和完整模型 fingerprint。
   "public_targets": [],
   "public_question_ids": [],
   "public_target_ids": [],
+  "public_question_lengths": [],
+  "public_target_lengths": [],
   "parameter_names": ["..."],
   "update_sha256": "...",
   "observation_id": "..."

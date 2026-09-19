@@ -44,6 +44,7 @@ class TrainingSpec:
     algorithm: str = "fedsgd"
     task: str = "vqa"
     knowledge: str = "private"
+    token_lengths_known: bool = False
     batch_size: int = 1
     local_steps: int = 1
     gradient_accumulation_steps: int = 1
@@ -88,7 +89,7 @@ class AttackSpec:
     method: str = "ig_adapted"
     text_method: str = "tag_adapted"
     iterations: int = 100
-    max_evaluations: int = 400
+    max_evaluations: int | None = None
     restarts: int = 1
     seconds: float = 3600.0
     seed: int = 0
@@ -152,6 +153,8 @@ def validate_training_config(training: TrainingSpec) -> None:
     _require_choice("training protocol", training.training_protocol, TRAINING_PROTOCOLS)
     _require_choice("knowledge condition", training.knowledge, KNOWLEDGE_CONDITIONS)
     _require_choice("task", training.task, TASK_TYPES)
+    if not isinstance(training.token_lengths_known, bool):
+        raise ValueError("training.token_lengths_known must be boolean")
     for name in ["batch_size", "local_steps", "gradient_accumulation_steps",
                  "clients", "clients_per_round"]:
         _require_positive(f"training.{name}", getattr(training, name))
@@ -178,8 +181,10 @@ def validate_training_config(training: TrainingSpec) -> None:
 def validate_attack_config(attack: AttackSpec) -> None:
     """Validate only controls required by every optimization run."""
     _require_choice("text method", attack.text_method, TEXT_METHODS)
-    for name in ["iterations", "max_evaluations", "restarts"]:
+    for name in ["iterations", "restarts"]:
         _require_positive(f"attack.{name}", getattr(attack, name))
+    if attack.max_evaluations is not None:
+        _require_positive("attack.max_evaluations", attack.max_evaluations)
     _require_positive("attack.seconds", attack.seconds)
 
 

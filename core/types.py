@@ -18,7 +18,7 @@ class Batch:
 
 @dataclass
 class Observation:
-    """Allowlisted attacker input. No sample IDs, paths, private masks or lengths."""
+    """Allowlisted attacker input with explicitly authorized text structure."""
 
     model: ModelSpec
     training: TrainingSpec
@@ -28,7 +28,9 @@ class Observation:
     public_targets: list[str] = field(default_factory=list)
     public_question_ids: list[list[int]] = field(default_factory=list)
     public_target_ids: list[list[int]] = field(default_factory=list)
-    schema_version: int = 3
+    public_question_lengths: list[int] = field(default_factory=list)
+    public_target_lengths: list[int] = field(default_factory=list)
+    schema_version: int = 4
 
     @property
     def sample_count(self):
@@ -37,9 +39,9 @@ class Observation:
     def validate(self):
         from core.config import Config, validate
         validate(Config(model=self.model, training=self.training))
-        if self.schema_version != 3:
+        if self.schema_version != 4:
             raise ValueError(
-                f"Unsupported observation schema v{self.schema_version}; expected schema v3")
+                f"Unsupported observation schema v{self.schema_version}; expected schema v4")
         if not self.tensors or any(not torch.isfinite(x).all() for x in self.tensors.values()):
             raise ValueError("Missing or nonfinite observed update")
         if self.training.knowledge == "private" and (self.public_questions or self.public_targets
@@ -60,6 +62,23 @@ class Observation:
         if self.training.knowledge == "text_known" and (len(self.public_target_ids) != self.sample_count or any(
                 len(row) != self.model.target_length for row in self.public_target_ids)):
             raise ValueError("Missing or malformed public target token slots")
+
+        lengths_known = self.training.token_lengths_known
+        question_lengths_required = lengths_known and self.training.task == "vqa"
+        self._validate_lengths("question", self.public_question_lengths,
+                               self.model.question_length, question_lengths_required)
+        self._validate_lengths("target", self.public_target_lengths,
+                               self.model.target_length, lengths_known)
+
+    def _validate_lengths(self, field, values, slot_length, required):
+        if not required:
+            if values:
+                raise ValueError(f"Unauthorized public {field} token lengths")
+            return
+        if len(values) != self.sample_count:
+            raise ValueError(f"Missing public {field} token lengths")
+        if any(type(value) is not int or not 0 <= value < slot_length for value in values):
+            raise ValueError(f"Malformed public {field} token lengths")
 
 
 @dataclass

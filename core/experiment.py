@@ -32,7 +32,8 @@ def protocol_config(config: DictConfig) -> Config:
     tuning = dict(value["tuning"])
     tuning.pop("name")
     fed.update(tuning)
-    fed.update(task=value["data"]["task"], knowledge=knowledge.name)
+    fed.update(task=value["data"]["task"], knowledge=knowledge.name,
+               token_lengths_known=knowledge.token_lengths_known)
     attack = dict(value["attack"])
     attack["method"] = attack.pop("name")
     evaluation = dict(value["evaluation"])

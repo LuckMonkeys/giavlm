@@ -58,8 +58,8 @@
 
 - [ ] 建立字段表，标注来源、形状、是否公开、由谁读取。
 - [ ] 解释同一图像的多条 QA 如何划分 split/client，以及 capture 的图像去重行为。
-- [ ] 比较 private/question_known/text_known 下攻击者可见字段的变化。
-- [ ] 确认真实图像、私有 QA、私有长度与参考 mask 不进入攻击接口。
+- [ ] 比较 private/question_known/text_known 以及 token_lengths_known 下攻击者可见字段的变化。
+- [ ] 确认真实图像、私有 QA 与参考 mask 不进入攻击接口，私有长度只在显式授权时公开。
 
 ### 阶段三：理解训练损失与联邦观测
 

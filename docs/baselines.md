@@ -6,12 +6,12 @@ original paper. Tune hyperparameters only on the designated tuning image groups.
 
 | Name | Implemented mechanism | Explicit changes/conditions |
 |---|---|---|
-| dlg_adapted | Sum of squared parameter-gradient residuals; L-BFGS | Soft autoregressive targets and unknown EOS; one inner L-BFGS step per outer iteration |
+| dlg_adapted | Sum of squared parameter-gradient residuals; L-BFGS | Soft autoregressive targets; optimized EOS by default or fixed EOS under `token_lengths_known`; one inner L-BFGS step per outer iteration |
 | ig_adapted | Global cosine residual, TV, Adam, signed image gradients | Alternating private text steps; selected common text component |
 | april_adapted | Squared residual plus positional-gradient cosine | Optimization variant only; no closed-form or classification label rule; gradient uploads and learned visual positions required |
 | gradvit_adapted | Layer L2 residual, external CNN BN statistics, patch-edge prior, TV, two-stage loss schedule | Explicit local prior checkpoint; no registration ensemble; classification labels replaced by text candidates |
 | gi_dqa_adapted | Layer mean-square plus cosine residual, spatial/channel TV, Laplacian and Gaussian terms, early cosine-decayed priors | Entire RGB image from noise; no template or region mask; public/optimized text component instead of legacy extraction |
-| tag_adapted | Soft token optimization using L2 + 0.01 L1 matching on text steps | Fixed public length bound and optimized EOS; no true labels or embedding-row oracle |
+| tag_adapted | Soft token optimization using L2 + 0.01 L1 matching on text steps | Fixed public length bound; EOS optimized unless lengths are explicitly public; no true labels or embedding-row oracle |
 | lamp_adapted | Continuous token candidates plus discrete swap/move proposals scored with update residual and public LM NLL | Soft vocabulary coordinates, two permutation proposals per field, autoregressive VLM targets; not original BERT code |
 
 Visual optimization and textual optimization alternate for Adam-based variants.

@@ -18,15 +18,19 @@
   `evaluation/` alone joins attack outputs to private reference artifacts.
 - There is no compatibility import layer. Every module is imported from its
   owning top-level package; the staged CLI runs as `python -m core.commands`.
-- `utils/run_cmds.py` runs explicit Hydra jobs from `run_yaml/`, sequentially,
-  with argv arrays and no shell execution or GPU occupancy jobs.
+- `utils/run_cmds.py` runs structured benchmark/module/script jobs from
+  `run_yaml/`. Without GPU IDs it is serial; explicit GPU IDs enable
+  memory-aware parallel scheduling. Keep argv execution and never add shell
+  execution. GPU occupancy is explicit, post-run only, and process-supervised.
 
 ## Privacy and Research Contracts
 
-- Never pass reference images, private text, image/sample IDs, data paths,
-  private sequence lengths or reference loss masks to an attacker.
+- Never pass reference images, private text, image/sample IDs, data paths, or
+  reference loss masks to an attacker. Private sequence lengths are public only
+  when the validated `token_lengths_known` capability explicitly authorizes them.
 - `AdversaryKnowledge` is an explicit assumption, validated against the public
-  `Observation`. Only `question_known`/`text_known` authorize exact public text.
+  `Observation`. Only `question_known`/`text_known` authorize exact public text;
+  only `token_lengths_known` authorizes per-sample content-token lengths.
 - `BaseAttacker.attack` returns `Reconstruction`, not ground truth. Evaluation
   reads truth only after reconstruction is committed. Python type boundaries
   are not an OS sandbox; use a separate user/container for stronger isolation.

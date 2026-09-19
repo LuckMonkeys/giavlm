@@ -12,7 +12,7 @@ from core.adapters.hf import HFAdapter
 from core.adapters.tiny_llava import TinyTokenizer
 
 
-def hf_fixture(family, strategy):
+def hf_fixture(family, strategy, token_lengths_known=False):
     from transformers import (Blip2Config, Blip2ForConditionalGeneration, Blip2QFormerConfig,
                               Blip2VisionConfig, CLIPVisionConfig, LlamaConfig, LlavaConfig,
                               LlavaForConditionalGeneration, OPTConfig, Qwen2_5_VLConfig,
@@ -55,7 +55,8 @@ def hf_fixture(family, strategy):
         model = Qwen2_5_VLForConditionalGeneration(config)
     processor = SimpleNamespace(tokenizer=TinyTokenizer(),
                                  image_processor=SimpleNamespace(image_mean=[0.5] * 3, image_std=[0.5] * 3))
-    training = TrainingSpec(fine_tuning_strategy=strategy)
+    training = TrainingSpec(fine_tuning_strategy=strategy,
+                            token_lengths_known=token_lengths_known)
     adapter = HFAdapter(ModelSpec(family=family, revision="test-fixture"), training,
                          backend=model, processor=processor)
     adapter.configure_training()
@@ -82,6 +83,20 @@ def test_actual_hf_architectures_allow_second_order(family, strategy):
         assert any(any(part in name for part in ("mlp", "fc1", "fc2")) for name in targets)
         assert not any(any(part in name.lower() for part in (
             "vision", "visual", "qformer", "projector", "lm_head")) for name in targets)
+
+
+@pytest.mark.parametrize("family", ["llava", "blip2", "qwen2_5_vl"])
+def test_hf_known_lengths_allow_second_order_text_recovery(family):
+    adapter = hf_fixture(family, "f_cl", token_lengths_known=True)
+    batch = adapter.batch(torch.rand(1, 3, 8, 8), ["what color"], ["red"])
+    observation = capture(adapter, batch, [], [])
+    candidate = Candidate(adapter, observation, 34)
+    predicted = simulate_update(adapter, candidate.batch(), adapter.training_spec, True)
+    objective = matching_loss(predicted, observation.tensors, "l2")
+    gradients = torch.autograd.grad(objective, tuple(candidate.parameters()))
+    by_name = dict(zip((name for name, _ in candidate.named_parameters()), gradients, strict=True))
+    assert by_name["questions"].isfinite().all() and by_name["questions"].norm() > 0
+    assert by_name["targets"].isfinite().all() and by_name["targets"].norm() > 0
 
 
 def test_qwen_patchification_matches_processor():

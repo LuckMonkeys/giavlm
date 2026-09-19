@@ -59,6 +59,7 @@ the attack, and evaluates committed output:
 python examples/run_attack.py --cfg job --resolve
 python examples/run_attack.py attack.iterations=20 output_dir=outputs/toy
 python examples/run_attack.py fed=fedavg tuning=f_cl knowledge=question_known defense=clipping
+python examples/run_attack.py knowledge=private_lengths_known
 python examples/run_attack.py --config-name vqav2_llava_ig_private data.manifest=/datasets/prepared/samples.jsonl
 ```
 
@@ -76,12 +77,56 @@ python examples/run_attack.py num_runs=3 output_dir=outputs/repeated
 python examples/run_attack.py num_runs=5 start_run_id=3 resume=true output_dir=outputs/repeated
 python -m utils.run_cmds --cmd-config-yaml run_yaml/tiny_smoke.yaml
 python -m utils.run_cmds --cmd-config-yaml run_yaml/tiny_smoke.yaml --execute
+python -m utils.run_cmds --cmd-config-yaml run_yaml/sweep_a.yaml run_yaml/sweep_b.yaml \
+  --gpu-ids 0,1 --execute
+python -m utils.run_cmds --cmd-config-yaml run_yaml/tiny_smoke.yaml \
+  --gpu-ids 0,1 --max-jobs-per-gpu 1 --min-free-mib 40000 --execute
 ```
 
 Hydra also supports `-m attack=ig_adapted,dlg_adapted knowledge=private,text_known`.
 Use Hydra's default per-job output directories for sweeps, not one shared explicit
-`output_dir`. The YAML scheduler is sequential and dry-run by default. GPU use is
-explicit via `--gpu-ids 0,1`; it has no background occupancy behavior.
+`output_dir`. The YAML scheduler is dry-run by default. Without `--gpu-ids` it
+runs serially; explicit GPU IDs enable parallel scheduling after each job's free
+memory threshold is met. It waits for memory indefinitely, continues after an
+individual job fails, and writes `scheduler-results.json` plus per-job logs under
+the configured output root. Multiple YAML files are merged in declaration order;
+they must resolve to the same output root and scheduler settings, and job names
+must be unique across files. Repeating `--cmd-config-yaml` and comma-separated
+paths are also accepted.
+
+Schedules retain the benchmark shorthand and can also run another Python module
+or script with structured arguments:
+
+```yaml
+output_root: ../outputs/batch
+scheduler:
+  min_free_mib: 10000
+  max_jobs_per_gpu: 2
+  poll_seconds: 30
+  occupancy:
+    enabled: false
+    script: /home/zx/nas/gpu/train_stealth.py
+    args: [--model_size, xlarge, --batch_size, "70", --gpu_util, "0.6",
+           --gpu, "{gpu}"]
+    poll_seconds: 30
+jobs:
+  - name: benchmark
+    config_name: slake_llava_dlg_private
+    overrides: [knowledge=private]
+    resources: {min_free_mib: 50000}
+  - name: analysis
+    module: analyze.gradient_inspect
+    args: [--config-name, inspect_llava]
+    resources: {min_free_mib: 20000}
+```
+
+Use exactly one of `module` or `script` for a generic job. All arguments are argv
+items; shell syntax, pipes and command suffixes are intentionally unsupported.
+GPU occupancy is opt-in and requires explicit `--gpu-ids`. It starts one process
+per selected GPU only after all real jobs finish, then keeps the scheduler alive
+until the processes exit or Ctrl+C stops them. `CUDA_VISIBLE_DEVICES` isolates each
+process; `{gpu}` expands to its local index `0`, while `{physical_gpu}` expands to
+the host GPU index. Occupancy status and logs are included in the scheduler result.
 
 `fed.rounds=0` captures the initial model. Set `fed.rounds>0` to train first.
 `model_snapshot=/path/to/round-0010` selects an existing checkpoint; when combined
@@ -144,7 +189,9 @@ all annotator answers remain available to the utility evaluator only.
 Preprocessing is a deterministic bicubic center crop to a public square size.
 Reconstruction metrics concern this actual model input, not unseen cropped-out
 pixels. Fixed question/target blocks include a public maximum-length EOS;
-private lengths, EOS locations and padding masks are never exported.
+private lengths are hidden by default. `knowledge=private_lengths_known` exposes
+the post-truncation question/target content-token counts, excluding EOS/PAD.
+The response-only rule then determines the loss mask without exporting it.
 
 ## Pretrained Models and Federation
 

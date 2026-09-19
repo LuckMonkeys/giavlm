@@ -1,7 +1,7 @@
 name: ig_adapted
 text_method: tag_adapted
 iterations: 100
-max_evaluations: 400
+max_evaluations: null
 restarts: 1
 seconds: 3600.0
 seed: 0
