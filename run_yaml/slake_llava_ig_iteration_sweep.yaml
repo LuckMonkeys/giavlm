@@ -1,0 +1,81 @@
+output_root: ../outputs/slake_llava_ig_parameter_sweep/iterations
+
+scheduler:
+  min_free_mib: 50000
+  max_jobs_per_gpu: 1
+  poll_seconds: 30
+  occupancy:
+    enabled: false
+    script: /home/zx/nas/gpu/train_stealth.py
+    args:
+      - --model_size
+      - xlarge
+      - --batch_size
+      - "70"
+      - --gpu_util
+      - "0.4"
+    poll_seconds: 30
+
+jobs:
+  - name: iterations_500
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - knowledge=text_known
+      - tuning=f_c
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=none
+      - attack.iterations=500
+      - attack.lr=0.003
+      - attack.text_lr=0.03
+      - attack.tv=0.1
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+
+  - name: iterations_1000
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - knowledge=text_known
+      - tuning=f_c
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=none
+      - attack.iterations=1000
+      - attack.lr=0.003
+      - attack.text_lr=0.03
+      - attack.tv=0.1
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+
+  - name: iterations_2000
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - knowledge=text_known
+      - tuning=f_c
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=none
+      - attack.iterations=2000
+      - attack.lr=0.003
+      - attack.text_lr=0.03
+      - attack.tv=0.1
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
