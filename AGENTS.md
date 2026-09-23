@@ -1,71 +1,69 @@
 # Repository Instructions
 
-## Active Entry and Ownership
+FedVLM gradient-inversion benchmark. Entry: `python examples/run_attack.py`
+(`core.experiment.main`, Hydra groups in `configs/`); staged CLI:
+`python -m core.commands`. Read `docs/PROJECT_HANDOFF.md` next for current state.
 
-- Canonical experiment entry: `python examples/run_attack.py`, backed by
-  `core.experiment.main` and real Hydra configuration groups in `configs/`.
-- `core/` owns protocol dataclasses, public observations, model adapters,
-  client updates, data preparation, artifacts, and experiment lifecycle.
-- `core/aggregation.py` owns high-level federated algorithms: client computation,
-  upload semantics, server aggregation, and global-model application. Keep those
-  stages explicit; register new algorithms in `create_federated_algorithm`. A
-  stateful server rule must add JSON/safetensors checkpoint recovery first.
-- `attacks/optim/engine.py` owns optimization, budget accounting and checkpoint
-  recovery. Method modules own objective/prior combinations. Use explicit
-  registration in `attacks/factory.py`; never alias original paper names to
-  `*_adapted` methods.
-- `defenses/` owns upload transforms. `metrics/` owns metric implementations;
-  `evaluation/` alone joins attack outputs to private reference artifacts.
-- There is no compatibility import layer. Every module is imported from its
-  owning top-level package; the staged CLI runs as `python -m core.commands`.
-- `utils/run_cmds.py` runs structured benchmark/module/script jobs from
-  `run_yaml/`. Without GPU IDs it is serial; explicit GPU IDs enable
-  memory-aware parallel scheduling. Keep argv execution and never add shell
-  execution. GPU occupancy is explicit, post-run only, and process-supervised.
+Docs: `docs/protocol.md` (threat model, artifacts, boundaries) ·
+`docs/project_architecture.md` (Chinese code walkthrough) · `docs/validation.md` ·
+`docs/baselines.md` (paper fidelity). The legacy
+`GI-DQA-Gradient-Inversion-of-Multimodal-Models/` and `llm_privacy_eval` are
+read-only references.
 
-## Privacy and Research Contracts
+## Ownership
 
-- Never pass reference images, private text, image/sample IDs, data paths, or
-  reference loss masks to an attacker. Private sequence lengths are public only
-  when the validated `token_lengths_known` capability explicitly authorizes them.
-- `AdversaryKnowledge` is an explicit assumption, validated against the public
-  `Observation`. Only `question_known`/`text_known` authorize exact public text;
-  only `token_lengths_known` authorizes per-sample content-token lengths.
-- `BaseAttacker.attack` returns `Reconstruction`, not ground truth. Evaluation
-  reads truth only after reconstruction is committed. Python type boundaries
-  are not an OS sandbox; use a separate user/container for stronger isolation.
-- An unimplemented attack degrades to `Reconstruction("not_implemented")` so a
-  sweep records the empty cell; an unimplemented defense raises instead, because
-  a defense is part of the condition and continuing would mislabel the row.
-  `attacks/registry.py` is the single source of truth for the method surface and
-  is asserted to cover every name `attacks/factory.py` accepts.
-- Report unsupported or unimplemented conditions honestly. Closed-form APRIL,
-  iDLG, DAGER, H3 embedding recovery and active-server attacks are not implemented.
-- Uploaded defenses currently use defense-unaware raw-update matching; this
-  must remain explicit in the output condition. Gaussian perturbation is not
-  a certified DP implementation: no privacy accountant or epsilon is provided.
-- Runs execute serially. On any exception, save the failed run state and re-raise
-  immediately so the experiment stops; do not automatically retry OOM failures or
-  alter batch size, update mode, local steps, dtype, task, or knowledge.
-- Preserve deterministic image-group splits and shared initial LoRA bases.
-  Numerical secure aggregation is not cryptography, nor aggregate inversion.
-- Select candidates using observable update/prior scores, never reference metrics.
-- Use safetensors and JSON for artifacts; do not introduce pickle checkpoints.
+- `core/`: protocol dataclasses, observations, adapters, client updates, data,
+  artifacts, lifecycle. No compatibility import layer; import from owning package.
+- `core/aggregation.py`: federated algorithms. Keep client/upload/aggregate/apply
+  stages explicit; register in `create_federated_algorithm`. A stateful server
+  rule needs JSON/safetensors checkpoint recovery first.
+- `attacks/optim/engine.py`: optimization, budgets, checkpoints. Method modules own
+  objective/prior combinations, registered explicitly in `attacks/factory.py`.
+  `attacks/registry.py` is the single source of truth for the method surface.
+  Never alias original paper names to `*_adapted` methods.
+- `defenses/`: upload transforms. `metrics/`: metrics. Only `evaluation/` joins
+  attack outputs with private references.
+- `utils/run_cmds.py`: argv-only job runner for `run_yaml/`; never add shell
+  execution. `run.sh` is a notebook of copyable one-liners, not a script.
 
-## Configuration and Recovery
+## Hard Rules
 
-- Runtime is Hydra `DictConfig`; `core.config.Config` is the strict serialized
-  protocol schema. Translate only through `protocol_config`.
-- Groups: `data`, `model`, `attack`, `defense`, `fed`, `knowledge`, `evaluation`.
-  Model `name` is a path-safe label; `checkpoint` is the actual model identifier.
-- Top-level presets use `<data>_<model>_<attack>_<knowledge>.yaml`.
-- `num_runs` is the exclusive stop run ID, not number of additional runs.
-  `start_run_id` selects the first requested batch. `resume=true` requires the
-  same output directory and matching source/protocol/data fingerprints.
-- Preserve unrelated artifacts in `outputs/`, `runs/`, and private datasets.
-  Do not share `capture/private/` or resolved private dataset paths in reports.
+- Never give an attacker reference images, private text, sample/image IDs, data
+  paths, or reference loss masks. Public text requires `question_known`/`text_known`;
+  per-sample token lengths require `token_lengths_known`.
+- Attacks return `Reconstruction`, never truth; evaluation reads truth only after
+  the reconstruction is committed. Select candidates by observable update/prior
+  scores, never by reference metrics.
+- Unimplemented attack → `Reconstruction("not_implemented")`; unimplemented
+  defense → raise. Report unsupported conditions honestly and never overclaim
+  (see `protocol.md#Experimental Boundaries`: no certified DP, no crypto secure
+  aggregation, defense-unaware matching must stay visible in the condition).
+  Not implemented: closed-form APRIL, iDLG, DAGER, H3 embedding recovery,
+  active-server attacks.
+- Fail fast: on any exception save failed-run state and re-raise. Never retry OOM
+  or silently change batch size, update mode, local steps, dtype, task, knowledge.
+- Keep deterministic image-group splits and shared initial LoRA bases.
+- Artifacts are safetensors + JSON only; no pickle.
+- Preserve unrelated files in `outputs/`, `runs/`, private datasets, and
+  uncommitted work. Never share `capture/private/` or resolved private paths.
 
-## Validation
+## Configuration
+
+- Hydra `DictConfig` enters strict `core.config.Config` only via `protocol_config`.
+- Groups: `data`, `model`, `attack`, `defense`, `fed` (algorithm + client
+  optimizer), `tuning` (F-C/F-L/F-CL/F-2stage), `knowledge`, `evaluation`.
+  Model `name` is a path label; `checkpoint` is the real identifier.
+- Presets: `<data>_<model>_<attack>_<knowledge>.yaml`.
+- `num_runs` is the exclusive stop run ID; `start_run_id` is the first. `resume=true`
+  needs the same output dir and matching source/protocol/data fingerprints.
+- Model overlays and `Observation` are schema v4: reject older schemas, never
+  migrate silently. Attack checkpoints version their schema independently.
+
+## Environment and Validation
+
+- GPU experiments: Conda env `gia` (CUDA, cached pinned weights).
+- CPU tests: `/tmp/giavlm-venv`. System Python lacks the stack. Do not repair or
+  replace unrelated Conda environments.
 
 ```bash
 python -m pytest -q
@@ -75,10 +73,9 @@ python examples/run_attack.py attack.iterations=2 attack.checkpoint_interval=1
 python -m utils.run_cmds --cmd-config-yaml run_yaml/tiny_smoke.yaml
 ```
 
-The checkout's validated CPU environment is `/tmp/giavlm-venv`; system Python
-does not have the required stack. Do not repair or replace unrelated Conda
-environments. Real pretrained GPU experiments require a working CUDA driver,
-pinned cached model weights, and optional pretrained metric/prior weights.
+## Session Start
 
-The legacy `GI-DQA-Gradient-Inversion-of-Multimodal-Models/` and neighboring
-`llm_privacy_eval` repository are references, not modules to edit for this project.
+Before acting, check `git status`, recent commits, the process table, and GPU
+state. A scheduler row marked `running` does not prove the process is alive.
+Update `docs/PROJECT_HANDOFF.md` after major commits, experiment phases, or
+direction changes; keep transient state there, not here.

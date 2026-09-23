@@ -103,6 +103,10 @@ the complete model fingerprint. Attack callbacks do not receive references.
 Evaluation verifies that its reference artifact has the same observation ID as the
 reconstruction.
 
+In an attack `result.json`, `questions` (when the question is private) and
+`targets` are reconstructed text, and `images.safetensors` / `image-*.png` are
+reconstructed images. None of them is ground truth.
+
 Result artifacts include a method/config signature, model state, attack seed,
 actual update/local-backward/prior evaluation counts, runtime, memory, and status.
 Optimizer recovery is serialized as JSON plus safetensors (no pickle). Immutable
