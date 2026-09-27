@@ -1,0 +1,212 @@
+# Diagnostic outside the threat model: the F-L reference-init grid at trained global states.
+# Snapshots from outputs/federation/slake_llava_f_l_fedavg (1 client, FedAvg + AdamW, lr 1e-4,
+# effective batch 8, 10 local steps/round). Capture protocol is unchanged (FedSGD, batch 1,
+# text_known, bf16 victim); server_round comes from the snapshot, so LoRA A gradients are nonzero.
+output_root: ../outputs/diagnostics/reference_init_trained
+
+scheduler:
+  min_free_mib: 36000  # F-L attack pilot peak was 32 GB
+  max_jobs_per_gpu: 1
+  poll_seconds: 30
+
+jobs:
+  - name: f_l_r5_mix0p01
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - model_snapshot=outputs/federation/slake_llava_f_l_fedavg/round-0005
+      - knowledge=text_known
+      - tuning=f_l
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=none
+      - attack.iterations=2000
+      - attack.lr=0.003
+      - attack.text_lr=0.03
+      - attack.tv=0.1
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - evaluation.trajectory=true
+      - attack.init_source=private_reference
+      - attack.init_perturbation=uniform_mix
+      - attack.init_level=0.01
+  - name: f_l_r5_mix0p03
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - model_snapshot=outputs/federation/slake_llava_f_l_fedavg/round-0005
+      - knowledge=text_known
+      - tuning=f_l
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=none
+      - attack.iterations=2000
+      - attack.lr=0.003
+      - attack.text_lr=0.03
+      - attack.tv=0.1
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - evaluation.trajectory=true
+      - attack.init_source=private_reference
+      - attack.init_perturbation=uniform_mix
+      - attack.init_level=0.03
+  - name: f_l_r5_mix0p1
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - model_snapshot=outputs/federation/slake_llava_f_l_fedavg/round-0005
+      - knowledge=text_known
+      - tuning=f_l
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=none
+      - attack.iterations=2000
+      - attack.lr=0.003
+      - attack.text_lr=0.03
+      - attack.tv=0.1
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - evaluation.trajectory=true
+      - attack.init_source=private_reference
+      - attack.init_perturbation=uniform_mix
+      - attack.init_level=0.1
+  - name: f_l_r5_mix0p25
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - model_snapshot=outputs/federation/slake_llava_f_l_fedavg/round-0005
+      - knowledge=text_known
+      - tuning=f_l
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=none
+      - attack.iterations=2000
+      - attack.lr=0.003
+      - attack.text_lr=0.03
+      - attack.tv=0.1
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - evaluation.trajectory=true
+      - attack.init_source=private_reference
+      - attack.init_perturbation=uniform_mix
+      - attack.init_level=0.25
+  - name: f_l_r10_mix0p01
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - model_snapshot=outputs/federation/slake_llava_f_l_fedavg/round-0010
+      - knowledge=text_known
+      - tuning=f_l
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=none
+      - attack.iterations=2000
+      - attack.lr=0.003
+      - attack.text_lr=0.03
+      - attack.tv=0.1
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - evaluation.trajectory=true
+      - attack.init_source=private_reference
+      - attack.init_perturbation=uniform_mix
+      - attack.init_level=0.01
+  - name: f_l_r10_mix0p03
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - model_snapshot=outputs/federation/slake_llava_f_l_fedavg/round-0010
+      - knowledge=text_known
+      - tuning=f_l
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=none
+      - attack.iterations=2000
+      - attack.lr=0.003
+      - attack.text_lr=0.03
+      - attack.tv=0.1
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - evaluation.trajectory=true
+      - attack.init_source=private_reference
+      - attack.init_perturbation=uniform_mix
+      - attack.init_level=0.03
+  - name: f_l_r10_mix0p1
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - model_snapshot=outputs/federation/slake_llava_f_l_fedavg/round-0010
+      - knowledge=text_known
+      - tuning=f_l
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=none
+      - attack.iterations=2000
+      - attack.lr=0.003
+      - attack.text_lr=0.03
+      - attack.tv=0.1
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - evaluation.trajectory=true
+      - attack.init_source=private_reference
+      - attack.init_perturbation=uniform_mix
+      - attack.init_level=0.1
+  - name: f_l_r10_mix0p25
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - model_snapshot=outputs/federation/slake_llava_f_l_fedavg/round-0010
+      - knowledge=text_known
+      - tuning=f_l
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=none
+      - attack.iterations=2000
+      - attack.lr=0.003
+      - attack.text_lr=0.03
+      - attack.tv=0.1
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - evaluation.trajectory=true
+      - attack.init_source=private_reference
+      - attack.init_perturbation=uniform_mix
+      - attack.init_level=0.25

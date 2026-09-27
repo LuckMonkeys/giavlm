@@ -1,0 +1,159 @@
+# Diagnostic outside the threat model: IG started from the victim's own image mixed with
+# uniform noise (init_source=private_reference). Same captures as the iteration sweep.
+# Results are labeled by init_source and must not enter benchmark conclusions.
+# mix0p03_bf16 repeats mix0p03 with bf16 candidate images (the pre-fix precision).
+# Wrong-update control: staged `core.commands attack --wrong-observation` on these captures.
+output_root: ../outputs/diagnostics/reference_init
+
+scheduler:
+  min_free_mib: 50000
+  max_jobs_per_gpu: 1
+  poll_seconds: 30
+
+jobs:
+  - name: mix0p01
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - knowledge=text_known
+      - tuning=f_c
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=none
+      - attack.iterations=2000
+      - attack.lr=0.003
+      - attack.text_lr=0.03
+      - attack.tv=0.1
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - evaluation.trajectory=true
+      - attack.init_source=private_reference
+      - attack.init_perturbation=uniform_mix
+      - attack.init_level=0.01
+  - name: mix0p03
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - knowledge=text_known
+      - tuning=f_c
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=none
+      - attack.iterations=2000
+      - attack.lr=0.003
+      - attack.text_lr=0.03
+      - attack.tv=0.1
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - evaluation.trajectory=true
+      - attack.init_source=private_reference
+      - attack.init_perturbation=uniform_mix
+      - attack.init_level=0.03
+  - name: mix0p1
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - knowledge=text_known
+      - tuning=f_c
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=none
+      - attack.iterations=2000
+      - attack.lr=0.003
+      - attack.text_lr=0.03
+      - attack.tv=0.1
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - evaluation.trajectory=true
+      - attack.init_source=private_reference
+      - attack.init_perturbation=uniform_mix
+      - attack.init_level=0.1
+  - name: mix0p25
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - knowledge=text_known
+      - tuning=f_c
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=none
+      - attack.iterations=2000
+      - attack.lr=0.003
+      - attack.text_lr=0.03
+      - attack.tv=0.1
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - evaluation.trajectory=true
+      - attack.init_source=private_reference
+      - attack.init_perturbation=uniform_mix
+      - attack.init_level=0.25
+  - name: mix0p03_prior_only
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - knowledge=text_known
+      - tuning=f_c
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=none
+      - attack.iterations=2000
+      - attack.lr=0.003
+      - attack.text_lr=0.03
+      - attack.tv=0.1
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - evaluation.trajectory=true
+      - attack.init_source=private_reference
+      - attack.init_perturbation=uniform_mix
+      - attack.init_level=0.03
+      - attack.name=prior_only
+  - name: mix0p03_bf16
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - knowledge=text_known
+      - tuning=f_c
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=none
+      - attack.iterations=2000
+      - attack.lr=0.003
+      - attack.text_lr=0.03
+      - attack.tv=0.1
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - evaluation.trajectory=true
+      - attack.init_source=private_reference
+      - attack.init_perturbation=uniform_mix
+      - attack.init_level=0.03
+      - attack.image_dtype=bfloat16

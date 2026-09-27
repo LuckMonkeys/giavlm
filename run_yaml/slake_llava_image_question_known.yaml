@@ -1,0 +1,88 @@
+# Text leakage on SLAKE + LLaVA-1.5-7B (F-C, FedSGD, batch 1) with the image public.
+# image_question_known: only the answer is private (upper bound on answer leakage);
+# image_known: question and answer private. The *_reference_* job starts from the
+# private answer with half its tokens replaced: a labeled diagnostic, not a benchmark result.
+output_root: ../outputs/slake_llava_text_leakage
+
+scheduler:
+  min_free_mib: 50000
+  max_jobs_per_gpu: 1
+  poll_seconds: 30
+
+jobs:
+  - name: iqk_random
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - tuning=f_c
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=tag_adapted
+      - attack.iterations=2000
+      - attack.text_lr=0.15
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - knowledge=image_question_known
+  - name: iqk_lengths_known
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - tuning=f_c
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=tag_adapted
+      - attack.iterations=2000
+      - attack.text_lr=0.15
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - knowledge=image_question_known
+      - knowledge.token_lengths_known=true
+  - name: ik_random
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - tuning=f_c
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=tag_adapted
+      - attack.iterations=2000
+      - attack.text_lr=0.15
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - knowledge=image_known
+  - name: iqk_reference_replace0p5
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - tuning=f_c
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=tag_adapted
+      - attack.iterations=2000
+      - attack.text_lr=0.15
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - knowledge=image_question_known
+      - attack.init_text_source=private_reference
+      - attack.init_text_perturbation=replace
+      - attack.init_text_level=0.5
