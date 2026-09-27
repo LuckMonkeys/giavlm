@@ -3,8 +3,10 @@
 ## Threat Model
 
 The server passively observes an individual client's uploaded update and the
-current model. No template, crop location, private sample ID, source file path,
-optimizer hidden state, or ground-truth image is given to the attack. Per-sample
+current model. No crop location, private sample ID, source file path,
+optimizer hidden state, or private image is given to the attack. By default
+candidates start from uniform noise; attacker-held start images are a declared
+condition (see Attack Initialization). Per-sample
 question/answer lengths are hidden unless `token_lengths_known` is enabled.
 Model architecture/weights, tokenizer, task, fixed slot lengths,
 preprocessing, optimizer hyperparameters, batch size, accumulation count and
@@ -20,6 +22,15 @@ Knowledge conditions:
 | private | Image, question, target private | Image and target private |
 | question_known | Question public; image/target private | Not applicable |
 | text_known | Question/target public; image private | Target public; image private |
+| image_known | Image public; question/target private | Image public; target private |
+| image_question_known | Image/question public; target private | Not applicable |
+
+Each condition is a set of public fields (`KNOWLEDGE_FIELDS` in `core/config.py`).
+A public field is a fixed input of the attack, never optimized and never scored;
+evaluation lists the scored fields in `scored_fields`. A public image travels in
+the observation as `public_images.safetensors`, exactly the preprocessed view the
+client trained on. `image_question_known` isolates answer leakage, the most
+attack-favorable text condition and hence an upper bound on text recovery.
 
 Public text is the decoded sequence actually used by the model, after truncation.
 It is excluded from recovery scores. Model utility may use all task annotations.
@@ -28,6 +39,52 @@ post-truncation question and target content-token counts; for captioning it
 publishes only the target count. Counts exclude EOS/PAD. Since response-only loss
 is public and contiguous, the target count uniquely determines the private loss
 mask (content plus EOS); no mask is serialized.
+
+## Attack Initialization
+
+The start image is attacker knowledge like the text conditions above: it can make
+a reconstruction resemble the reference with no help from the gradient. It is
+therefore a recorded condition, never an implementation detail.
+
+| `attack.init_source` | Start images | Use |
+|---|---|---|
+| `random` (default) | Uniform noise | Benchmark |
+| `public_image` | `attack.init_images`: attacker-held images (safetensors `images`, one file, or a directory), e.g. a public same-modality template | Benchmark, as a stronger threat model |
+| `private_reference` | The victim's own private images; defaults to the capture's `private/images.safetensors` | Diagnostic only; never a benchmark conclusion |
+
+Private text has the matching `attack.init_text_source`:
+
+| `attack.init_text_source` | Start tokens | Use |
+|---|---|---|
+| `random` (default) | Near-uniform logits | Benchmark |
+| `public_text` | `attack.init_question` / `attack.init_target` templates, each applied to its private field only | Benchmark, as a stronger threat model |
+| `private_reference` | The capture's own raw question/target, re-encoded exactly as captured | Diagnostic only |
+
+A start token becomes logits `init_text_scale · one_hot(id)` plus the usual small
+noise. `attack.init_text_perturbation=replace` swaps each content token for a
+random non-special token with probability `init_text_level`; EOS/PAD positions are
+kept, so a start adds no length information beyond its source. An initialization
+must target a private field: an image start with a public image, or a text start
+with all text public, is rejected.
+
+Private candidate images are optimized as a master copy in `attack.image_dtype`
+(default `float32`) and cast to the victim dtype only in the forward pass. The
+victim model, its dtype and the observed update are unchanged. With a bfloat16
+master copy, Adam/sign steps below about 0.004 round away for pixels at or above
+0.5; runs made before this setting existed used the victim dtype and are
+reproduced only with `attack.image_dtype=bfloat16`.
+
+`attack.init_perturbation` (`uniform_mix`, `gaussian`, `blur`) and
+`attack.init_level` perturb the start deterministically per restart; `uniform_mix`
+level 1 is pure noise. The result condition records `init_source`, perturbation,
+level and the start-image hash, so reports never pool different starts. Every
+attack writes its actual start to `init.safetensors`; evaluation reports it as
+`init_*` metrics, so the gradient's gain is the reconstruction score minus the
+start score. For `public_image`, evaluation sets `init_near_reference` when a start
+is within MSE 1e-3 (about 30 dB PSNR) of the reference; such a run is not a
+public-knowledge result. With `evaluation.trajectory=true`, evaluation also scores
+every committed checkpoint after the attack. `init.json` holds the decoded text
+start and yields `init_question_*` / `init_target_*` metrics.
 
 ## Native SFT V2
 
@@ -93,8 +150,9 @@ exact trainable and uploaded parameter set an attacker must replay.
 
 ## Artifact Boundary
 
-Schema-v4 `Observation` contains model/training specifications, model fingerprint, named
-update tensors and only explicitly public text. Loading verifies an allowlist,
+Schema-v5 `Observation` contains model/training specifications, model fingerprint, named
+update tensors, only explicitly public text, and public images only under an
+image-known condition (hash-checked `public_images.safetensors`). Loading verifies an allowlist,
 metadata digest, tensor-file hash and parameter names. Schema-v4 model checkpoints
 store only the strategy-owned mutable overlay in safetensors: connector for F-C,
 LoRA for F-L, and both for F-CL/F-2stage. Restoration reloads the pinned external

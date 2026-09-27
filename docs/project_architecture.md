@@ -229,9 +229,10 @@ Observation.tensors         {parameter_name: parameter-shaped tensor}
 
 `Observation.validate()` 是隐私边界的关键检查：
 
-- `private` 不允许出现任何公开问题/答案及其 token IDs；
-- `question_known` 只允许 VQA 问题公开；
-- `text_known` 允许问题和目标文本公开；
+- 每个知识条件对应一组公开字段（`core/config.py` 的 `KNOWLEDGE_FIELDS`），
+  未声明公开的字段一律不得出现在观测中；
+- `question_known` 只允许 VQA 问题公开，`text_known` 允许问题和目标文本公开；
+- `image_known` 公开图像（`public_images`），`image_question_known` 公开图像和问题；
 - caption 不能携带私有问题字段；
 - 所有上传 tensor 必须有限且非空。
 
@@ -312,6 +313,12 @@ upload = selected(Δθ)
 | `private` | 待恢复 | 待恢复 | 待恢复 |
 | `question_known` | 待恢复 | 精确公开 | 待恢复 |
 | `text_known` | 待恢复 | VQA 中精确公开 | 精确公开 |
+| `image_known` | 精确公开 | 待恢复 | 待恢复 |
+| `image_question_known` | 精确公开 | 精确公开 | 待恢复 |
+
+公开字段在攻击中是固定输入（buffer），既不优化也不计分；图像公开时每一步都只更新文本。
+待恢复字段的起点由 `attack.init_source`（图像）和 `attack.init_text_source`（文本）决定，
+详见 `docs/protocol.md#Attack Initialization`。
 
 `AdversaryKnowledge` 目前只接受 honest-but-curious、未知模板的条件。恶意服务器和已知模板协议没有在这一入口中实现。
 
