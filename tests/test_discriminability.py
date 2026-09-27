@@ -47,6 +47,15 @@ def test_metrics_distinguish_direction_magnitude_and_zero_updates():
     assert update_scores({'z': torch.zeros(2)}, {'z': torch.zeros(2)})['losses']['cosine'] is None
 
 
+@pytest.mark.skipif(not torch.cuda.is_available(), reason='cross-device scoring needs CUDA')
+def test_update_scores_moves_deserialized_cpu_target_to_candidate_device():
+    predicted = {'a': torch.tensor([1., 2.], device='cuda')}
+    target = {'a': torch.tensor([1., 2.], device='cpu')}
+    result = update_scores(predicted, target)
+    assert result['losses']['cosine'] == pytest.approx(0, abs=1e-7)
+    assert result['losses']['relative_l2'] == 0
+
+
 def test_ordering_ties_empty_and_image_bootstrap():
     def rows(values):
         return [{'losses': {'cosine': loss}, 'image': {'mse': mse, 'one_minus_ssim': mse}}

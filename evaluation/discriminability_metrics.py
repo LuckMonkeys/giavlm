@@ -70,7 +70,10 @@ def replay(adapter, images, batch, differentiable=False):
 
 
 def _moments(x, y):
-    x, y = x.detach().float(), y.detach().float()
+    x = x.detach().float()
+    # Observation tensors are intentionally deserialized on CPU. Match the
+    # candidate update's device here, just as the differentiable objective does.
+    y = y.detach().to(device=x.device, dtype=torch.float32)
     values = torch.stack([(x * y).sum(), x.square().sum(), y.square().sum(),
                           (x - y).square().sum()])
     if not torch.isfinite(values).all():
