@@ -1,6 +1,6 @@
 # Project Handoff
 
-Updated: 2026-09-27 (Asia/Shanghai) · branch `gradient-diagnostics` (3 commits on
+Updated: 2026-09-27 (Asia/Shanghai) · branch `gradient-diagnostics` (6 commits on
 top of `main` at `451eea2`, not merged)
 
 Resume: read `AGENTS.md` first, then this file. Verify it is current:
@@ -19,25 +19,20 @@ ps -eo pid,etime,cmd | rg 'examples.run_attack|utils.run_cmds'; nvidia-smi
 - **Stage:** method/protocol validation and diagnosis. The end-to-end pipeline runs;
   DLG and IG were exercised on SLAKE/LLaVA.
 - **Finding:** reconstructions are noise-like, for images and private Q/A tokens.
-- **Diagnosis so far (text_known, FedSGD batch 1, bf16 victim, n=3 images):** not a
-  replay bug (truth replay is exact). The matching objective does not identify the
-  image: images far from the truth reach lower loss than barely perturbed truths,
-  and IG drifts away even from a start visually identical to the truth. At round 0,
-  F-C, F-L and F-CL behave identically. After 10 rounds of real FedAvg training,
-  F-L shows a weak restoring effect (IG settles near ~24 dB instead of ~19 dB);
-  F-CL does not. Nothing approaches reconstruction.
+- **Diagnosis so far:** replay is exact. On 20 held-out images, matching loss has
+  useful global ordering over the finite candidate bank, especially at trained
+  round 10, but its local pixel-space descent direction is almost orthogonal to the
+  direction back to the private image. This reconciles candidate discriminability
+  with failed IG optimization. It does not establish unique recovery.
 
 ## Priorities
 
-1. **Current direction (user, 2026-09-27): gradient discriminability.** The staged
-   diagnostic is implemented on `gradient-diagnostics`; see
-   `configs/diagnostics/slake_llava_discriminability.yaml` and
-   `docs/validation.md#Gradient-discriminability-diagnostic`. It tests candidate
-   ranking, low-loss false matches, local descent directions, module losses,
-   common-gradient centering and an fp32 pilot over F-C r0, F-L r0/r10 and F-CL
-   r0/r10. The three-image native-precision scoring pilot is active on physical
-   GPUs 5/6. Complete pilot score/directions/report before starting the 20-image
-   development cohort; freeze it before the independent 20-image eval cohort.
+1. **Interpret and extend the completed gradient-discriminability study.** The
+   finite-bank result supports gradient loss as a global ranking signal, while the
+   direction probes show why ordinary pixel-space descent fails. Before proposing a
+   new optimizer, inspect the module/candidate-family results and test whether a
+   coarse or derivative-free search can exploit the ordering without private
+   reference selection. See the completed evidence and reports below.
 2. IG random-init baseline under float32 candidates (`attack.image_dtype`, default
    since 2026-09-24). The parameter sweep used bf16 candidates; rerun before citing
    it. `attack.image_dtype=bfloat16` reproduces the old runs.
@@ -53,6 +48,39 @@ ps -eo pid,etime,cmd | rg 'examples.run_attack|utils.run_cmds'; nvidia-smi
 5. Expand only after an update carries recoverable image or text signal.
    - F-2stage; `private`, `question_known`, known-length conditions.
    - Enable LPIPS/CLIP and private-text metrics for formal runs.
+
+## Evidence: Gradient Discriminability (2026-09-27, completed)
+
+Private-reference diagnostic, not an attack benchmark. Configuration:
+`configs/diagnostics/slake_llava_discriminability.yaml`; implementation:
+`evaluation/gradient_discriminability.py`, `evaluation/discriminability_metrics.py`
+and `evaluation/discriminability_report.py`. Conditions are F-C r0, F-L r0/r10 and
+F-CL r0/r10. A 3-image pilot (native and fp32) preceded 20 `tune` development
+images; the analysis was then frozen and applied to 20 independent `eval` images.
+All score and direction jobs completed with return code 0 on physical GPUs 5/6.
+Reports are under `outputs/diagnostics/discriminability/reports/`.
+
+- **The scalar loss is globally discriminative on the finite candidate bank.** On
+  validation, the probability that a near candidate has lower cosine loss than a
+  far candidate is 0.860–0.877 at round 0 and 0.963–0.979 at round 10. Relative-L2
+  gives 0.812–0.830 and 0.960–0.972 respectively. Image-level Spearman correlation
+  between cosine loss and MSE is 0.71–0.74 at round 0 and 0.88–0.92 at round 10.
+  No far candidate appears in the lowest-loss 1% in this constructed bank.
+- **The relationship survives common-gradient centering.** Centered-cosine
+  near-win probability is 0.878–0.898 at round 0 and 0.967–0.969 at round 10, so the
+  ranking is not explained only by a shared image-independent component.
+- **The local derivative does not point back to the truth.** Across six perturbation
+  radii, the cosine between `-d(loss)/d(image)` and the exact truth displacement is
+  approximately zero (about -3.8e-4 to 1.1e-3; sign direction about -4.5e-3 to
+  4.5e-3). Depending on condition/objective/direction, only about 1–12% of tested
+  radius/step combinations, averaged over five images, simultaneously reduce loss
+  and MSE.
+- **Conclusion:** gradient matching loss contains a useful global ordering signal,
+  which becomes stronger after LoRA training, but local first-order optimization
+  cannot readily exploit it in raw pixel space. This explains how noise gradients
+  can look globally similar while reconstruction still fails. The result is limited
+  to the declared finite candidates and does not prove identifiability or attack
+  success.
 
 ## Evidence: Private-Reference Gradient Diagnostics (2026-09-23)
 
@@ -208,14 +236,16 @@ Full numbers: `outputs/slake_llava_ig_parameter_sweep/{lr,tv,iterations,sweep}_r
 
 ## Active / Pending Jobs
 
-- `outputs/diagnostics/discriminability`: native-precision, three-image scoring
-  pilot started 2026-09-27 on physical GPUs 5 and 6. The scheduler is limited to
-  two GPUs total and one job per card; inspect `pilot-score.log` and the committed
-  scheduler JSON rather than trusting this note.
+- `outputs/diagnostics/discriminability`: completed through pilot, development,
+  frozen analysis, validation and final reports. Every scheduler job returned 0.
+- At the user's request, `/home/zx/nas/gpu/train_stealth.py` is running on physical
+  GPU 5 after study completion (`xlarge`, batch 70, fp32, 40% target utilization):
+  it reports a 70,000 MiB allocation; PID and log are in
+  `outputs/train_stealth_gpu5_70g.{pid,log}`.
 - `run_yaml/slake_llava_ig_iteration_occ.yaml` (100000-iteration diagnostic): it
   died at iteration 15150; the scheduler's `running` row is stale.
-- User GPU assignment for this line of work: GPU 6 (F-L / general), GPU 7 (F-CL).
-  Other users share both; check free memory before launching.
+- This discriminability study was restricted to physical GPUs 5 and 6, at most two
+  GPUs and one worker per card. Check current assignments before any new launch.
 - Memory: IG attack peaks ~29–32 GB (F-C/F-L/F-CL, bf16 victim, second-order);
   `train` with batch 2 ~20 GB. The trained-snapshot grids use `min_free_mib: 36000`;
   older schedules use 50000.
@@ -234,9 +264,9 @@ Full numbers: `outputs/slake_llava_ig_parameter_sweep/{lr,tv,iterations,sweep}_r
   (`evaluation/gradient_diagnostics.py`, `diagnose-gradient`), attack starts
   (`attacks/init.py`, `attack.init_*`, `attack.init_text_*`), per-field knowledge
   with `image_known` / `image_question_known`, `attack.image_dtype`, Observation v5,
-  `evaluation.trajectory` and `init_*` metrics, their tests, these docs, and five
-  `run_yaml/slake_llava_*` schedules. Tests: 205 pass; 2 CPU-venv failures need the
-  missing `datasets` package; ruff clean (rechecked 2026-09-27).
+  `evaluation.trajectory` and `init_*` metrics, the staged discriminability study,
+  their tests, these docs, and five `run_yaml/slake_llava_*` schedules. Tests:
+  223 passed, 3 skipped; ruff clean (rechecked 2026-09-27).
 - Analysis code that produced `outputs/diagnostics/loss_curves/*` is not in the repo:
   copies live in `outputs/diagnostics/analysis_scripts/` (loss curves, α vs victim
   dtype, CLIP feature sensitivity, parameter census, plots, per-job comparison,
