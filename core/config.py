@@ -15,9 +15,29 @@ FINE_TUNING_STRATEGIES = ("f_c", "f_l", "f_cl", "f_2stage")
 FEDERATED_ALGORITHMS = ("fedsgd", "fedavg")
 LOCAL_OPTIMIZERS = ("sgd", "adamw")
 TRAINING_PROTOCOLS = ("native-sft-v2",)
-KNOWLEDGE_CONDITIONS = ("private", "question_known", "text_known")
+# Each named condition is a set of public input fields; everything else is private.
+KNOWLEDGE_FIELDS = {
+    "private": frozenset(),
+    "question_known": frozenset({"question"}),
+    "text_known": frozenset({"question", "target"}),
+    "image_known": frozenset({"image"}),
+    "image_question_known": frozenset({"image", "question"}),
+}
+KNOWLEDGE_CONDITIONS = tuple(KNOWLEDGE_FIELDS)
+
+
+def caption_condition(knowledge):
+    """A known question without a known target only duplicates another caption condition."""
+    fields = KNOWLEDGE_FIELDS[knowledge]
+    return "question" not in fields or "target" in fields
 TASK_TYPES = ("vqa", "caption")
 TEXT_METHODS = ("none", "tag_adapted", "lamp_adapted")
+# private_reference derives the start from the victim's own image: diagnostics only.
+INIT_SOURCES = ("random", "public_image", "private_reference")
+INIT_PERTURBATIONS = ("none", "uniform_mix", "gaussian", "blur")
+INIT_TEXT_SOURCES = ("random", "public_text", "private_reference")
+INIT_TEXT_PERTURBATIONS = ("none", "replace")
+CANDIDATE_IMAGE_DTYPES = ("float32", "float64", "bfloat16", "float16")
 
 
 @dataclass
@@ -74,6 +94,28 @@ class TrainingSpec:
         """Number of examples consumed by one client update."""
         return self.batch_size * self.local_steps * self.gradient_accumulation_steps
 
+    # Public/private status of each input field under the knowledge condition.
+    @property
+    def image_public(self) -> bool:
+        return "image" in KNOWLEDGE_FIELDS[self.knowledge]
+
+    @property
+    def question_public(self) -> bool:
+        """Captioning has no private question slot, so this is VQA-only."""
+        return self.task == "vqa" and "question" in KNOWLEDGE_FIELDS[self.knowledge]
+
+    @property
+    def question_private(self) -> bool:
+        return self.task == "vqa" and not self.question_public
+
+    @property
+    def target_public(self) -> bool:
+        return "target" in KNOWLEDGE_FIELDS[self.knowledge]
+
+    @property
+    def private_text(self) -> bool:
+        return self.question_private or not self.target_public
+
     @property
     def fine_tuning_stage(self) -> str:
         """Active parameter group for the next client update."""
@@ -107,6 +149,19 @@ class AttackSpec:
     gradvit_prior_weight: float = 0.0001
     patch_weight: float = 0.0001
     allow_prior_download: bool = False
+    # Candidate initialization; see docs/protocol.md#Attack Initialization.
+    init_source: str = "random"
+    init_images: str = ""
+    init_perturbation: str = "none"
+    init_level: float = 0.0
+    init_text_source: str = "random"
+    init_question: str = ""
+    init_target: str = ""
+    init_text_perturbation: str = "none"
+    init_text_level: float = 0.0
+    init_text_scale: float = 10.0
+    # Precision of the optimized candidate images, independent of the victim model dtype.
+    image_dtype: str = "float32"
 
 
 @dataclass
@@ -117,6 +172,7 @@ class EvalSpec:
     clip_revision: str = ""
     bootstrap: int = 1000
     seed: int = 42
+    trajectory: bool = False
 
 
 @dataclass
@@ -186,15 +242,54 @@ def validate_attack_config(attack: AttackSpec) -> None:
     if attack.max_evaluations is not None:
         _require_positive("attack.max_evaluations", attack.max_evaluations)
     _require_positive("attack.seconds", attack.seconds)
+    _require_choice("attack init source", attack.init_source, INIT_SOURCES)
+    _require_choice("attack init perturbation", attack.init_perturbation, INIT_PERTURBATIONS)
+    if attack.init_source == "random":
+        if attack.init_images or attack.init_perturbation != "none":
+            raise ValueError("Random initialization takes no init_images or init_perturbation")
+    elif attack.init_source == "public_image" and not attack.init_images:
+        raise ValueError("attack.init_source=public_image requires attack.init_images")
+    if attack.init_perturbation == "none" and attack.init_level != 0:
+        raise ValueError("attack.init_level requires an init_perturbation")
+    if attack.init_perturbation == "uniform_mix" and not 0 <= attack.init_level <= 1:
+        raise ValueError("uniform_mix init_level must lie in [0, 1]")
+    if attack.init_perturbation in {"gaussian", "blur"} and attack.init_level <= 0:
+        raise ValueError(f"{attack.init_perturbation} init_level must be positive")
+    _require_choice("attack image dtype", attack.image_dtype, CANDIDATE_IMAGE_DTYPES)
+    _require_choice("attack init text source", attack.init_text_source, INIT_TEXT_SOURCES)
+    _require_choice("attack init text perturbation", attack.init_text_perturbation,
+                    INIT_TEXT_PERTURBATIONS)
+    _require_positive("attack.init_text_scale", attack.init_text_scale)
+    templates = attack.init_question or attack.init_target
+    if attack.init_text_source == "random":
+        if templates or attack.init_text_perturbation != "none":
+            raise ValueError("Random text initialization takes no template or perturbation")
+    elif attack.init_text_source == "public_text" and not templates:
+        raise ValueError("attack.init_text_source=public_text requires init_question or init_target")
+    elif attack.init_text_source == "private_reference" and templates:
+        raise ValueError("private_reference text comes from the capture, not from templates")
+    if attack.init_text_perturbation == "none" and attack.init_text_level != 0:
+        raise ValueError("attack.init_text_level requires an init_text_perturbation")
+    if attack.init_text_perturbation == "replace" and not 0 < attack.init_text_level <= 1:
+        raise ValueError("replace init_text_level must lie in (0, 1]")
 
 
 def validate_protocol_compatibility(cfg: Config) -> None:
     """Reject cross-component combinations with ambiguous research semantics."""
     training, attack = cfg.training, cfg.attack
-    if training.task == "caption" and training.knowledge == "question_known":
+    if training.task == "caption" and not caption_condition(training.knowledge):
         raise ValueError("Caption has a public task instruction, not a private question")
-    if attack.text_method == "none" and training.knowledge != "text_known" and attack.method != "random":
+    if attack.text_method == "none" and training.private_text and attack.method != "random":
         raise ValueError("Private text needs an explicit reconstruction component")
+    # Initialization applies only to fields the attacker optimizes.
+    if attack.init_source != "random" and training.image_public:
+        raise ValueError("Image initialization needs a private image; the image is public here")
+    if attack.init_text_source != "random" and not training.private_text:
+        raise ValueError("Text initialization needs private text; all text is public here")
+    if attack.init_question and not training.question_private:
+        raise ValueError("attack.init_question needs a private VQA question")
+    if attack.init_target and training.target_public:
+        raise ValueError("attack.init_target needs a private target")
 
 
 def validate(cfg: Config) -> Config:

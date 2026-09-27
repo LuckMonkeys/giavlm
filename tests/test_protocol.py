@@ -7,7 +7,8 @@ import torch
 from core.artifacts import file_hash, read_json, read_tensors, write_json, write_tensors
 from attacks import AttackRunner, Candidate, matching_loss, supports
 from core.aggregation import apply_server_update, create_federated_algorithm
-from core.config import AttackSpec, ModelSpec, TrainingSpec, load_config
+from core.config import (KNOWLEDGE_CONDITIONS, KNOWLEDGE_FIELDS, AttackSpec, ModelSpec,
+                         TrainingSpec, caption_condition, load_config)
 from core.fl import (capture, load_observation, mask_upload, resolve_upload,
                      restore_model, save_model, save_observation, simulate_update)
 from core.vlm_wrapper import build_model, canonical_probabilities
@@ -323,23 +324,27 @@ def test_model_snapshot_rejects_fingerprint_mismatch(tmp_path):
         restore_model(tmp_path)
 
 
-@pytest.mark.parametrize("knowledge", ["private", "question_known", "text_known"])
-def test_known_text_is_not_optimized(knowledge):
+@pytest.mark.parametrize("knowledge", KNOWLEDGE_CONDITIONS)
+def test_known_fields_are_not_optimized(knowledge):
     adapter, batch = fixture(knowledge=knowledge)
     obs = capture(adapter, batch, adapter.decode(batch.questions), adapter.decode(batch.targets))
     candidate = Candidate(adapter, obs, 3)
     names = dict(candidate.named_parameters())
-    assert ("questions" in names) == (knowledge == "private")
-    assert ("targets" in names) == (knowledge != "text_known")
+    fields = KNOWLEDGE_FIELDS[knowledge]
+    assert ("images" in names) == ("image" not in fields)
+    assert ("questions" in names) == ("question" not in fields)
+    assert ("targets" in names) == ("target" not in fields)
+    if "image" in fields:
+        torch.testing.assert_close(candidate.images, batch.images)
     if knowledge == "text_known":
         assert candidate.decoded() == (obs.public_questions, obs.public_targets)
 
 
 @pytest.mark.parametrize("task", ["vqa", "caption"])
-@pytest.mark.parametrize("knowledge", ["private", "question_known", "text_known"])
+@pytest.mark.parametrize("knowledge", KNOWLEDGE_CONDITIONS)
 def test_capture_exposes_only_authorized_token_lengths(tmp_path, task, knowledge):
-    if task == "caption" and knowledge == "question_known":
-        pytest.skip("question_known is not a caption condition")
+    if task == "caption" and not caption_condition(knowledge):
+        pytest.skip(f"{knowledge} is not a caption condition")
     adapter, _ = fixture(task=task, knowledge=knowledge, token_lengths_known=True,
                          batch_size=2)
     images = torch.rand(2, 3, 8, 8)
@@ -350,11 +355,17 @@ def test_capture_exposes_only_authorized_token_lengths(tmp_path, task, knowledge
     expected_questions = adapter.content_lengths(batch.questions) if task == "vqa" else []
     assert observation.public_question_lengths == expected_questions
     assert observation.public_target_lengths == adapter.content_lengths(batch.targets)
-    assert bool(observation.public_question_ids) == (task == "vqa" and knowledge != "private")
-    assert bool(observation.public_target_ids) == (knowledge == "text_known")
+    fields = KNOWLEDGE_FIELDS[knowledge]
+    assert bool(observation.public_question_ids) == (task == "vqa" and "question" in fields)
+    assert bool(observation.public_target_ids) == ("target" in fields)
+    assert (observation.public_images is not None) == ("image" in fields)
 
     save_observation(tmp_path, observation)
     loaded = load_observation(tmp_path)
+    if "image" in fields:
+        torch.testing.assert_close(loaded.public_images, images)
+    else:
+        assert loaded.public_images is None and not (tmp_path / "public_images.safetensors").exists()
     assert loaded.public_question_lengths == observation.public_question_lengths
     assert loaded.public_target_lengths == observation.public_target_lengths
 

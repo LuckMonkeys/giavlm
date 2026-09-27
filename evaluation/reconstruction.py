@@ -9,26 +9,36 @@ from scipy.optimize import linear_sum_assignment
 import torch
 
 from core.artifacts import read_json, read_tensors
+from core.config import TrainingSpec
 
 
 from metrics.text import words, edit_distance, pii_exact_match_recall, text_metrics
 from metrics.image import image_metrics
 from metrics.semantic import OptionalMetrics
 
+INIT_NEAR_REFERENCE_MSE = 1e-3  # PSNR above 30 dB against the private reference
+
 def match_pairs(reference_images, prediction_images, reference_texts, prediction_texts, use_text=True):
-    n = len(reference_images)
-    if n != len(prediction_images) or n != len(reference_texts) or n != len(prediction_texts):
+    """Align slots by the private fields only; ``prediction_images`` is None for a public image."""
+    use_images = prediction_images is not None
+    n = len(reference_texts)
+    if (n != len(prediction_texts)
+            or (use_images and (n != len(reference_images) or n != len(prediction_images)))):
         raise ValueError("Reconstruction cardinality differs from observed sample slots")
+    if not use_images and not use_text:
+        raise ValueError("Nothing private to align")
     image_cost, text_cost = np.zeros((n, n)), np.zeros((n, n))
     for i in range(n):
         for j in range(n):
-            image_cost[i, j] = float((reference_images[i] - prediction_images[j]).square().mean())
+            if use_images:
+                image_cost[i, j] = float((reference_images[i] - prediction_images[j]).square().mean())
             ref, pred = words(reference_texts[i]), words(prediction_texts[j])
             text_cost[i, j] = edit_distance(ref, pred) / max(1, len(ref), len(pred))
     _, assignment = linear_sum_assignment(image_cost + (text_cost if use_text else 0))
     _, image_assignment = linear_sum_assignment(image_cost)
     _, text_assignment = linear_sum_assignment(text_cost)
-    agreement = float(np.mean(image_assignment == text_assignment)) if use_text and n > 1 else None
+    agreement = (float(np.mean(image_assignment == text_assignment))
+                 if use_images and use_text and n > 1 else None)
     return assignment.tolist(), agreement
 
 
@@ -60,41 +70,87 @@ def evaluate(reconstruction_dir, truth_dir, spec, device="cpu"):
     report["evaluation_config"] = asdict(spec)
     if result["status"] != "completed":
         return report
-    true_images = read_tensors(truth_dir / "images.safetensors")["images"]
-    pred_images = read_tensors(reconstruction_dir / "images.safetensors")["images"]
-    if true_images.shape != pred_images.shape or not torch.isfinite(pred_images).all():
-        raise ValueError("Invalid reconstructed image tensor")
-    if pred_images.min() < 0 or pred_images.max() > 1:
-        raise ValueError("Reconstructed RGB images must be in [0,1]")
     rows = truth["samples"]
     t = truth["training"]
-    private_q = t["task"] == "vqa" and t["knowledge"] == "private"
-    private_y = t["knowledge"] != "text_known"
+    training = TrainingSpec(**t)
+    private_image, private_q, private_y = (not training.image_public, training.question_private,
+                                           not training.target_public)
+    true_images = read_tensors(truth_dir / "images.safetensors")["images"]
+    pred_images = None
+    if private_image:
+        pred_images = read_tensors(reconstruction_dir / "images.safetensors")["images"]
+        if true_images.shape != pred_images.shape or not torch.isfinite(pred_images).all():
+            raise ValueError("Invalid reconstructed image tensor")
+        if pred_images.min() < 0 or pred_images.max() > 1:
+            raise ValueError("Reconstructed RGB images must be in [0,1]")
+    elif (reconstruction_dir / "images.safetensors").exists():
+        raise ValueError("A public-image condition must not report reconstructed images")
     reference_texts = [(r["model_question"] + " " if private_q else "") +
                        (r["model_target"] if private_y else "") for r in rows]
     prediction_texts = [(q + " " if private_q else "") + (y if private_y else "")
                         for q, y in zip(result["questions"], result["targets"])]
     assignment, agreement = match_pairs(true_images, pred_images, reference_texts, prediction_texts,
                                         use_text=private_q or private_y)
+    # The actual start separates the gradient's contribution from the initialization.
+    init_images = (read_tensors(reconstruction_dir / "init.safetensors")["images"]
+                   if private_image and (reconstruction_dir / "init.safetensors").exists() else None)
+    init_text = (read_json(reconstruction_dir / "init.json")
+                 if (reconstruction_dir / "init.json").exists() else None)
     optional = OptionalMetrics(spec, device)
     report.update({"metric_status": optional.status, "pair_assignment": assignment,
                    "pair_assignment_agreement": agreement,
-                   "alignment": "Hungarian(image_MSE + normalized_private_text_edit); one joint assignment",
+                   "scored_fields": [name for name, private in [
+                       ("image", private_image), ("question", private_q), ("target", private_y)]
+                       if private],
+                   "alignment": "Hungarian(image_MSE + normalized_private_text_edit) over private fields",
                    "reference_policy": "actual trained tokens after truncation, excluding EOS/pad"})
     for i, j in enumerate(assignment):
-        metrics = image_metrics(true_images[i], pred_images[j])
-        if private_q:
-            metrics.update({"question_" + k: v for k, v in text_metrics(
-                rows[i]["model_question"], result["questions"][j]).items()})
-        if private_y:
-            metrics.update({"target_" + k: v for k, v in text_metrics(
-                rows[i]["model_target"], result["targets"][j]).items()})
-        metrics.update(optional.score(true_images[i], pred_images[j], rows[i]["model_target"],
-                                      result["targets"][j], t["task"]))
+        metrics = image_metrics(true_images[i], pred_images[j]) if private_image else {}
+        if init_images is not None:
+            metrics.update({"init_" + k: v for k, v in
+                            image_metrics(true_images[i], init_images[j]).items()})
+        for field, private, reference, predicted in [
+                ("question", private_q, rows[i]["model_question"], result["questions"]),
+                ("target", private_y, rows[i]["model_target"], result["targets"])]:
+            if not private:
+                continue
+            metrics.update({f"{field}_{k}": v for k, v in
+                            text_metrics(reference, predicted[j]).items()})
+            if init_text is not None:
+                metrics.update({f"init_{field}_{k}": v for k, v in
+                                text_metrics(reference, init_text[field + "s"][j]).items()})
+        if private_image:
+            metrics.update(optional.score(true_images[i], pred_images[j], rows[i]["model_target"],
+                                          result["targets"][j], t["task"]))
         metrics.update(canary_metrics(rows[i], reference_texts[i], prediction_texts[j]))
         report["samples"].append({"image_id": rows[i]["image_id"], "sample_id": rows[i]["sample_id"],
                                    "prediction_index": j, "metrics": metrics})
+    # A "public" start almost equal to the reference would silently leak the truth.
+    source = result["condition"].get("init_source", "random")
+    report["init_near_reference"] = (
+        None if init_images is None or source != "public_image"
+        else any(row["metrics"]["init_mse"] < INIT_NEAR_REFERENCE_MSE for row in report["samples"]))
+    if spec.trajectory:
+        report["trajectory"] = (trajectory(reconstruction_dir, true_images, assignment)
+                                if private_image else None)
     return report
+
+
+def trajectory(attack_dir, true_images, assignment):
+    """Reference metrics of every committed attack checkpoint, computed after the attack."""
+    rows = []
+    for generation in (Path(attack_dir) / "checkpoints").iterdir():
+        meta = read_json(generation / "state.json")
+        images = read_tensors(generation / "state.safetensors")["candidate.images"].float()
+        images = images.clamp(0, 1)
+        history = [h for h in meta["history"]
+                   if h.get("restart") == meta["restart"] and h.get("iteration") == meta["iteration"]]
+        rows.append({"restart": meta["restart"], "iteration": meta["iteration"],
+                     "objective": history[-1]["objective"] if history else None,
+                     "discrete_score": history[-1]["discrete_score"] if history else None,
+                     "image": [image_metrics(true_images[i], images[j])
+                               for i, j in enumerate(assignment)]})
+    return sorted(rows, key=lambda row: (row["restart"], row["iteration"]))
 
 
 def summarize(reports, bootstrap=1000, seed=42):

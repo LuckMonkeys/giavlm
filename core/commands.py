@@ -265,6 +265,28 @@ def capture(args):
           "communication_bytes": sum(t.numel() * t.element_size() for t in observation.tensors.values())})
 
 
+def initial_text_tokens(spec, adapter, obs, public):
+    """Token starts for private text fields: public templates or the capture's own text.
+
+    ``private_reference`` reads the sibling ``private/truth.json`` and re-encodes the
+    raw rows exactly as capture did; it is a labeled diagnostic, not attacker knowledge.
+    """
+    n, training = obs.sample_count, obs.training
+    if spec.init_text_source == "public_text":
+        questions, targets = [spec.init_question] * n, [spec.init_target] * n
+    else:
+        rows = read_json(public.parent / "private" / "truth.json")["samples"]
+        questions, targets = [r["question"] for r in rows], [r["target"] for r in rows]
+    tokens = {}
+    if training.question_private and (spec.init_text_source == "private_reference"
+                                      or spec.init_question):
+        tokens["questions"] = adapter.encode(questions, adapter.spec.question_length).cpu()
+    if not training.target_public and (spec.init_text_source == "private_reference"
+                                       or spec.init_target):
+        tokens["targets"] = adapter.encode(targets, adapter.spec.target_length).cpu()
+    return tokens
+
+
 def attack(args):
     """Reconstruct private inputs from one validated public observation."""
     from attacks.factory import create_attacker
@@ -315,13 +337,29 @@ def attack(args):
             raise ValueError("Wrong-gradient control was given the original update")
         obs.tensors = wrong.tensors
 
+    # Start images are attacker knowledge; private_reference is a labeled diagnostic
+    # that defaults to this capture's own private images.
+    initial_images, init_sha256 = None, None
+    if cfg.attack.init_source != "random":
+        from attacks.init import load_initial_images
+        from attacks.optim.engine import _tensor_digest
+        source = cfg.attack.init_images or public.parent / "private" / "images.safetensors"
+        initial_images = load_initial_images(source, adapter, obs.sample_count)
+        init_sha256 = _tensor_digest({"images": initial_images})
+    initial_tokens, init_text_sha256 = None, None
+    if cfg.attack.init_text_source != "random":
+        from attacks.optim.engine import _tensor_digest
+        initial_tokens = initial_text_tokens(cfg.attack, adapter, obs, public)
+        init_text_sha256 = _tensor_digest(initial_tokens)
+
     # Attackers receive only the public update, protocol, and declared knowledge.
     try:
         result = create_attacker(adapter, cfg.attack).attack(
             obs.tensors, obs,
             AdversaryKnowledge(name=obs.training.knowledge,
                                token_lengths_known=obs.training.token_lengths_known),
-            directory=output, resume=args.resume)
+            directory=output, resume=args.resume, initial_images=initial_images,
+            initial_tokens=initial_tokens)
     except torch.OutOfMemoryError as error:
         if getattr(args, "raise_oom", False):
             raise
@@ -358,7 +396,17 @@ def attack(args):
                                "lora_alpha": obs.training.lora_alpha,
                                "attack_protocol_hash": digest({
                                    k: v for k, v in asdict(cfg.attack).items() if k != "seed"}),
-                               "control": "wrong_update" if args.wrong_observation else "none"},
+                               "control": "wrong_update" if args.wrong_observation else "none",
+                               "init_source": cfg.attack.init_source,
+                               "init_perturbation": cfg.attack.init_perturbation,
+                               "init_level": cfg.attack.init_level,
+                               "init_images_sha256": init_sha256,
+                               "init_text_source": cfg.attack.init_text_source,
+                               "init_text_perturbation": cfg.attack.init_text_perturbation,
+                               "init_text_level": cfg.attack.init_text_level,
+                               "init_text_scale": cfg.attack.init_text_scale,
+                               "init_text_sha256": init_text_sha256,
+                               "attack_image_dtype": cfg.attack.image_dtype},
                  "environment": environment()})
 
     if (public / "upload.json").exists():
@@ -397,6 +445,22 @@ def report(args):
     jsonl = Path(args.output).with_suffix(".jsonl")
     jsonl.write_text("".join(json.dumps(record, sort_keys=True) + "\n" for record in records))
     emit({"reports": len(paths), "groups": len(summary["groups"]), "output": args.output})
+
+
+def diagnose_gradient(args):
+    """Private-reference probe: replay truth and perturbations against one upload."""
+    from evaluation.gradient_diagnostics import diagnose
+    output = Path(args.output)
+    if output.exists():
+        raise FileExistsError("Diagnostic output exists; choose a new file")
+    report = diagnose(args.capture, args.device, args.seed, args.other_capture, args.reconstruction)
+    write_json(output, report)
+    emit({"status": "diagnosed", "data_path": report["data_path"], "output": str(output),
+          "variants": [{"family": row["family"], "level": row["level"],
+                        "cosine_loss": row["cosine_loss"], "relative_l2": row["relative_l2"],
+                        "psnr": [image["psnr"] for image in row["image"]],
+                        "connector_input_cosine": row["connector_input"]["cosine"]}
+                       for row in report["variants"]]})
 
 
 def doctor(args):
@@ -571,6 +635,15 @@ def build_parser():
     p.add_argument("--output", required=True)
     p.add_argument("--bootstrap", type=int, default=1000)
     p.add_argument("--seed", type=int, default=42)
+    p = command("diagnose-gradient", diagnose_gradient)
+    p.add_argument("--capture", required=True, help="Capture directory with public/ and private/")
+    p.add_argument("--output", required=True, help="Report JSON; keep it outside benchmark trees")
+    p.add_argument("--other-capture", action="append", default=[],
+                   help="Capture whose private image is replayed with this capture's text")
+    p.add_argument("--reconstruction", action="append", default=[],
+                   help="Attack directory whose images (or best checkpoint) are replayed")
+    p.add_argument("--device")
+    p.add_argument("--seed", type=int, default=0)
     p = command("doctor", doctor, True)
     p.add_argument("--probe", action="store_true")
     p.add_argument("--resolve-revision", metavar="HF_MODEL_ID")
@@ -596,7 +669,8 @@ def build_parser():
     p.add_argument("--tasks", nargs="+", choices=["vqa", "caption"], default=["vqa", "caption"])
     p.add_argument("--strategies", nargs="+", choices=["f_c", "f_l", "f_cl", "f_2stage"],
                    default=["f_c", "f_l", "f_cl", "f_2stage"])
-    p.add_argument("--knowledge", nargs="+", choices=["private", "question_known", "text_known"],
+    from core.config import KNOWLEDGE_CONDITIONS
+    p.add_argument("--knowledge", nargs="+", choices=list(KNOWLEDGE_CONDITIONS),
                    default=["private", "text_known"])
     p.add_argument("--methods", nargs="+", default=["dlg_adapted", "ig_adapted", "april_adapted",
                                                    "gradvit_adapted", "gi_dqa_adapted"])

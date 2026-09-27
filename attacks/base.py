@@ -14,20 +14,24 @@ class BaseAttacker(ABC):
 
     @abstractmethod
     def attack(self, gradients, batch_info: Observation, knowledge: AdversaryKnowledge,
-               *, directory=None, resume=False) -> Reconstruction:
+               *, directory=None, resume=False, initial_images=None,
+               initial_tokens=None) -> Reconstruction:
         raise NotImplementedError
 
 
 class OptimizationAttacker(BaseAttacker):
-    def attack(self, gradients, batch_info, knowledge, *, directory=None, resume=False):
+    def attack(self, gradients, batch_info, knowledge, *, directory=None, resume=False,
+               initial_images=None, initial_tokens=None):
         observation = replace(batch_info, tensors=gradients)
         knowledge.validate_observation(observation)
-        return AttackRunner(self.adapter, observation, self.spec).run(directory, resume)
+        return AttackRunner(self.adapter, observation, self.spec).run(
+            directory, resume, initial_images, initial_tokens)
 
 
 class UnimplementedAttacker(BaseAttacker):
     reason = "This method has no validated VLM implementation in this benchmark."
 
-    def attack(self, gradients, batch_info, knowledge, *, directory=None, resume=False):
+    def attack(self, gradients, batch_info, knowledge, *, directory=None, resume=False,
+               initial_images=None, initial_tokens=None):
         knowledge.validate_observation(batch_info)
         return Reconstruction("not_implemented", self.reason)

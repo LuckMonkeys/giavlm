@@ -10,7 +10,8 @@ class AdversaryKnowledge:
     server: str = "honest_but_curious"
 
     def validate(self):
-        if self.name not in {"private", "question_known", "text_known"}:
+        from core.config import KNOWLEDGE_CONDITIONS
+        if self.name not in KNOWLEDGE_CONDITIONS:
             raise ValueError(f"Unknown knowledge condition: {self.name}")
         if not isinstance(self.token_lengths_known, bool):
             raise ValueError("token_lengths_known must be boolean")

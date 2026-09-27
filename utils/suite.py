@@ -7,7 +7,7 @@ import sys
 
 from core.artifacts import file_hash, read_json, write_json
 from core.commands import child_environment
-from core.config import digest, load_config, validate
+from core.config import caption_condition, digest, load_config, validate
 from core.data import read_manifest
 
 
@@ -52,7 +52,7 @@ def materialize(args):
                 batches.sort(key=lambda pair: (pair[1], pair[0]))
                 for strategy in args.strategies:
                     for knowledge in args.knowledge:
-                        if task == "caption" and knowledge == "question_known":
+                        if task == "caption" and not caption_condition(knowledge):
                             continue
                         cfg = replace(
                             base,

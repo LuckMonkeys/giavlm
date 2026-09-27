@@ -16,20 +16,45 @@ from attacks.priors import BatchNormPrior, TextPrior, total_variation
 from core.types import Batch, Reconstruction
 
 
+from attacks.init import perturb, perturb_tokens
 from attacks.objectives import matching_loss
 from attacks.registry import METHODS, supports
 
 class Candidate(nn.Module):
-    def __init__(self, adapter, observation, seed):
+    def __init__(self, adapter, observation, seed, initial_images=None, initial_tokens=None,
+                 image_dtype=torch.float32):
+        """Optimize private fields; public fields are fixed buffers from the observation.
+
+        ``initial_images`` and ``initial_tokens`` (field -> token IDs) replace the
+        random start of private fields only. Random draws happen regardless, so a
+        given start leaves every other field's initialization unchanged. Private
+        images are a master copy in ``image_dtype`` (``attack.image_dtype``), cast to
+        the victim dtype only in the forward pass: in bfloat16, steps below about
+        0.004 would otherwise round away for pixels at or above 0.5.
+        """
         super().__init__()
         self.adapter = [adapter]  # The victim is not part of candidate parameters/state.
         self.observation = observation
+        training = observation.training
         g = torch.Generator(device=adapter.device).manual_seed(seed)
         n, m = observation.sample_count, observation.model
-        self.images = nn.Parameter(torch.rand(n, 3, m.image_size, m.image_size,
-                                              generator=g, device=adapter.device, dtype=adapter.dtype))
-        self.private_q = observation.training.task == "vqa" and observation.training.knowledge == "private"
-        self.private_y = observation.training.knowledge != "text_known"
+        images = torch.rand(n, 3, m.image_size, m.image_size,
+                            generator=g, device=adapter.device, dtype=image_dtype)
+        self.private_image = not training.image_public
+        if self.private_image:
+            if initial_images is not None:
+                if tuple(initial_images.shape) != tuple(images.shape):
+                    raise ValueError("Initial images differ from the observed candidate slots")
+                images = initial_images.to(device=adapter.device, dtype=image_dtype).clamp(0, 1)
+            self.images = nn.Parameter(images)
+        else:
+            if initial_images is not None:
+                raise ValueError("Public images are fixed and take no initialization")
+            self.register_buffer("images", observation.public_images.to(
+                device=adapter.device, dtype=adapter.dtype))
+        self.private_q = training.question_private
+        self.private_y = not training.target_public
+        initial_tokens = initial_tokens or {}
         self.known_lengths = {}
         for field, length, private, public, known_lengths in [
             ("questions", m.question_length, self.private_q, observation.public_questions,
@@ -40,8 +65,16 @@ class Candidate(nn.Module):
             if private:
                 values = torch.randn(n, length, adapter.vocab_size, generator=g,
                                      device=adapter.device, dtype=torch.float32) * 0.1
+                if field in initial_tokens:
+                    scale, ids = initial_tokens[field]
+                    if tuple(ids.shape) != (n, length):
+                        raise ValueError(f"Initial {field} tokens differ from the candidate slots")
+                    values = values + scale * F.one_hot(ids.to(adapter.device).long(),
+                                                        adapter.vocab_size).float()
                 self.register_parameter(field, nn.Parameter(values))
             else:
+                if field in initial_tokens:
+                    raise ValueError(f"Public {field} are fixed and take no initialization")
                 public_ids = observation.public_question_ids if field == "questions" else observation.public_target_ids
                 ids = torch.tensor(public_ids, device=adapter.device, dtype=torch.long) if public_ids else adapter.encode(public or [""] * n, length)
                 if known_lengths and adapter.content_lengths(ids) != known_lengths:
@@ -83,7 +116,8 @@ class Candidate(nn.Module):
         return canonical_probabilities(value, adapter.eos, adapter.pad)[0] if discrete else value
 
     def batch(self, discrete=False):
-        return Batch(self.images.clamp(0, 1), self.distribution("questions", discrete),
+        images = self.images.clamp(0, 1).to(self.adapter[0].dtype)
+        return Batch(images, self.distribution("questions", discrete),
                      self.distribution("targets", discrete))
 
     def decoded(self):
@@ -148,6 +182,10 @@ class AttackRunner:
         update = simulate_update(self.adapter, batch, self.observation.training, differentiable)
         return {name: update[name] for name in self.observation.tensors}
 
+    def _special_ids(self):
+        tokenizer = self.adapter.tokenizer
+        return set(tokenizer.all_special_ids) | {self.adapter.eos, self.adapter.pad}
+
     def text_score(self, candidate):
         if self.text_prior is None:
             return 0.0
@@ -171,7 +209,10 @@ class AttackRunner:
         if math.isfinite(score) and score < self.best_score:
             self.best_score = score
             q, y = candidate.decoded()
-            self.best = (candidate.images.detach().clamp(0, 1).cpu().clone(), q, y)
+            # Public images are an input, never a reconstruction.
+            images = (candidate.images.detach().clamp(0, 1).cpu().clone()
+                      if candidate.private_image else None)
+            self.best = (images, q, y)
 
     def objective(self, candidate, iteration, text_phase):
         batch = candidate.batch()
@@ -223,7 +264,8 @@ class AttackRunner:
                 "prior_evaluations": self.prior_evaluations, "elapsed": self.elapsed(), "history": self.history,
                 "best_score": self.best_score if math.isfinite(self.best_score) else None}
         if self.best is not None:
-            tensors["best.images"] = self.best[0]
+            if self.best[0] is not None:
+                tensors["best.images"] = self.best[0]
             meta["best_questions"], meta["best_targets"] = self.best[1:]
         meta["optimizer"] = _pack(optimizer.state_dict(), tensors)
         write_tensors(generation / "state.safetensors", tensors)
@@ -231,7 +273,16 @@ class AttackRunner:
         write_json(Path(directory) / "checkpoint.json",
                    {"schema_version": 3, "generation": generation.name})
 
-    def run(self, directory=None, resume=False):
+    def run(self, directory=None, resume=False, initial_images=None, initial_tokens=None):
+        """Optimize private fields from random starts or the loaded ``attack.init_*`` starts.
+
+        ``initial_tokens`` maps private text fields to token IDs before perturbation.
+        """
+        if (initial_images is None) != (self.spec.init_source == "random"):
+            raise ValueError("Initial images are required exactly when attack.init_source is not random")
+        if (initial_tokens is None) != (self.spec.init_text_source == "random"):
+            raise ValueError(
+                "Initial tokens are required exactly when attack.init_text_source is not random")
         support = supports(self.spec.method, self.adapter, self.observation)
         if support.status != "supported":
             return Reconstruction(support.status, support.reason)
@@ -246,7 +297,7 @@ class AttackRunner:
             raise ValueError("Attack model differs from the observed model state")
         parameters = self.adapter.trainable()
         self.observation.tensors = {k: v.to(parameters[k].device) for k, v in self.observation.tensors.items()}
-        if self.spec.text_method == "lamp_adapted" and self.observation.training.knowledge != "text_known":
+        if self.spec.text_method == "lamp_adapted" and self.observation.training.private_text:
             if self.spec.prior_model == "tiny-public-bigram" and self.adapter.spec.family != "tiny":
                 raise ValueError("The tiny bigram prior is a fixture, not a VLM benchmark prior")
             self.text_prior = TextPrior(self.spec.prior_model, self.spec.prior_revision,
@@ -257,6 +308,17 @@ class AttackRunner:
         if self.adapter.device.type == "cuda":
             for device in {p.device for p in self.adapter.parameters()}:
                 torch.cuda.reset_peak_memory_stats(device)
+        initialization = {"source": self.spec.init_source,
+                          "perturbation": self.spec.init_perturbation,
+                          "level": self.spec.init_level,
+                          "images_sha256": None if initial_images is None
+                          else _tensor_digest({"images": initial_images.float().cpu()}),
+                          "text_source": self.spec.init_text_source,
+                          "text_perturbation": self.spec.init_text_perturbation,
+                          "text_level": self.spec.init_text_level,
+                          "text_scale": self.spec.init_text_scale,
+                          "tokens_sha256": None if initial_tokens is None
+                          else _tensor_digest({k: v.long().cpu() for k, v in initial_tokens.items()})}
         signature = digest({"attack": asdict(self.spec), "fingerprint": self.observation.model_fingerprint,
                             "source_sha256": source_fingerprint(),
                             "training": asdict(self.observation.training),
@@ -266,7 +328,11 @@ class AttackRunner:
                             "question_ids": self.observation.public_question_ids,
                             "target_ids": self.observation.public_target_ids,
                             "question_lengths": self.observation.public_question_lengths,
-                            "target_lengths": self.observation.public_target_lengths})
+                            "target_lengths": self.observation.public_target_lengths,
+                            **({} if initial_images is None
+                               else {"initial_images": initialization["images_sha256"]}),
+                            **({} if initial_tokens is None
+                               else {"initial_tokens": initialization["tokens_sha256"]})})
         saved = None
         pointer = Path(directory) / "checkpoint.json" if directory else None
         if resume and pointer and pointer.exists():
@@ -288,13 +354,32 @@ class AttackRunner:
             self.history = saved["history"]
             if saved["best_score"] is not None:
                 self.best_score = saved["best_score"]
-                self.best = (state["best.images"].cpu(), saved["best_questions"], saved["best_targets"])
+                images = state["best.images"].cpu() if "best.images" in state else None
+                self.best = (images, saved["best_questions"], saved["best_targets"])
         reason = "iterations_completed"
         for restart in range(saved["restart"] if saved else 0, self.spec.restarts):
             self.restarts_started = max(self.restarts_started, restart + 1)
             torch.manual_seed(self.spec.seed + restart)
-            candidate = Candidate(self.adapter, self.observation, self.spec.seed + restart)
-            image_params = [candidate.images]
+            start_images = None if initial_images is None else perturb(
+                initial_images, self.spec.init_perturbation, self.spec.init_level,
+                self.spec.seed + restart)
+            start_tokens = None if initial_tokens is None else {
+                field: (self.spec.init_text_scale, perturb_tokens(
+                    ids, self.spec.init_text_perturbation, self.spec.init_text_level,
+                    self.spec.seed + restart, self.adapter.vocab_size, self._special_ids()))
+                for field, ids in initial_tokens.items()}
+            candidate = Candidate(self.adapter, self.observation, self.spec.seed + restart,
+                                  start_images, start_tokens, getattr(torch, self.spec.image_dtype))
+            if directory and restart == 0 and not saved:
+                # The actual start lets evaluation separate the gradient's gain from the start.
+                if candidate.private_image:
+                    write_tensors(Path(directory) / "init.safetensors",
+                                  {"images": candidate.images.detach().float().cpu()})
+                questions, targets = candidate.decoded()
+                write_json(Path(directory) / "init.json",
+                           {"questions": questions if candidate.private_q else [],
+                            "targets": targets if candidate.private_y else []})
+            image_params = [candidate.images] if candidate.private_image else []
             text_params = [p for n, p in candidate.named_parameters() if n != "images"]
             if self.spec.method == "dlg_adapted":
                 optimizer = torch.optim.LBFGS(list(candidate.parameters()), lr=self.spec.lr,
@@ -320,7 +405,9 @@ class AttackRunner:
                     self.remember(candidate, self.discrete_score(candidate))
                 for iteration in range(start, self.spec.iterations):
                     self.check_budget()
-                    text_phase = bool(text_params) and iteration % 2 == 1 and self.spec.method != "dlg_adapted"
+                    # Image and text steps alternate; with a public image every step is a text step.
+                    text_phase = (bool(text_params) and self.spec.method != "dlg_adapted"
+                                  and (not image_params or iteration % 2 == 1))
 
                     def closure():
                         optimizer.zero_grad(set_to_none=True)
@@ -373,7 +460,8 @@ class AttackRunner:
                       "signature": signature, "protocol": self.adapter.protocol_version,
                       "best_observable_score": self.best_score if self.best else None,
                       "text_prior": self.text_prior.provenance if self.text_prior else None,
-                      "image_prior": self.image_prior.provenance if self.image_prior else None}
+                      "image_prior": self.image_prior.provenance if self.image_prior else None,
+                      "initialization": initialization}
         if self.best is None:
             return Reconstruction("attack_failed", reason, costs=costs, history=self.history, provenance=provenance)
         status = "completed" if reason in {"iterations_completed", "budget_exhausted"} else "attack_failed"

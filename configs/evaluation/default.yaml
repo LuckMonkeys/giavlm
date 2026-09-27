@@ -5,3 +5,4 @@ clip_model: openai/clip-vit-base-patch32
 clip_revision: ""
 bootstrap: 1000
 seed: 42
+trajectory: false

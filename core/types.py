@@ -16,9 +16,12 @@ class Batch:
         return Batch(self.images[start:stop], self.questions[start:stop], self.targets[start:stop])
 
 
+OBSERVATION_SCHEMA = 5
+
+
 @dataclass
 class Observation:
-    """Allowlisted attacker input with explicitly authorized text structure."""
+    """Allowlisted attacker input with explicitly authorized public fields."""
 
     model: ModelSpec
     training: TrainingSpec
@@ -30,7 +33,9 @@ class Observation:
     public_target_ids: list[list[int]] = field(default_factory=list)
     public_question_lengths: list[int] = field(default_factory=list)
     public_target_lengths: list[int] = field(default_factory=list)
-    schema_version: int = 4
+    # Present exactly when the knowledge condition makes the image public.
+    public_images: torch.Tensor | None = None
+    schema_version: int = OBSERVATION_SCHEMA
 
     @property
     def sample_count(self):
@@ -39,29 +44,37 @@ class Observation:
     def validate(self):
         from core.config import Config, validate
         validate(Config(model=self.model, training=self.training))
-        if self.schema_version != 4:
-            raise ValueError(
-                f"Unsupported observation schema v{self.schema_version}; expected schema v4")
+        if self.schema_version != OBSERVATION_SCHEMA:
+            raise ValueError(f"Unsupported observation schema v{self.schema_version}; "
+                             f"expected schema v{OBSERVATION_SCHEMA}")
         if not self.tensors or any(not torch.isfinite(x).all() for x in self.tensors.values()):
             raise ValueError("Missing or nonfinite observed update")
-        if self.training.knowledge == "private" and (self.public_questions or self.public_targets
-                                                      or self.public_question_ids or self.public_target_ids):
-            raise ValueError("Private text appeared in the public observation")
-        if self.training.knowledge == "question_known" and (self.public_targets or self.public_target_ids):
-            raise ValueError("Private targets appeared in the public observation")
-        if self.training.task == "caption" and (self.public_questions or self.public_question_ids):
+        training = self.training
+        if training.task == "caption" and (self.public_questions or self.public_question_ids):
             raise ValueError("Caption observations cannot expose private question fields")
-        if self.training.knowledge != "private" and self.training.task == "vqa":
-            if len(self.public_questions) != self.sample_count:
-                raise ValueError("Missing declared public questions")
-            if len(self.public_question_ids) != self.sample_count or any(
-                    len(row) != self.model.question_length for row in self.public_question_ids):
-                raise ValueError("Missing or malformed public question token slots")
-        if self.training.knowledge == "text_known" and len(self.public_targets) != self.sample_count:
-            raise ValueError("Missing declared public targets")
-        if self.training.knowledge == "text_known" and (len(self.public_target_ids) != self.sample_count or any(
-                len(row) != self.model.target_length for row in self.public_target_ids)):
-            raise ValueError("Missing or malformed public target token slots")
+        for name, public, texts, ids, length in [
+                ("question", training.question_public, self.public_questions,
+                 self.public_question_ids, self.model.question_length),
+                ("target", training.target_public, self.public_targets,
+                 self.public_target_ids, self.model.target_length)]:
+            if not public:
+                if texts or ids:
+                    raise ValueError(f"Private {name}s appeared in the public observation")
+                continue
+            if len(texts) != self.sample_count:
+                raise ValueError(f"Missing declared public {name}s")
+            if len(ids) != self.sample_count or any(len(row) != length for row in ids):
+                raise ValueError(f"Missing or malformed public {name} token slots")
+        if not training.image_public:
+            if self.public_images is not None:
+                raise ValueError("Private images appeared in the public observation")
+        else:
+            size = self.model.image_size
+            images = self.public_images
+            if images is None or tuple(images.shape) != (self.sample_count, 3, size, size):
+                raise ValueError("Missing or malformed declared public images")
+            if not torch.isfinite(images).all() or images.min() < 0 or images.max() > 1:
+                raise ValueError("Public images must be finite RGB values in [0, 1]")
 
         lengths_known = self.training.token_lengths_known
         question_lengths_required = lengths_known and self.training.task == "vqa"

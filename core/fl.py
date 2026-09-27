@@ -8,7 +8,7 @@ from torch.func import functional_call
 
 from core.artifacts import file_hash, read_json, read_tensors, write_json, write_tensors
 from core.config import ModelSpec, TrainingSpec, digest
-from core.types import Batch, Observation
+from core.types import OBSERVATION_SCHEMA, Batch, Observation
 
 
 def canonicalize_lora_parameter_name(name: str) -> str:
@@ -184,14 +184,16 @@ def capture(adapter, batch, questions: list[str], targets: list[str]):
     obs = Observation(model=replace(adapter.spec), training=replace(spec),
                       tensors=update,
                       model_fingerprint=adapter.fingerprint(),
-                      public_questions=list(questions) if spec.knowledge != "private" and spec.task == "vqa" else [],
-                      public_targets=list(targets) if spec.knowledge == "text_known" else [],
+                      public_questions=list(questions) if spec.question_public else [],
+                      public_targets=list(targets) if spec.target_public else [],
                       public_question_ids=batch.questions.detach().cpu().tolist()
-                      if spec.knowledge != "private" and spec.task == "vqa" else [],
+                      if spec.question_public else [],
                       public_target_ids=batch.targets.detach().cpu().tolist()
-                      if spec.knowledge == "text_known" else [],
+                      if spec.target_public else [],
                       public_question_lengths=question_lengths,
-                      public_target_lengths=target_lengths)
+                      public_target_lengths=target_lengths,
+                      public_images=batch.images.detach().float().cpu().clone()
+                      if spec.image_public else None)
     obs.validate()
     return obs
 
@@ -201,7 +203,7 @@ def save_observation(directory, observation):
     if (directory / "observation.json").exists():
         raise FileExistsError(directory)
     observation.validate()
-    metadata = {"schema_version": 4, "model": asdict(observation.model),
+    metadata = {"schema_version": OBSERVATION_SCHEMA, "model": asdict(observation.model),
                 "training": asdict(observation.training),
                 "model_fingerprint": observation.model_fingerprint,
                 "public_questions": observation.public_questions,
@@ -214,6 +216,10 @@ def save_observation(directory, observation):
     write_tensors(directory / "update.safetensors", observation.tensors)
     from core.artifacts import file_hash
     metadata["update_sha256"] = file_hash(directory / "update.safetensors")
+    metadata["public_images_sha256"] = None
+    if observation.public_images is not None:
+        write_tensors(directory / "public_images.safetensors", {"images": observation.public_images})
+        metadata["public_images_sha256"] = file_hash(directory / "public_images.safetensors")
     metadata["observation_id"] = digest(metadata)
     write_json(directory / "observation.json", metadata)
     return metadata["observation_id"]
@@ -222,12 +228,12 @@ def save_observation(directory, observation):
 def load_observation(directory, device=None):
     directory = Path(directory)
     meta = read_json(directory / "observation.json")
-    if meta.get("schema_version") != 4:
-        raise ValueError(
-            f"Unsupported observation schema v{meta.get('schema_version')}; expected schema v4")
+    if meta.get("schema_version") != OBSERVATION_SCHEMA:
+        raise ValueError(f"Unsupported observation schema v{meta.get('schema_version')}; "
+                         f"expected schema v{OBSERVATION_SCHEMA}")
     allowed = {"schema_version", "model", "training", "model_fingerprint", "public_questions",
                "public_targets", "public_question_ids", "public_target_ids",
-               "public_question_lengths", "public_target_lengths",
+               "public_question_lengths", "public_target_lengths", "public_images_sha256",
                "parameter_names", "update_sha256", "observation_id"}
     if set(meta) != allowed:
         raise ValueError("Observation contains unknown or missing fields")
@@ -238,6 +244,11 @@ def load_observation(directory, device=None):
     from core.artifacts import file_hash
     if file_hash(directory / "update.safetensors") != meta["update_sha256"]:
         raise ValueError("Observed update integrity check failed")
+    public_images = None
+    if meta["public_images_sha256"] is not None:
+        if file_hash(directory / "public_images.safetensors") != meta["public_images_sha256"]:
+            raise ValueError("Public image integrity check failed")
+        public_images = read_tensors(directory / "public_images.safetensors", "cpu")["images"]
     model = ModelSpec(**meta["model"])
     if device:
         model.device = device
@@ -252,6 +263,7 @@ def load_observation(directory, device=None):
         public_target_ids=meta["public_target_ids"],
         public_question_lengths=meta["public_question_lengths"],
         public_target_lengths=meta["public_target_lengths"],
+        public_images=public_images,
         schema_version=meta["schema_version"])
     if sorted(obs.tensors) != meta["parameter_names"]:
         raise ValueError("Observed parameter names differ from metadata")

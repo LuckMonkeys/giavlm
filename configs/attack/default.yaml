@@ -19,3 +19,14 @@ gradvit_prior_checkpoint: ""
 gradvit_prior_weight: 0.0001
 patch_weight: 0.0001
 allow_prior_download: false
+init_source: random
+init_images: ""
+init_perturbation: none
+init_level: 0.0
+init_text_source: random
+init_question: ""
+init_target: ""
+init_text_perturbation: none
+init_text_level: 0.0
+init_text_scale: 10.0
+image_dtype: float32
