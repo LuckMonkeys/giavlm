@@ -16,6 +16,7 @@ dependencies = [
 
 [project.optional-dependencies]
 metrics = ["lpips==0.1.4"]
+diagnostics = ["lpips==0.1.4", "matplotlib==3.8.0"]
 utility = ["pycocoevalcap==1.2"]
 dev = ["pytest==8.3.5", "ruff==0.11.13"]
 

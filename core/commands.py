@@ -463,6 +463,11 @@ def diagnose_gradient(args):
                        for row in report["variants"]]})
 
 
+def diagnose_discriminability(args):
+    from evaluation.gradient_discriminability import execute
+    execute(args)
+
+
 def doctor(args):
     from attacks import METHODS, supports
     cfg = configuration(args)
@@ -644,6 +649,18 @@ def build_parser():
                    help="Attack directory whose images (or best checkpoint) are replayed")
     p.add_argument("--device")
     p.add_argument("--seed", type=int, default=0)
+    p = command("diagnose-discriminability", diagnose_discriminability)
+    p.add_argument("--spec", required=True)
+    p.add_argument("--output", required=True)
+    p.add_argument("--stage", required=True,
+                   choices=["prepare", "score", "directions", "freeze", "report"])
+    p.add_argument("--cohort", choices=["pilot", "development", "validation"], default="pilot")
+    p.add_argument("--precision", choices=["native", "float32"], default="native")
+    p.add_argument("--condition")
+    p.add_argument("--device")
+    p.add_argument("--gpu-ids", default="5,6")
+    p.add_argument("--resume", action="store_true")
+    p.add_argument("--worker", action="store_true", help=argparse.SUPPRESS)
     p = command("doctor", doctor, True)
     p.add_argument("--probe", action="store_true")
     p.add_argument("--resolve-revision", metavar="HF_MODEL_ID")

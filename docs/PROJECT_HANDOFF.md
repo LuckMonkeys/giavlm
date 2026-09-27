@@ -29,13 +29,15 @@ ps -eo pid,etime,cmd | rg 'examples.run_attack|utils.run_cmds'; nvidia-smi
 
 ## Priorities
 
-1. **Next direction (user, 2026-09-27): gradient discriminability.** Before any more
-   optimizer work, test question (1) systematically: does the matching loss track
-   distance to the truth at all? Question (2), how to minimize it, only matters if
-   (1) holds. No plan is written yet; the previous planning attempt was not
-   completed. Useful evidence already in hand: initial loss vs α
-   (`outputs/diagnostics/loss_curves/`), the high cosine of pure-noise gradients,
-   and IG reconstructions with low loss but ~19 dB PSNR.
+1. **Current direction (user, 2026-09-27): gradient discriminability.** The staged
+   diagnostic is implemented on `gradient-diagnostics`; see
+   `configs/diagnostics/slake_llava_discriminability.yaml` and
+   `docs/validation.md#Gradient-discriminability-diagnostic`. It tests candidate
+   ranking, low-loss false matches, local descent directions, module losses,
+   common-gradient centering and an fp32 pilot over F-C r0, F-L r0/r10 and F-CL
+   r0/r10. The three-image native-precision scoring pilot is active on physical
+   GPUs 5/6. Complete pilot score/directions/report before starting the 20-image
+   development cohort; freeze it before the independent 20-image eval cohort.
 2. IG random-init baseline under float32 candidates (`attack.image_dtype`, default
    since 2026-09-24). The parameter sweep used bf16 candidates; rerun before citing
    it. `attack.image_dtype=bfloat16` reproduces the old runs.
@@ -206,7 +208,10 @@ Full numbers: `outputs/slake_llava_ig_parameter_sweep/{lr,tv,iterations,sweep}_r
 
 ## Active / Pending Jobs
 
-- None running (trained-snapshot grids for F-L and F-CL finished 2026-09-27 ~00:40).
+- `outputs/diagnostics/discriminability`: native-precision, three-image scoring
+  pilot started 2026-09-27 on physical GPUs 5 and 6. The scheduler is limited to
+  two GPUs total and one job per card; inspect `pilot-score.log` and the committed
+  scheduler JSON rather than trusting this note.
 - `run_yaml/slake_llava_ig_iteration_occ.yaml` (100000-iteration diagnostic): it
   died at iteration 15150; the scheduler's `running` row is stale.
 - User GPU assignment for this line of work: GPU 6 (F-L / general), GPU 7 (F-CL).

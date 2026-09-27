@@ -1,5 +1,29 @@
 # Validation
 
+## Gradient discriminability diagnostic
+
+`diagnose-discriminability` is a private-reference study, not an attack benchmark.
+The frozen SLAKE/LLaVA specification is
+`configs/diagnostics/slake_llava_discriminability.yaml`. It evaluates the same
+candidate images under F-C r0, F-L r0/r10 and F-CL r0/r10, records global and
+module matching losses, tests local descent directions, and bootstraps at the
+image level. Reports never expose sample/image IDs or private paths.
+
+Run the stages in order:
+
+```bash
+python -m core.commands diagnose-discriminability --spec configs/diagnostics/slake_llava_discriminability.yaml --output outputs/diagnostics/discriminability --stage prepare
+python -m core.commands diagnose-discriminability --spec configs/diagnostics/slake_llava_discriminability.yaml --output outputs/diagnostics/discriminability --stage score --cohort pilot --gpu-ids 5,6 --resume
+python -m core.commands diagnose-discriminability --spec configs/diagnostics/slake_llava_discriminability.yaml --output outputs/diagnostics/discriminability --stage directions --cohort pilot --gpu-ids 5,6 --resume
+python -m core.commands diagnose-discriminability --spec configs/diagnostics/slake_llava_discriminability.yaml --output outputs/diagnostics/discriminability --stage report --cohort pilot
+```
+
+The scheduler accepts only physical GPUs 5 and 6, exposes one UUID to each worker,
+allows at most two GPUs total and one job per GPU, and fails on worker errors without
+retrying or changing the protocol. Development must complete `score` and
+`directions`, then `freeze`, before validation can start. The fp32 control is
+restricted to the three-image pilot.
+
 ## Automated Checks
 
 Run `pytest -q` for protocol, data, metrics and model-adapter tests. The offline
