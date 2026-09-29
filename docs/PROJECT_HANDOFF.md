@@ -1,7 +1,7 @@
 # Project Handoff
 
-Updated: 2026-09-27 (Asia/Shanghai) · branch `gradient-diagnostics` (6 commits on
-top of `main` at `451eea2`, not merged)
+Updated: 2026-09-29 (Asia/Shanghai) · branch `main`; former
+`gradient-diagnostics` work merged through `cf9411f`
 
 Resume: read `AGENTS.md` first, then this file. Verify it is current:
 
@@ -260,7 +260,7 @@ Full numbers: `outputs/slake_llava_ig_parameter_sweep/{lr,tv,iterations,sweep}_r
   `step1_pilot` are v4 and are rejected by `attack`/`diagnose-gradient`; recapture
   (deterministic, minutes) to reuse them. `outputs/diagnostics/reference_init*` and
   the trained-snapshot grids are v5. All reports and numbers above remain valid.
-- Branch `gradient-diagnostics` (not merged into `main`) holds: diagnostics
+- `main` now includes the former `gradient-diagnostics` branch: diagnostics
   (`evaluation/gradient_diagnostics.py`, `diagnose-gradient`), attack starts
   (`attacks/init.py`, `attack.init_*`, `attack.init_text_*`), per-field knowledge
   with `image_known` / `image_question_known`, `attack.image_dtype`, Observation v5,
