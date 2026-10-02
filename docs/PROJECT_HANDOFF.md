@@ -1,6 +1,6 @@
 # Project Handoff
 
-Updated: 2026-09-29 (Asia/Shanghai) · branch `main`; former
+Updated: 2026-10-02 (Asia/Shanghai) · branch `main`; former
 `gradient-diagnostics` work merged through `cf9411f`
 
 Resume: read `AGENTS.md` first, then this file. Verify it is current:
@@ -18,7 +18,9 @@ ps -eo pid,etime,cmd | rg 'examples.run_attack|utils.run_cmds'; nvidia-smi
   SLAKE + LLaVA-1.5-7B.
 - **Stage:** method/protocol validation and diagnosis. The end-to-end pipeline runs;
   DLG and IG were exercised on SLAKE/LLaVA.
-- **Finding:** reconstructions are noise-like, for images and private Q/A tokens.
+- **Finding:** image reconstructions remain noise-like. With the ground-truth image
+  and private-text lengths public, TAG recovered no question content in 18 runs;
+  answer signal appeared only weakly under F-CL at round 0 (details below).
 - **Diagnosis so far:** replay is exact. On 20 held-out images, matching loss has
   useful global ordering over the finite candidate bank, especially at trained
   round 10, but its local pixel-space descent direction is almost orthogonal to the
@@ -36,14 +38,15 @@ ps -eo pid,etime,cmd | rg 'examples.run_attack|utils.run_cmds'; nvidia-smi
 2. IG random-init baseline under float32 candidates (`attack.image_dtype`, default
    since 2026-09-24). The parameter sweep used bf16 candidates; rerun before citing
    it. `attack.image_dtype=bfloat16` reproduces the old runs.
-3. Text-side leakage: `run_yaml/slake_llava_image_question_known.yaml` (4 jobs × 3
-   images: `image_question_known` random / lengths known, `image_known`, and a
-   private-reference answer start with 50% token replacement; prepared, not
-   launched; a 20-iteration pilot passed, `outputs/diagnostics/iqk_pilot`).
-   Consider running it on the trained F-L snapshots, where the update is dominated
-   by a text-driven component.
-4. Before any paper claim from the strategy/round results: trained F-C snapshots
-   (missing), 10–20 images instead of 3, more seeds, and more training rounds to see
+3. **Text-side leakage:** the completed `image_known` + known-length matrix found no
+   question recovery and only weak F-CL/r0 answer signal. Next run a matched
+   `image_question_known` + known-answer-length matrix (question fixed, answer
+   private) across F-C/F-L/F-CL at rounds 0/10 to separate joint-search failure from
+   an uninformative text objective. The older four-job schedule
+   `run_yaml/slake_llava_image_question_known.yaml` remains unlaunched apart from a
+   20-iteration pilot (`outputs/diagnostics/iqk_pilot`).
+4. Before any paper claim from the strategy/round results: the IG grid on the new
+   trained F-C snapshots (training done 2026-09-29, attack grid not run), 10–20 images instead of 3, more seeds, and more training rounds to see
    whether the F-L equilibrium keeps rising.
 5. Expand only after an update carries recoverable image or text signal.
    - F-2stage; `private`, `question_known`, known-length conditions.
@@ -186,6 +189,12 @@ Figure: `outputs/diagnostics/loss_curves/rounds_comparison.png`.
   all 224 LoRA-A gradients are nonzero in the round-5/10 captures. Reproduce with
   `outputs/federation/slake_llava_{f_l,f_cl}_fedavg.protocol.json` plus the `--set`
   overrides recorded in `outputs/federation/slake_llava_f_cl_pipeline.sh`.
+- F-C trained 2026-09-29 with the same settings on GPU 5
+  (`outputs/federation/slake_llava_f_c_fedavg`, snapshots 0/5/10;
+  `slake_llava_f_c_pipeline.sh`, training only). Loss per round 4.51 → 1.58
+  (4.51, 3.70, 3.77, 3.61, 2.24, 2.10, 2.06, 3.11, 2.18, 1.58); the round-8 spike
+  appears in F-L/F-CL too. The process reserved ~50 GB (nvidia-smi, shared GPU).
+  No IG grid on these snapshots yet.
 
 - F-L improves monotonically with training: final PSNR round 0 → 5 → 10 rises at every
   α and on all 3 images (α=0.01 median 19.9 → 21.6 → 24.1; SSIM ~0.2 → ~0.38). At
@@ -203,6 +212,41 @@ Figure: `outputs/diagnostics/loss_curves/rounds_comparison.png`.
   sensitive and more dominated by an image-independent component. The bf16 dead zone
   (α ≤ 1e-4) and the jump at 3e-4 remain in every setting.
 
+## Evidence: Text-Only Reconstruction with Public Images (2026-09-29, completed)
+
+`run_yaml/slake_llava_image_known_lengths_states.yaml`; outputs under
+`outputs/slake_llava_text_leakage/image_known_lengths_states/`. All six scheduler
+jobs returned 0. Each condition uses the same 3 SLAKE `tune` images, one attack seed,
+2000 iterations and one restart. The ground-truth image and per-sample
+question/answer token lengths are declared public; question and answer contents are
+private. The image is a fixed `Observation` input and is never optimized or scored.
+
+| Condition | Question EM | Question ROUGE-L | Answer EM | Answer ROUGE-L | Answer word recall |
+|---|---:|---:|---:|---:|---:|
+| F-C r0 | 0 | 0 | 0 | 0 | 0 |
+| F-C r10 | 0 | 0 | 0 | 0 | 0 |
+| F-L r0 | 0 | 0 | 0 | 0 | 0 |
+| F-L r10 | 0 | 0 | 0 | 0 | 0 |
+| F-CL r0 | 0 | 0 | 0.333 | 0.467 | 0.500 |
+| F-CL r10 | 0 | 0 | 0 | 0 | 0 |
+
+- Question EM, ROUGE-1/L and word recall are zero in all 18 runs. All answer
+  metrics are also zero outside F-CL/r0.
+- Under F-CL/r0, one of three answers is recovered exactly and one partially
+  (ROUGE-L 0.4, word recall 0.5). The exact recovery is the single-token target;
+  the partial case has four target tokens. All random-start metrics are zero, but
+  this sample size is too small to distinguish leakage from short-answer chance.
+- Training to round 10 does not improve recovery: F-C and F-L remain at zero, and
+  the weak F-CL/r0 answer signal disappears at r10.
+- Lower matching loss does not imply recovery. For example, F-L/r10 run 0 reduces
+  its raw TAG objective 1482.93→1174.37 (iteration 50→2000), while the best
+  observable discrete score occurs at iteration 1250 (1.065 versus 1.413 at the
+  end); both reconstructed fields still have zero overlap with the references.
+  Raw TAG objectives are unnormalized and must not be compared across conditions.
+- This is n=3 development evidence, not a paper result: the three runs are three
+  images, not independent attack seeds. A paired known-question experiment and
+  larger image/seed counts remain necessary.
+
 ## Hypotheses (unverified)
 
 - IG drift from near-truth starts comes from the objective preferring other images,
@@ -210,7 +254,7 @@ Figure: `outputs/diagnostics/loss_curves/rounds_comparison.png`.
   same start and sign steps against a wrong update, and a much smaller LR.
 - The F-L restoring effect grows with more training rounds (only rounds 0/5/10 seen).
 - F-CL's round-10 fallback reflects the trained connector's model state rather than
-  chance (n=3; trained F-C snapshots would help separate this).
+  chance (n=3; the trained F-C snapshots, now available, would help separate this).
 - The update's image-independent component (pure-noise gradients keep cosine
   0.4–0.7 with the truth's, higher after training) is what limits discriminability.
 
@@ -265,7 +309,7 @@ Full numbers: `outputs/slake_llava_ig_parameter_sweep/{lr,tv,iterations,sweep}_r
   (`attacks/init.py`, `attack.init_*`, `attack.init_text_*`), per-field knowledge
   with `image_known` / `image_question_known`, `attack.image_dtype`, Observation v5,
   `evaluation.trajectory` and `init_*` metrics, the staged discriminability study,
-  their tests, these docs, and five `run_yaml/slake_llava_*` schedules. Tests:
+  their tests, these docs, and the associated `run_yaml/slake_llava_*` schedules. Tests:
   223 passed, 3 skipped; ruff clean (rechecked 2026-09-27).
 - Analysis code that produced `outputs/diagnostics/loss_curves/*` is not in the repo:
   copies live in `outputs/diagnostics/analysis_scripts/` (loss curves, α vs victim

@@ -1,0 +1,137 @@
+# Text-only recovery on SLAKE + LLaVA-1.5-7B with the ground-truth image and
+# per-sample question/answer token lengths declared public. Question and answer
+# contents remain private. Compare F-C, F-L and F-CL at matched round-0/round-10
+# global states; the public image is fixed and is never optimized or evaluated.
+output_root: ../outputs/slake_llava_text_leakage/image_known_lengths_states
+
+scheduler:
+  min_free_mib: 50000
+  max_jobs_per_gpu: 1
+  poll_seconds: 30
+
+jobs:
+  - name: ik_lengths_f_c_r0
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - model_snapshot=outputs/federation/slake_llava_f_c_fedavg/round-0000
+      - tuning=f_c
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=tag_adapted
+      - attack.iterations=2000
+      - attack.text_lr=0.15
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - knowledge=image_known
+      - knowledge.token_lengths_known=true
+
+  - name: ik_lengths_f_c_r10
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - model_snapshot=outputs/federation/slake_llava_f_c_fedavg/round-0010
+      - tuning=f_c
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=tag_adapted
+      - attack.iterations=2000
+      - attack.text_lr=0.15
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - knowledge=image_known
+      - knowledge.token_lengths_known=true
+
+  - name: ik_lengths_f_l_r0
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - model_snapshot=outputs/federation/slake_llava_f_l_fedavg/round-0000
+      - tuning=f_l
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=tag_adapted
+      - attack.iterations=2000
+      - attack.text_lr=0.15
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - knowledge=image_known
+      - knowledge.token_lengths_known=true
+
+  - name: ik_lengths_f_l_r10
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - model_snapshot=outputs/federation/slake_llava_f_l_fedavg/round-0010
+      - tuning=f_l
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=tag_adapted
+      - attack.iterations=2000
+      - attack.text_lr=0.15
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - knowledge=image_known
+      - knowledge.token_lengths_known=true
+
+  - name: ik_lengths_f_cl_r0
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - model_snapshot=outputs/federation/slake_llava_f_cl_fedavg/round-0000
+      - tuning=f_cl
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=tag_adapted
+      - attack.iterations=2000
+      - attack.text_lr=0.15
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - knowledge=image_known
+      - knowledge.token_lengths_known=true
+
+  - name: ik_lengths_f_cl_r10
+    config_name: slake_llava_ig_private
+    overrides:
+      - data.manifest=data/slake/samples.jsonl
+      - data.split=tune
+      - model.checkpoint=/home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+      - model_snapshot=outputs/federation/slake_llava_f_cl_fedavg/round-0010
+      - tuning=f_cl
+      - num_runs=3
+      - resume=true
+      - threads=8
+      - attack.text_method=tag_adapted
+      - attack.iterations=2000
+      - attack.text_lr=0.15
+      - attack.restarts=1
+      - attack.max_evaluations=null
+      - attack.checkpoint_interval=50
+      - attack.seconds=14400
+      - knowledge=image_known
+      - knowledge.token_lengths_known=true
