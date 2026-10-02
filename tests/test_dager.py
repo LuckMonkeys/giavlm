@@ -301,7 +301,7 @@ def test_token_metrics_are_post_commit_and_distinguish_ambiguity(tmp_path):
 
 
 def test_equal_topk_ablation_compares_scores_after_commit(tmp_path):
-    from evaluation.dager_ablation import compare_token_filters
+    from evaluation.dager_ablation import compare_token_filters, validate_token_filters
     truth = tmp_path / "truth"
     write_tensors(truth / "text_tokens.safetensors", {
         "questions": torch.tensor([[4, 5, 2, 0]]),
@@ -325,6 +325,28 @@ def test_equal_topk_ablation_compares_scores_after_commit(tmp_path):
     assert report["modes"]["residual"]["topk"]["recall"] == 0.75
     assert report["modes"]["residual"]["ambiguous_in_topk"] == 0
     assert report["pairs"]["raw__residual"]["intersection"] == 1
+    validation = validate_token_filters(
+        directories, truth, TrainingSpec(knowledge="image_known"),
+        wrong_references=[{3, 4}, {3, 5}], exact_length_references=[{3, 4}],
+        wrong_references_by_field={"questions": [{3, 4}], "targets": [{3, 5}]},
+        exact_length_references_by_field={"questions": [{3, 4}], "targets": [{3, 5}]},
+        distinct_references_by_field={"questions": [{3}], "targets": [{5}]},
+        exact_length_distinct_references_by_field={"questions": [{3}], "targets": [{5}]},
+        topk=3, topks=(1, 3, 5), random_draws=1000, seed=7)
+    raw = validation["modes"]["raw"]
+    residual = validation["modes"]["residual"]
+    assert raw["ranking"]["curve"][1]["hits"] == 2
+    assert residual["ranking"]["curve"][1]["hits"] == 3
+    assert residual["ranking"]["average_precision"] > raw["ranking"]["average_precision"]
+    assert raw["random_topk_control"]["expected_hits"] == 2.4
+    assert raw["random_topk_control"]["exact_probability_at_least_observed"] == 1
+    assert raw["wrong_text_control"]["reference_count"] == 2
+    assert raw["exact_length_wrong_text_control"]["reference_count"] == 1
+    assert raw["wrong_text_control_by_field"]["questions"]["reference_count"] == 1
+    assert raw["exact_length_wrong_text_control_by_field"]["targets"]["reference_count"] == 1
+    assert raw["distinct_wrong_text_control_by_field"]["questions"]["reference_count"] == 1
+    assert raw["exact_length_distinct_wrong_text_control_by_field"]["targets"]["reference_count"] == 1
+    assert "references" not in raw["wrong_text_control"]
     with pytest.raises(ValueError, match="committed"):
         compare_token_filters({"missing": tmp_path / "missing"}, truth,
                               TrainingSpec(knowledge="image_known"), topk=3)

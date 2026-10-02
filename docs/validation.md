@@ -22,12 +22,17 @@ is used. The tests cover:
   interrupted search resume, changed-upload/config/schema rejection, OOM failure
   persistence, and staged attack-to-evaluation artifact boundaries.
 - Equal-top-k raw/public-residual comparison after both score artifacts commit,
-  plus exclusion of padded model embedding rows that have no tokenizer ID.
+  exclusion of padded model embedding rows that have no tokenizer ID, and
+  post-commit ranking controls against exact random top-k nulls and aggregate
+  wrong-reference distributions.
 
 Run with `/tmp/giavlm-venv/bin/python -m pytest -q tests/test_dager.py`.
-Real token detection and full reconstruction remain intentionally unrun. Before
-those studies, freeze thresholds on development data, compare raw/quotient/QKV
-conditions, and include wrong-update and precision controls.
+One authorized real-model diagnostic has since been run; see
+`docs/PROJECT_HANDOFF.md#evidence-first-real-dager-diagnostic-2026-10-02-completed`.
+Its sequence reconstruction failed. The token ranking is far above uniform random
+on that sample, but wrong-text and corpus-frequency controls show substantial
+template-token effects. Freeze settings before a multi-image study, and retain
+random-subspace, wrong-text, corpus-frequency and precision controls.
 
 ## Gradient discriminability diagnostic
 

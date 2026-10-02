@@ -20,15 +20,16 @@ ps -eo pid,etime,cmd | rg 'examples.run_attack|utils.run_cmds'; nvidia-smi
   DLG and IG were exercised on SLAKE/LLaVA.
 - **New implementation:** `dager_adapted` adds text-only discrete reconstruction
   under public images/lengths, with optional known questions. Original `dager`
-  remains unimplemented. Only mathematical and small random-model interface tests
-  are authorized/completed in this phase; do not launch real token detection or
-  reconstruction experiments without a new request. See `docs/baselines.md` and
+  remains unimplemented. One authorized real-model `image_known` diagnostic and
+  its post-commit token-ranking controls are now complete; they show token-set
+  signal but failed sequence reconstruction. See the evidence below and
   `docs/validation.md` for controls and boundaries.
-- **Validation (2026-10-02):** CPU full regression 243 passed, 3 skipped; new
-  DAGER suite 20 passed; Ruff clean and Hydra DAGER configuration resolves. No
-  real DAGER run had been launched at implementation time. Initial unrelated
-  changes were preserved in commit `e1e9557`; local DAGER reference checkout is
-  ignored like the other reference projects, with its own untracked PDF left intact.
+- **Validation (2026-10-02):** DAGER mathematical/interface tests, real GPU-4
+  diagnostics, paired raw/public-residual top-50 scoring and post-commit random,
+  wrong-text and corpus-frequency controls are complete. CPU regression: 246
+  passed, 3 skipped; Ruff clean. Initial unrelated changes were preserved in
+  commit `e1e9557`; local DAGER reference checkout is ignored like the other
+  reference projects, with its own untracked PDF left intact.
 - **Finding:** image reconstructions remain noise-like. With the ground-truth image
   and private-text lengths public, TAG recovered no question content in 18 runs;
   answer signal appeared only weakly under F-CL at round 0 (details below).
@@ -40,11 +41,12 @@ ps -eo pid,etime,cmd | rg 'examples.run_attack|utils.run_cmds'; nvidia-smi
 
 ## Priorities
 
-Current text-method direction: use the new DAGER implementation for the next
-authorized study, beginning with trained F-L/F-CL and known-question answers.
-Rank-8 effectiveness, numerical thresholds and real reconstruction are unverified.
-Initialization with zero LoRA-A gradients is explicitly unsupported. The earlier
-TAG follow-up below remains a separate pending comparison, not an active run.
+Current text-method direction: freeze the DAGER settings and repeat the token
+ranking controls on multiple independent images before doing more sequence search.
+The single-sample diagnostic contains real sample-associated token-set signal but
+does not establish generalization. Initialization with zero LoRA-A gradients is
+explicitly unsupported. The earlier TAG follow-up below remains a separate pending
+comparison, not an active run.
 
 1. **Interpret and extend the completed gradient-discriminability study.** The
    finite-bank result supports gradient loss as a global ranking signal, while the
@@ -341,6 +343,45 @@ is not part of this comparison. Artifacts and the paired report are under
   test and a post-commit equal-top-k evaluator. The invalid artifacts under
   `outputs/diagnostics/dager_projection_ablation/` are retained only as an audit
   trail and must not be cited.
+
+### Token-filter null controls (`n=1`, 2026-10-02)
+
+The already committed full-vocabulary score artifacts were evaluated without new
+gradient capture or attack tuning. The aggregate report is
+`outputs/diagnostics/dager_projection_ablation_valid_vocab/filter_validation.json`.
+It uses 100,000 random top-50 draws and 632 wrong SLAKE `tune` texts from other
+image groups. No individual wrong-reference ID or text is retained in the report.
+
+- Uniform random top-50 sampling expects 0.0219 of the 14 private IDs. The exact
+  probability of at least the observed 7 raw hits is 4.99e-17; for the 13
+  public-residual hits it is 8.41e-37. Neither of 100,000 draws reached either
+  observation. The filter is therefore decisively not equivalent to uniform
+  vocabulary sampling on this sample.
+- The K curve also reflects ranking, not a lucky cutoff: public residual recovers
+  9/14 IDs at K=20, 13/14 at K=50 and 14/14 at K=100 (average precision 0.336).
+  Raw recovers 5/14, 7/14 and 7/14 respectively (average precision 0.187), and is
+  still only 8/14 at K=1000.
+- A corpus-frequency top-50 recovers all 10 question IDs but none of the four
+  target IDs. Thus most question-token hits are vulnerable to a repeated-template
+  explanation; uniform random is an insufficient baseline. Public residual still
+  recovers all four target IDs, which are absent from that frequency baseline.
+- After excluding wrong texts whose field token set exactly equals the current
+  field, public residual's question recall is 0.90 versus a wrong-text median of
+  about 0.46 (plus-one empirical tail 0.00168 over 593 texts); target recall is
+  1.0 versus median 0 (tail 0.0306 over 619). Raw question recall 0.40 is not
+  exceptional (tail 0.180), although its target recall 0.75 is (tail 0.0226).
+- Only six length-matched wrong texts per field remain after removing exact token-
+  set duplicates, so that control has a minimum attainable plus-one tail of 1/7
+  and cannot establish significance. Descriptively, their target overlap is zero
+  for both filters while the current target has 3/4 raw and 4/4 residual coverage.
+
+Conclusion: the current DAGER scores contain genuine sample-associated token-set
+signal, especially for the answer, and public-direction removal strengthens it.
+They also strongly favor common/template tokens, so the 13/14 headline must not be
+treated as 13 sample-specific discoveries. This remains post-hoc `n=1` development
+evidence, not sequence recovery or generalization. The next valid step is a frozen
+multi-image study with per-image random, wrong-text/frequency and random-subspace
+controls.
 
 ## Hypotheses (unverified)
 
