@@ -26,9 +26,9 @@ ps -eo pid,etime,cmd | rg 'examples.run_attack|utils.run_cmds'; nvidia-smi
   `docs/validation.md` for controls and boundaries.
 - **Validation (2026-10-02):** CPU full regression 243 passed, 3 skipped; new
   DAGER suite 20 passed; Ruff clean and Hydra DAGER configuration resolves. No
-  real DAGER token/reconstruction run was launched. Initial unrelated changes
-  were preserved in commit `e1e9557`; local DAGER reference checkout is ignored
-  like the other reference projects, with its own untracked PDF left intact.
+  real DAGER run had been launched at implementation time. Initial unrelated
+  changes were preserved in commit `e1e9557`; local DAGER reference checkout is
+  ignored like the other reference projects, with its own untracked PDF left intact.
 - **Finding:** image reconstructions remain noise-like. With the ground-truth image
   and private-text lengths public, TAG recovered no question content in 18 runs;
   answer signal appeared only weakly under F-CL at round 0 (details below).
@@ -263,6 +263,38 @@ private. The image is a fixed `Observation` input and is never optimized or scor
 - This is n=3 development evidence, not a paper result: the three runs are three
   images, not independent attack seeds. A paired known-question experiment and
   larger image/seed counts remain necessary.
+
+## Evidence: First Real DAGER Diagnostic (2026-10-02, completed)
+
+One authorized development sample was run on physical GPU 4 under trained F-L
+round 10, FedSGD, LoRA rank 8, `image_question_known` and public target length.
+Artifacts are under `outputs/diagnostics/dager_real_gpu4_f_l_r10/run-00000/`.
+This is a functionality/signal diagnostic (`n=1`), not a reconstruction result for
+the paper and not a threshold-tuning set.
+
+- `public_residual`, joint Q/K/V and threshold 0.05 produced first- and
+  second-layer quotient-space ranks 24 (public ranks 597 and 653 in hidden size
+  4096). Neither space was saturated.
+- It scanned all 32,064 vocabulary IDs. The filter returned 2 informative and 19
+  public-overlap ambiguous candidates. The 2 informative candidates were both
+  true private-answer token IDs (precision 1.0), but they covered only half of the
+  four unique private content-token IDs (recall 0.5). Including ambiguous IDs gave
+  precision 0.095, recall 0.5. This is evidence of partial token-set leakage only.
+- Beam search filled four private content slots using 1,029 prefix evaluations in
+  65 batches; attack work after model loading took 5.5 seconds and used no full
+  gradient reranking. The submitted text had EM/ROUGE/word recall 0 and WER 1.0.
+  Thus the first complete real reconstruction failed despite precise partial token
+  detection.
+- The first launch captured successfully but exposed a fresh-run/resume interface
+  bug: `ExperimentRunner` passes `resume=true` to a new attack. Commit `0a61e94`
+  makes DAGER restore only when its own checkpoint exists and adds a regression
+  test. The attack was then run directly against the unchanged hash-checked public
+  observation, followed by evaluation after result commitment. No retry changed
+  the data, precision, training condition or search settings.
+- GPU 4 was empty before the run, peaked during LLaVA capture/restore, and returned
+  to 0 MiB afterward. There was no OOM. The stale `failed.json` in the attack
+  directory records the pre-search interface failure; `result.json` and
+  `evaluation.json` are the later committed successful execution artifacts.
 
 ## Hypotheses (unverified)
 
