@@ -6,7 +6,8 @@ from hydra import compose, initialize_config_dir
 import pytest
 import torch
 
-from attacks.analytic.dager_adapted import DAGERSearch, dager_support, gradient_groups
+from attacks.analytic.dager_adapted import (DAGERSearch, dager_support, forbidden_token_ids,
+                                            gradient_groups)
 from attacks.analytic.dager_subspace import SpanFilter, residual, row_basis, select_tokens
 from attacks.factory import create_attacker
 from core.adapters.hf import HFAdapter
@@ -107,6 +108,23 @@ def test_public_overlap_is_retained_without_being_a_positive_detection():
     ids, metadata = select_tokens(scores, ambiguous, set(), DAGEROptions(max_candidates=1))
     assert ids == [0, 1]
     assert metadata["ambiguous_candidates"] == 1 and metadata["truncated"]
+
+
+def test_dager_excludes_padded_embedding_rows_outside_tokenizer():
+    adapter = SimpleNamespace(
+        tokenizer=SimpleNamespace(__len__=lambda self: 5, all_special_ids=[0, 1]),
+        vocab_size=8, eos=2, pad=0)
+    # SpecialNamespace does not dispatch a per-instance __len__; use a tiny class.
+    class Tokenizer:
+        all_special_ids = [0, 1]
+        def __len__(self):
+            return 5
+    adapter.tokenizer = Tokenizer()
+    assert forbidden_token_ids(adapter) == {0, 1, 2, 5, 6, 7}
+    adapter.tokenizer = Tokenizer()
+    adapter.vocab_size = 4
+    with pytest.raises(ValueError, match="exceeds"):
+        forbidden_token_ids(adapter)
 
 
 @pytest.mark.parametrize("knowledge", ["image_question_known", "image_known"])
@@ -280,6 +298,36 @@ def test_token_metrics_are_post_commit_and_distinguish_ambiguity(tmp_path):
     assert metrics["candidates"]["recall"] == 1
     assert metrics["informative_detections"]["recall"] == 0
     assert metrics["ambiguous_reference_count"] == 1
+
+
+def test_equal_topk_ablation_compares_scores_after_commit(tmp_path):
+    from evaluation.dager_ablation import compare_token_filters
+    truth = tmp_path / "truth"
+    write_tensors(truth / "text_tokens.safetensors", {
+        "questions": torch.tensor([[4, 5, 2, 0]]),
+        "targets": torch.tensor([[6, 7, 2, 0]])})
+    directories = {}
+    for name, scores, ambiguous in [
+            ("raw", [0.9, 0.8, 0.7, 0.1, 0.2, 0.6, 0.3, 0.4], [False] * 8),
+            ("residual", [0.9, 0.8, 0.7, 0.6, 0.5, 0.1, 0.2, 0.3],
+             [False, False, False, True, False, False, False, False])]:
+        directory = tmp_path / name
+        directories[name] = directory
+        write_json(directory / "result.json", {"status": "budget_exhausted"})
+        write_json(directory / "token_candidates.json", {
+            "schema_version": 1, "scope": "private_text_union", "forbidden_ids": [0, 1, 2]})
+        write_tensors(directory / "token_candidates.safetensors", {
+            "token_ids": torch.arange(8), "scores": torch.tensor(scores),
+            "ambiguous": torch.tensor(ambiguous)})
+    report = compare_token_filters(
+        directories, truth, TrainingSpec(knowledge="image_known"), topk=3)
+    assert report["modes"]["raw"]["topk"]["recall"] == 0.5
+    assert report["modes"]["residual"]["topk"]["recall"] == 0.75
+    assert report["modes"]["residual"]["ambiguous_in_topk"] == 0
+    assert report["pairs"]["raw__residual"]["intersection"] == 1
+    with pytest.raises(ValueError, match="committed"):
+        compare_token_filters({"missing": tmp_path / "missing"}, truth,
+                              TrainingSpec(knowledge="image_known"), topk=3)
 
 
 def test_staged_command_commits_text_only_result_before_evaluation(tmp_path, monkeypatch):

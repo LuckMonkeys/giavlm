@@ -37,6 +37,15 @@ def gradient_groups(adapter, observation, projections):
     return groups
 
 
+def forbidden_token_ids(adapter):
+    """Exclude special tokens and padded embedding rows outside the tokenizer."""
+    tokenizer_size = len(adapter.tokenizer)
+    if tokenizer_size > adapter.vocab_size:
+        raise ValueError("Tokenizer vocabulary exceeds the model embedding matrix")
+    return (set(adapter.tokenizer.all_special_ids) | {adapter.eos, adapter.pad}
+            | set(range(tokenizer_size, adapter.vocab_size)))
+
+
 def dager_support(adapter, observation, options=None):
     training = observation.training
     if observation.model.family != "llava":
@@ -209,7 +218,7 @@ class DAGERSearch:
             self.state["vocab_cursor"] = stop
             self.state["costs"]["vocab_tokens_scored"] += stop - start
             self.save()
-        forbidden = set(self.adapter.tokenizer.all_special_ids) | {self.adapter.eos, self.adapter.pad}
+        forbidden = forbidden_token_ids(self.adapter)
         candidates, details = select_tokens(self.scores, self.ambiguous, forbidden, options)
         self.state["candidates"] = candidates
         self.state["provenance"]["token_filter"] = details
