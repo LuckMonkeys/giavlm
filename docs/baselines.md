@@ -6,6 +6,7 @@ original paper. Tune hyperparameters only on the designated tuning image groups.
 
 | Name | Implemented mechanism | Explicit changes/conditions |
 |---|---|---|
+| dager_adapted | First-layer LoRA-A token span checks, second-layer prefix beam search, optional final gradient reranking | Single-sample LLaVA VQA, public image and token lengths, F-L/F-CL FedSGD; raw or public-input quotient subspaces; no exact-recovery guarantee |
 | dlg_adapted | Sum of squared parameter-gradient residuals; L-BFGS | Soft autoregressive targets; optimized EOS by default or fixed EOS under `token_lengths_known`; one inner L-BFGS step per outer iteration |
 | ig_adapted | Global cosine residual, TV, Adam, signed image gradients | Alternating private text steps; selected common text component |
 | april_adapted | Squared residual plus positional-gradient cosine | Optimization variant only; no closed-form or classification label rule; gradient uploads and learned visual positions required |
@@ -46,6 +47,66 @@ audit before its numerical outputs can be compared with the new adapters.
 - These two entries return `not_implemented`, preserving the distinction from
   architecture/protocol incompatibility. They are not part of the core release's
   implemented-method count.
+
+## DAGER adaptation
+
+`dager` remains the unimplemented original-paper entry. `dager_adapted` is an
+independent implementation of the span-check mechanism in Petrov et al.,
+*DAGER: Exact Gradient Inversion for Large Language Models*, NeurIPS 2024
+(https://arxiv.org/abs/2405.15586). The local `dager-gradient-inversion/` checkout
+is an ignored, read-only reference; no upstream model loading, pickle artifacts,
+logging services or parameter-list indices are imported.
+
+The first release requires `image_question_known` or `image_known`, declared
+token lengths, one sample, single-device LLaVA/LLaMA with at least two decoder
+blocks, F-L/F-CL and undefended FedSGD uploads. Required first/second-layer
+LoRA-A tensors are resolved by name. Zero A gradients (including ordinary
+LoRA initialization), missing uploads and incompatible protocols are explicit
+`not_applicable` results. There is no fallback to LoRA-B, full-weight gradients,
+TAG, a different dtype or a changed training strategy.
+
+Select it with `attack=dager_adapted`; the preset sets `text_method=none` because
+the method owns text recovery. Controls live under `attack.dager`:
+
+- `mode=raw` tests normalized input vectors against the uploaded gradient row
+  space. `mode=public_residual` first removes known input directions from both
+  gradients and candidate vectors. Layer 0 uses all known input rows; layer 1
+  uses only the causal prefix before the first unknown token.
+- `projections=qkv` normalizes each raw Q/K/V gradient by its Frobenius norm
+  before projection and stacking; `q`, `k` or `v` select one module.
+- `analysis_dtype`, `rank_rtol`, `rank_atol` control decomposition only. Victim
+  computation stays in its declared dtype. Upcasting cannot repair rounded uploads.
+- `token_selection=threshold` keeps distances at most `token_threshold`; `topk`
+  keeps the best `max_candidates` informative IDs. The same cap also applies
+  after threshold filtering, with truncation recorded. Tokens annihilated by
+  public projection remain ambiguous candidates outside this cap, not detections.
+- `beam_width` bounds retained prefixes; `prefix_batch_size` and
+  `vocab_chunk_size` bound work batches. Prefix scores sum second-layer span
+  distances at private content positions; ambiguous positions contribute zero.
+- `rerank_candidates=0` selects by prefix score. A positive value replays that
+  many leading complete candidates and selects by relative-L2 residual on exactly
+  the uploaded parameters. This is an explicit adaptation, not the original algorithm.
+
+To attack a compatible, already-captured public observation later, use the staged
+entry (substitute the public capture and a new output directory):
+
+```bash
+python -m core.commands attack --observation PUBLIC_CAPTURE --output NEW_ATTACK_OUTPUT --set attack.method=dager_adapted --set attack.text_method=none --set attack.checkpoint_interval=1
+```
+
+The observation supplies the authoritative victim model, dtype, training strategy,
+knowledge and lengths; setting those fields in the attack config cannot make a
+private image public or change a captured rank. A fresh ordinary LoRA initializer
+will be rejected because its A gradients are zero. All numerical/search options
+are recorded under result provenance and covered by the attack protocol hash.
+
+Rank deficiency alone does not guarantee that true input vectors lie in the
+observed gradient space, especially at LoRA rank 8. Zero numerical rank returns
+`no_signal`; an empty vocabulary filter returns `no_candidates`. Saturated
+subspaces are recorded in provenance. Bounded search can miss the true sequence.
+`completed` means a full candidate was committed, not that it equals the truth.
+Only offline mathematical and random-small-model interface tests have been run;
+real token detection and real reconstruction have not been evaluated.
 
 ## Sources
 

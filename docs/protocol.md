@@ -86,6 +86,46 @@ public-knowledge result. With `evaluation.trajectory=true`, evaluation also scor
 every committed checkpoint after the attack. `init.json` holds the decoded text
 start and yields `init_question_*` / `init_target_*` metrics.
 
+## DAGER Text Search
+
+`dager_adapted` consumes the same schema-v5 Observation and keeps public images
+fixed. It returns `images=None`, restores public question IDs unchanged, and
+searches only private content tokens. Public lengths determine EOS/PAD; neither
+reference text nor a private loss mask enters search. Image/text initialization
+overrides are rejected. The generic `init_source=random` label is a neutral
+configuration default here: this deterministic discrete search has no random
+candidate start and writes no `init.*` artifacts.
+
+The attack shares the victim's exact fixed-slot LLaVA layout. Question padding
+remains in the attention context, as in native-sft-v2. Only the first decoder
+block is executed for prefix checks; future unknown slots are never replayed.
+Public image features and subspace bases are computed from the declared model
+state. Known template tokens after a private question are not treated as known
+contextual features at layer 1.
+
+Search is bounded by `attack.seconds` and `attack.max_evaluations`. One evaluation
+is one private-prefix extension or one full gradient replay, charged before the
+operation, independently of batching. These units differ from optimizer steps;
+costs separately expose vocabulary IDs scored, prefix candidates, forward
+batches and full replays. `iterations` and optimizer learning rates are unused.
+`checkpoint_interval` counts prefix forward batches; vocabulary chunks and stage
+transitions are always checkpointed. Checkpoints use independent schema v1,
+JSON/safetensors generations and an atomic pointer, bound to source, attack
+options, public inputs, model fingerprint and uploaded tensors. Resume preserves
+consumed time/evaluations. OOM and other exceptions persist failed state and
+re-raise without a retry or protocol change.
+
+Artifacts `token_candidates.safetensors` and its JSON metadata contain vocabulary
+scores, selected IDs and a public-overlap ambiguity mask. `text_tokens.safetensors`
+contains the final reconstructed IDs. Token filtering alone is not a completed
+reconstruction; `budget_exhausted`, `no_candidates`, and `no_signal` have no fake
+text output. Only evaluation opens private references after `result.json` is
+committed. New captures store exact reference IDs in private
+`text_tokens.safetensors`; older captures without it explicitly report token-ID
+metrics unavailable, with no silent reconstruction of references by re-tokenizing.
+Candidate-set metrics include ambiguous IDs; informative-detection metrics exclude
+them. They measure the union of private text tokens, not order or field assignment.
+
 ## Native SFT V2
 
 `native-sft-v2` uses family-specific LLaVA, BLIP-2 and Qwen2.5-VL public prompt

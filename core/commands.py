@@ -249,6 +249,8 @@ def capture(args):
 
     # Private references are consumed only by evaluation after reconstruction.
     write_tensors(output / "private" / "images.safetensors", {"images": batch.images})
+    write_tensors(output / "private" / "text_tokens.safetensors", {
+        "questions": batch.questions, "targets": batch.targets})
     for row, q, y in zip(rows, adapter.decode(batch.questions), adapter.decode(batch.targets)):
         row["model_question"], row["model_target"] = q, y
 
@@ -353,18 +355,24 @@ def attack(args):
         init_text_sha256 = _tensor_digest(initial_tokens)
 
     # Attackers receive only the public update, protocol, and declared knowledge.
+    attack_options = {}
+    if cfg.attack.method == "dager_adapted":
+        attack_options["upload_metadata"] = (read_json(public / "upload.json")
+                                              if (public / "upload.json").exists() else {})
     try:
         result = create_attacker(adapter, cfg.attack).attack(
             obs.tensors, obs,
             AdversaryKnowledge(name=obs.training.knowledge,
                                token_lengths_known=obs.training.token_lengths_known),
             directory=output, resume=args.resume, initial_images=initial_images,
-            initial_tokens=initial_tokens)
+            initial_tokens=initial_tokens, **attack_options)
     except torch.OutOfMemoryError as error:
-        if getattr(args, "raise_oom", False):
+        if getattr(args, "raise_oom", False) or cfg.attack.method == "dager_adapted":
             raise
         result = Reconstruction("resource_unavailable", f"Out of memory: {error}")
     except (FileNotFoundError, ImportError, OSError) as error:
+        if cfg.attack.method == "dager_adapted":
+            raise
         result = Reconstruction("resource_unavailable", str(error))
 
     # Keep image tensors separate from JSON metadata and reconstructed text.
@@ -499,7 +507,7 @@ def doctor(args):
             raise RuntimeError(f"Replay/second-order probe failed: error={error}, norms={norms}")
         result.update({"probe": "passed", "replay_max_error": error, "candidate_gradient_norms": norms,
                        "model": adapter.description(),
-                       "capabilities": {method: asdict(supports(method, adapter, obs)) for method in METHODS},
+                       "capabilities": {method: asdict(supports(method, adapter, obs, cfg.attack)) for method in METHODS},
                        "zero_update_parameters": [k for k, v in obs.tensors.items() if v.count_nonzero() == 0]})
     emit(result)
     if args.output:

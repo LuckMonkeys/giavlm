@@ -1,0 +1,20 @@
+defaults:
+  - default
+name: dager_adapted
+text_method: none
+restarts: 1
+checkpoint_interval: 1
+dager:
+  mode: public_residual
+  projections: qkv
+  analysis_dtype: float64
+  rank_rtol: 1.0e-5
+  rank_atol: 1.0e-8
+  zero_tolerance: 1.0e-7
+  token_selection: threshold
+  token_threshold: 0.05
+  max_candidates: 256
+  beam_width: 16
+  vocab_chunk_size: 1024
+  prefix_batch_size: 16
+  rerank_candidates: 0

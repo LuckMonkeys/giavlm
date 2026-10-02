@@ -127,6 +127,23 @@ class TrainingSpec:
 
 
 @dataclass
+class DAGEROptions:
+    mode: str = "public_residual"
+    projections: str = "qkv"
+    analysis_dtype: str = "float64"
+    rank_rtol: float = 1e-5
+    rank_atol: float = 1e-8
+    zero_tolerance: float = 1e-7
+    token_selection: str = "threshold"
+    token_threshold: float = 0.05
+    max_candidates: int = 256
+    beam_width: int = 16
+    vocab_chunk_size: int = 1024
+    prefix_batch_size: int = 16
+    rerank_candidates: int = 0
+
+
+@dataclass
 class AttackSpec:
     method: str = "ig_adapted"
     text_method: str = "tag_adapted"
@@ -162,6 +179,7 @@ class AttackSpec:
     init_text_scale: float = 10.0
     # Precision of the optimized candidate images, independent of the victim model dtype.
     image_dtype: str = "float32"
+    dager: DAGEROptions = field(default_factory=DAGEROptions)
 
 
 @dataclass
@@ -242,6 +260,32 @@ def validate_attack_config(attack: AttackSpec) -> None:
     if attack.max_evaluations is not None:
         _require_positive("attack.max_evaluations", attack.max_evaluations)
     _require_positive("attack.seconds", attack.seconds)
+    if attack.method == "dager_adapted":
+        import math
+        options = attack.dager
+        if not math.isfinite(attack.seconds):
+            raise ValueError("DAGER seconds must be finite")
+        _require_choice("DAGER mode", options.mode, ("raw", "public_residual"))
+        _require_choice("DAGER projections", options.projections, ("q", "k", "v", "qkv"))
+        _require_choice("DAGER analysis dtype", options.analysis_dtype, ("float32", "float64"))
+        _require_choice("DAGER token selection", options.token_selection, ("threshold", "topk"))
+        for name in ("rank_rtol", "rank_atol", "zero_tolerance", "token_threshold"):
+            value = getattr(options, name)
+            if not math.isfinite(value) or value < 0:
+                raise ValueError(f"DAGER {name} must be finite and nonnegative")
+        if not 0 < options.zero_tolerance < 1 or options.token_threshold > 1:
+            raise ValueError("DAGER tolerances must describe normalized distances")
+        for name in ("max_candidates", "beam_width", "vocab_chunk_size", "prefix_batch_size"):
+            value = getattr(options, name)
+            if type(value) is not int or value <= 0:
+                raise ValueError(f"DAGER {name} must be a positive integer")
+        if type(options.rerank_candidates) is not int or options.rerank_candidates < 0:
+            raise ValueError("DAGER rerank_candidates must be a nonnegative integer")
+        if attack.text_method != "none" or attack.restarts != 1:
+            raise ValueError("DAGER owns text search and requires text_method=none, restarts=1")
+        if attack.init_source != "random" or attack.init_text_source != "random":
+            raise ValueError("DAGER uses declared public inputs, not candidate initialization")
+        _require_positive("attack.checkpoint_interval", attack.checkpoint_interval)
     _require_choice("attack init source", attack.init_source, INIT_SOURCES)
     _require_choice("attack init perturbation", attack.init_perturbation, INIT_PERTURBATIONS)
     if attack.init_source == "random":
@@ -279,7 +323,9 @@ def validate_protocol_compatibility(cfg: Config) -> None:
     training, attack = cfg.training, cfg.attack
     if training.task == "caption" and not caption_condition(training.knowledge):
         raise ValueError("Caption has a public task instruction, not a private question")
-    if attack.text_method == "none" and training.private_text and attack.method != "random":
+    from attacks.registry import SELF_CONTAINED_TEXT_METHODS
+    if (attack.text_method == "none" and training.private_text
+            and attack.method not in SELF_CONTAINED_TEXT_METHODS):
         raise ValueError("Private text needs an explicit reconstruction component")
     # Initialization applies only to fields the attacker optimizes.
     if attack.init_source != "random" and training.image_public:

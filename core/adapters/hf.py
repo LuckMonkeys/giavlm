@@ -136,11 +136,8 @@ class HFAdapter(VLMAdapter):
             logits = self.backend.lm_head(hidden[:, -y.shape[1]:])
         else:
             if self.spec.family == "llava":
-                instruction = (self.public_embeddings("\nDescribe the image.", b)
-                               if self.training_spec.task == "caption"
-                               else torch.cat([self.public_embeddings("\n", b), question], 1))
-                pieces = [self.public_embeddings("USER: ", b), visual, instruction,
-                          self.public_embeddings(" ASSISTANT: ", b), response]
+                from core.adapters.llava import llava_input_pieces
+                pieces = llava_input_pieces(self, visual, question, response)
             else:
                 instruction = (self.public_embeddings("Describe the image.", b)
                                if self.training_spec.task == "caption"

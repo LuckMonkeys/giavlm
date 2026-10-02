@@ -1,5 +1,32 @@
 # Validation
 
+## DAGER mathematical and interface validation (2026-10-02)
+
+`tests/test_dager.py` uses synthetic matrices and randomly initialized small HF
+LLaVA/LLaMA models only. No pretrained weights, medical samples or GPU experiment
+is used. The tests cover:
+
+- Linear/LoRA gradient identities, full input-span recovery under sufficient rank,
+  rank-deficient counterexamples, zero A gradients at initialization, and public
+  input cancellation with unknown backward coefficients.
+- Q/K/V joint spaces, retained-but-ambiguous public-overlap tokens, and numeric
+  rank/empty-candidate handling.
+- Partial first-block replay versus inputs captured from the actual victim Q
+  projections, including question fixed slots, EOS/PAD and visual positions.
+  Short-prefix parity uses float32-scale tolerances because HF normalization and
+  attention internally upcast/cast through float32 even for fp64 weights.
+- Synthetic answer and joint question/answer recovery, raw and quotient modes,
+  optional observable-update reranking, F-L/F-CL interfaces and original-name
+  separation. This verifies implementation, not recovery on real models.
+- Candidate-count budgets independent of batch size, time exhaustion, actual
+  interrupted search resume, changed-upload/config/schema rejection, OOM failure
+  persistence, and staged attack-to-evaluation artifact boundaries.
+
+Run with `/tmp/giavlm-venv/bin/python -m pytest -q tests/test_dager.py`.
+Real token detection and full reconstruction remain intentionally unrun. Before
+those studies, freeze thresholds on development data, compare raw/quotient/QKV
+conditions, and include wrong-update and precision controls.
+
 ## Gradient discriminability diagnostic
 
 `diagnose-discriminability` is a private-reference study, not an attack benchmark.

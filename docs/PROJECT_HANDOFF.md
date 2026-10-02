@@ -18,6 +18,17 @@ ps -eo pid,etime,cmd | rg 'examples.run_attack|utils.run_cmds'; nvidia-smi
   SLAKE + LLaVA-1.5-7B.
 - **Stage:** method/protocol validation and diagnosis. The end-to-end pipeline runs;
   DLG and IG were exercised on SLAKE/LLaVA.
+- **New implementation:** `dager_adapted` adds text-only discrete reconstruction
+  under public images/lengths, with optional known questions. Original `dager`
+  remains unimplemented. Only mathematical and small random-model interface tests
+  are authorized/completed in this phase; do not launch real token detection or
+  reconstruction experiments without a new request. See `docs/baselines.md` and
+  `docs/validation.md` for controls and boundaries.
+- **Validation (2026-10-02):** CPU full regression 243 passed, 3 skipped; new
+  DAGER suite 20 passed; Ruff clean and Hydra DAGER configuration resolves. No
+  real DAGER token/reconstruction run was launched. Initial unrelated changes
+  were preserved in commit `e1e9557`; local DAGER reference checkout is ignored
+  like the other reference projects, with its own untracked PDF left intact.
 - **Finding:** image reconstructions remain noise-like. With the ground-truth image
   and private-text lengths public, TAG recovered no question content in 18 runs;
   answer signal appeared only weakly under F-CL at round 0 (details below).
@@ -28,6 +39,12 @@ ps -eo pid,etime,cmd | rg 'examples.run_attack|utils.run_cmds'; nvidia-smi
   with failed IG optimization. It does not establish unique recovery.
 
 ## Priorities
+
+Current text-method direction: use the new DAGER implementation for the next
+authorized study, beginning with trained F-L/F-CL and known-question answers.
+Rank-8 effectiveness, numerical thresholds and real reconstruction are unverified.
+Initialization with zero LoRA-A gradients is explicitly unsupported. The earlier
+TAG follow-up below remains a separate pending comparison, not an active run.
 
 1. **Interpret and extend the completed gradient-discriminability study.** The
    finite-bank result supports gradient loss as a global ranking signal, while the

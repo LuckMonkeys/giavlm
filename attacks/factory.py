@@ -4,7 +4,10 @@ from attacks.base import OptimizationAttacker, UnimplementedAttacker
 
 def create_attacker(adapter, spec):
     name = spec.method
-    if name == "dlg_adapted":
+    if name == "dager_adapted":
+        from attacks.analytic.dager_adapted import DAGERAdaptedAttacker
+        return DAGERAdaptedAttacker(adapter, spec)
+    elif name == "dlg_adapted":
         from attacks.optim.dlg import DLGAttacker
         return DLGAttacker(adapter, spec)
     elif name == "ig_adapted":

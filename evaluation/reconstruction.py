@@ -68,6 +68,10 @@ def evaluate(reconstruction_dir, truth_dir, spec, device="cpu"):
               "status": result["status"], "reason": result.get("reason", ""),
               "condition": result["condition"], "costs": result.get("costs", {}), "samples": []}
     report["evaluation_config"] = asdict(spec)
+    if result["condition"].get("method") == "dager_adapted":
+        from evaluation.token_recovery import evaluate_token_candidates
+        report["token_detection"] = evaluate_token_candidates(
+            reconstruction_dir, truth_dir, TrainingSpec(**truth["training"]))
     if result["status"] != "completed":
         return report
     rows = truth["samples"]
