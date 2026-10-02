@@ -34,6 +34,16 @@ on that sample, but wrong-text and corpus-frequency controls show substantial
 template-token effects. Freeze settings before a multi-image study, and retain
 random-subspace, wrong-text, corpus-frequency and precision controls.
 
+`evaluation/dager_surrogate_diagnostic.py` additionally isolates first-stage
+token filtering under misspecified public images. The scoring stage accepts only
+the public observation and commits every full-vocabulary score vector before the
+evaluation stage may read private token IDs. It compares Raw, template-only,
+matched-rank random subspaces, the true public image, and deterministic image
+blends. Blend construction from the true image is explicitly an oracle sensitivity
+diagnostic. The current GPU-5 output is
+`outputs/diagnostics/dager_surrogate_gpu5_n1/`; it is repeated-measure `n=1`
+evidence and must not be reported as an image-private attack.
+
 ## Gradient discriminability diagnostic
 
 `diagnose-discriminability` is a private-reference study, not an attack benchmark.

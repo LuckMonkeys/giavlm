@@ -26,7 +26,7 @@ ps -eo pid,etime,cmd | rg 'examples.run_attack|utils.run_cmds'; nvidia-smi
   `docs/validation.md` for controls and boundaries.
 - **Validation (2026-10-02):** DAGER mathematical/interface tests, real GPU-4
   diagnostics, paired raw/public-residual top-50 scoring and post-commit random,
-  wrong-text and corpus-frequency controls are complete. CPU regression: 246
+  wrong-text and corpus-frequency controls are complete. CPU regression: 247
   passed, 3 skipped; Ruff clean. Initial unrelated changes were preserved in
   commit `e1e9557`; local DAGER reference checkout is ignored like the other
   reference projects, with its own untracked PDF left intact.
@@ -382,6 +382,54 @@ treated as 13 sample-specific discoveries. This remains post-hoc `n=1` developme
 evidence, not sequence recovery or generalization. The next valid step is a frozen
 multi-image study with per-image random, wrong-text/frequency and random-subspace
 controls.
+
+### Surrogate visual-subspace sensitivity (`n=1`, GPU 5, 2026-10-02)
+
+`evaluation/dager_surrogate_diagnostic.py` reuses the committed gradient above and
+tests only the first-layer full-vocabulary ranking. Its GPU scoring phase never
+reads private text; evaluation joins exact token IDs only after all 27 score
+artifacts commit. Conditions are Raw, template-only, the true public image, three
+matched-rank random subspaces, and seven true/random-pixel blend levels with three
+fixed noise directions each. Artifacts are under
+`outputs/diagnostics/dager_surrogate_gpu5_n1/`. The blends are an oracle
+misspecification diagnostic, not an image-private attack.
+
+- The template rank is 11, the incremental visual rank is 576 and every full
+  visual condition has public rank 587. Matched random controls therefore remove
+  exactly the same number of dimensions. Raw recovers 7/14 IDs at K=50 (AP 0.187),
+  template-only 8/14 (AP 0.183), matched random spaces 8/14 (AP about 0.255), and
+  the true image 13/14 (AP 0.336). No true token is marked ambiguous in any of
+  these conditions.
+- A 1% blend with random pixels is still 48.5 dB from the true image, but its
+  aligned visual-feature cosine is only about 0.914 and its visual-subspace overlap
+  about 0.690. It recovers 11/14 at K=50 (question 8/10, target 3/4; mean AP 0.287),
+  already below the true image's 13/14 (9/10 and 4/4). A 3% blend is also 11/14;
+  10% gives 10--11/14 (mean 10.67).
+- From 25% through 100% random pixels, all nine conditions stabilize at 10/14
+  (question 7/10, target 3/4), with mean AP 0.262 down to about 0.256. Even the
+  pure-random images outperform Raw by three top-50 hits and the matched random
+  Euclidean subspaces by two. Thus a generic subspace produced by the actual
+  vision encoder removes useful visual-modality nuisance, while exact image
+  content supplies the remaining three hits, including the fourth answer token.
+- Across the 21 blends, visual-subspace overlap has descriptive Spearman
+  correlation 0.826 with Recall@50 and 0.917 with AP. These are repeated measures
+  of one gradient, so their nominal p-values are not inferential evidence. The
+  pure-random image retains overlap about 0.544 and aligned feature cosine about
+  0.727, confirming that the encoder maps unrelated pixels into a substantial
+  shared visual manifold.
+- Candidate-set size still matters: a representative pure-random image recovers
+  9/14, 10/14, 11/14, 13/14 and 14/14 at K=20/50/100/200/500, while the true image
+  reaches 14/14 by K=100. Raw remains at only 8/14 even at K=1000.
+
+Conclusion: Raw is an operational no-image baseline, not a mathematical lower
+bound. Wrong residual spaces can in principle harm ranking. On this sample,
+however, any tested vision-encoder-derived surrogate helps over Raw, and the
+benefit separates into a generic visual-manifold component plus an exact-image
+component. The striking drop from true image to a 1% blend also shows that the
+oracle advantage is fragile. Repeat the frozen design across independent images
+and add natural public-image surrogates before proposing an image-unknown method.
+GPU 5 was shared with an unrelated roughly 40.5 GiB allocation; this job used
+about 16.3 GiB, completed without OOM, and released its allocation.
 
 ## Hypotheses (unverified)
 
