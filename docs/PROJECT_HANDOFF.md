@@ -296,6 +296,25 @@ the paper and not a threshold-tuning set.
   directory records the pre-search interface failure; `result.json` and
   `evaluation.json` are the later committed successful execution artifacts.
 
+The first diagnostic above used `image_question_known` and therefore treats the
+question content as public. It is an answer-only upper bound, not the user's
+intended unknown-question condition. A corrected run was subsequently completed
+under `image_known + token_lengths_known` using the same sample and F-L round-10
+state. Artifacts are under
+`outputs/diagnostics/dager_real_gpu4_f_l_r10_image_known/run-00000/`.
+
+- The public observation contains the image and lengths only (question 10 content
+  tokens, target 4); public question/target text and token-ID fields are empty.
+- The filter produced 1 informative and 9 ambiguous candidates. The informative
+  candidate was a true private token (precision 1.0), but union recall was 1/14
+  (0.071); question recall was 0 and target recall was 0.25.
+- Beam search filled all 14 private content positions using 2,030 prefix checks in
+  128 batches and 6.1 seconds after model load. Reconstructed question and target
+  both had EM/ROUGE/word recall 0. Thus the intended real reconstruction failed,
+  with substantially weaker token coverage than the known-question upper bound.
+- GPU 4 returned to 0 MiB after completion. This remains `n=1` development
+  evidence and no post-reference threshold adjustment was run.
+
 ## Hypotheses (unverified)
 
 - IG drift from near-truth starts comes from the objective preferring other images,
