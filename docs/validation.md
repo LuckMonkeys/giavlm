@@ -21,6 +21,8 @@ is used. The tests cover:
 - Candidate-count budgets independent of batch size, time exhaustion, actual
   interrupted search resume, changed-upload/config/schema rejection, OOM failure
   persistence, and staged attack-to-evaluation artifact boundaries.
+- Equal-top-k raw/public-residual comparison after both score artifacts commit,
+  plus exclusion of padded model embedding rows that have no tokenizer ID.
 
 Run with `/tmp/giavlm-venv/bin/python -m pytest -q tests/test_dager.py`.
 Real token detection and full reconstruction remain intentionally unrun. Before

@@ -315,6 +315,33 @@ state. Artifacts are under
 - GPU 4 returned to 0 MiB after completion. This remains `n=1` development
   evidence and no post-reference threshold adjustment was run.
 
+### Paired public-direction ablation (`n=1`, 2026-10-02)
+
+The corrected `image_known` public observation was reused without recapture to
+compare the first-layer token ranking under `raw` and `public_residual`. Both
+modes used joint Q/K/V, the same numerical rank settings, and an exact top 50 over
+valid tokenizer IDs. Each attack committed its complete vocabulary scores before
+evaluation read private token IDs; sequence work was capped after one prefix and
+is not part of this comparison. Artifacts and the paired report are under
+`outputs/diagnostics/dager_projection_ablation_valid_vocab/`.
+
+- Raw top-50: precision 0.14, recall 0.50 (7/14 unique private IDs), question
+  recall 0.40 and target recall 0.75. True-token ranks ranged from 2 to 26,249
+  with median 389.5.
+- Public-residual top-50: precision 0.26, recall 0.929 (13/14), question recall
+  0.90 and target recall 1.0. It contained 9 public-overlap ambiguous IDs; true
+  ranks ranged from 10 to 98 with median 16.5. The one miss ranked 98.
+- The two top-50 sets intersected in 22 IDs (Jaccard 0.282), so public projection
+  substantially reordered the vocabulary. On this sample it had a clear positive
+  effect on token-set detection. This is not yet evidence for sequence recovery or
+  generalization; repeat on a frozen multi-image development/validation cohort.
+- An initial raw comparison was invalid: 49/50 entries were padded model embedding
+  rows above the tokenizer vocabulary. LLaVA has 32,064 embedding rows but only
+  32,002 tokenizer IDs. Commit `03f214f` excludes those rows, adds a regression
+  test and a post-commit equal-top-k evaluator. The invalid artifacts under
+  `outputs/diagnostics/dager_projection_ablation/` are retained only as an audit
+  trail and must not be cited.
+
 ## Hypotheses (unverified)
 
 - IG drift from near-truth starts comes from the objective preferring other images,
