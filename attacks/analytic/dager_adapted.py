@@ -284,9 +284,14 @@ class DAGERSearch:
         if (not resume and self.directory is not None and self.directory.exists()
                 and any(self.directory.iterdir())):
             raise FileExistsError("DAGER output is nonempty; use resume or a new directory")
-        checkpoint_valid = not resume
+        has_checkpoint = (self.directory is not None
+                          and (self.directory / "checkpoint.json").exists())
+        checkpoint_valid = not resume or not has_checkpoint
         try:
-            if resume:
+            # ExperimentRunner passes resume=True for a fresh attack so it can
+            # safely continue an interrupted capture/attack pipeline. Restore
+            # only after this attack has actually committed a checkpoint.
+            if resume and has_checkpoint:
                 self.restore()
                 checkpoint_valid = True
             self.prepare()

@@ -329,6 +329,14 @@ def test_changed_upload_and_checkpoint_schema_are_rejected(tmp_path):
         run(adapter, obs, spec, directory=tmp_path, resume=True)
 
 
+def test_fresh_experiment_resume_flag_starts_without_a_checkpoint(tmp_path):
+    adapter, batch, obs = fixture(answer="red")
+    result = run(adapter, obs, specification(), directory=tmp_path, resume=True)
+    assert result.status == "completed"
+    assert result.targets == adapter.decode(batch.targets)
+    assert (tmp_path / "checkpoint.json").exists()
+
+
 def test_oom_is_saved_and_reraised_without_retry(tmp_path, monkeypatch):
     adapter, _, obs = fixture()
     calls = 0
