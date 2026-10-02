@@ -41,6 +41,8 @@ class LlavaTextView:
         response = adapter.embedding()(torch.tensor([self.target_ids[:-1]], device=self.device))
         pieces = llava_input_pieces(adapter, visual, question, response)
         self.embeddings = torch.cat(pieces, 1)
+        self.visual_start = pieces[0].shape[1]
+        self.visual_stop = self.visual_start + visual.shape[1]
         question_start = pieces[0].shape[1] + visual.shape[1] + adapter.public_embeddings(
             "\n", 1).shape[1]
         response_start = sum(piece.shape[1] for piece in pieces[:-1])
@@ -53,6 +55,7 @@ class LlavaTextView:
         known = torch.ones(self.embeddings.shape[1], dtype=torch.bool, device=self.device)
         for _, _, position in self.slots:
             known[position] = False
+        self.known_mask = known
         self.public_layer0 = self.decoder.layers[0].input_layernorm(self.embeddings[:, known])[0]
         # Only this causal prefix is known at deeper layers. Public tokens after
         # an unknown question are context-dependent and cannot be projected away.

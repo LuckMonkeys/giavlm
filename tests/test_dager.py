@@ -13,7 +13,7 @@ from attacks.factory import create_attacker
 from core.adapters.hf import HFAdapter
 from core.adapters.llava import LlavaTextView, llava_input_pieces
 from core.adapters.tiny_llava import TinyTokenizer
-from core.artifacts import read_json, read_tensors, write_json, write_tensors
+from core.artifacts import file_hash, read_json, read_tensors, write_json, write_tensors
 from core.config import AttackSpec, DAGEROptions, ModelSpec, TrainingSpec, load_config
 from core.experiment import protocol_config
 from core.fl import capture
@@ -152,6 +152,8 @@ def test_partial_forward_matches_native_attention_inputs_and_fixed_slots(knowled
     ids = view.token_ids(prefix)
     torch.testing.assert_close(ids["questions"], batch.questions)
     torch.testing.assert_close(ids["targets"], batch.targets)
+    assert view.visual_stop > view.visual_start
+    assert view.known_mask[view.visual_start:view.visual_stop].all()
     if knowledge == "image_question_known":
         assert view.slots[0][2] > adapter.spec.question_length
     assert view.public_layer1.shape[0] == view.slots[0][2]
@@ -350,6 +352,51 @@ def test_equal_topk_ablation_compares_scores_after_commit(tmp_path):
     with pytest.raises(ValueError, match="committed"):
         compare_token_filters({"missing": tmp_path / "missing"}, truth,
                               TrainingSpec(knowledge="image_known"), topk=3)
+
+
+def test_surrogate_diagnostic_evaluates_only_committed_aggregate_scores(tmp_path):
+    from evaluation.dager_surrogate_diagnostic import condition_plan, evaluate_scores
+    scores, truth = tmp_path / "scores", tmp_path / "truth"
+    plan = condition_plan((0.25, 0.75), (0,), ())
+    assert [row["label"] for row in plan] == [
+        "raw", "template_only", "true_image", "blend_a0p25_s0", "blend_a0p75_s0"]
+    with pytest.raises(FileNotFoundError):
+        evaluate_scores(scores, truth)
+
+    training = TrainingSpec(knowledge="image_known", token_lengths_known=True)
+    write_json(truth / "truth.json", {"training": asdict(training), "samples": []})
+    write_tensors(truth / "text_tokens.safetensors", {
+        "questions": torch.tensor([[150, 151, 2, 0]]),
+        "targets": torch.tensor([[152, 153, 2, 0]])})
+    signature = "synthetic-committed-scores"
+    labels = [row["label"] for row in plan]
+    write_json(scores / "scores_complete.json", {
+        "schema_version": 1, "signature": signature, "conditions": labels})
+    front = {
+        "raw": [150], "template_only": [150], "true_image": [150, 151, 152, 153],
+        "blend_a0p25_s0": [150, 151], "blend_a0p75_s0": [150, 151, 152, 153]}
+    for row in plan:
+        label = row["label"]
+        values = torch.arange(200, dtype=torch.float64) + 1000
+        for index, token_id in enumerate(front[label]):
+            values[token_id] = index
+        tensor_path = scores / "conditions" / f"{label}.safetensors"
+        write_tensors(tensor_path, {
+            "scores": values, "ambiguous": torch.zeros(200, dtype=torch.bool)})
+        similarity = None
+        if row["kind"] in {"true_image", "blend"}:
+            similarity = {"visual_subspace_overlap": 1.0 if row["kind"] == "true_image"
+                          else row["alpha"]}
+        write_json(scores / "conditions" / f"{label}.json", {
+            "schema_version": 1, "signature": signature, "condition": row,
+            "span": {}, "image_similarity": similarity, "forbidden_ids": [0, 1, 2],
+            "tensor_sha256": file_hash(tensor_path)})
+    report = evaluate_scores(scores, truth, topks=(10, 20, 50))
+    assert report["conditions"]["raw"]["metrics"]["curve"][-1]["hits"] == 1
+    assert report["conditions"]["true_image"]["metrics"]["curve"][-1]["hits"] == 4
+    assert report["blend_alpha_summary"]["0.75"]["mean_recall_at_50"] == 1
+    assert report["descriptive_correlations"][
+        "visual_subspace_overlap_vs_recall_at_50"]["spearman"] == pytest.approx(1)
 
 
 def test_staged_command_commits_text_only_result_before_evaluation(tmp_path, monkeypatch):
