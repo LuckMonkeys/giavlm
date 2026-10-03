@@ -129,6 +129,7 @@ class TrainingSpec:
 @dataclass
 class DAGEROptions:
     mode: str = "public_residual"
+    image_source: str = "declared"
     projections: str = "qkv"
     analysis_dtype: str = "float64"
     rank_rtol: float = 1e-5
@@ -266,6 +267,7 @@ def validate_attack_config(attack: AttackSpec) -> None:
         if not math.isfinite(attack.seconds):
             raise ValueError("DAGER seconds must be finite")
         _require_choice("DAGER mode", options.mode, ("raw", "public_residual"))
+        _require_choice("DAGER image source", options.image_source, ("declared", "random"))
         _require_choice("DAGER projections", options.projections, ("q", "k", "v", "qkv"))
         _require_choice("DAGER analysis dtype", options.analysis_dtype, ("float32", "float64"))
         _require_choice("DAGER token selection", options.token_selection, ("threshold", "topk"))

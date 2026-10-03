@@ -48,12 +48,19 @@ def forbidden_token_ids(adapter):
 
 def dager_support(adapter, observation, options=None):
     training = observation.training
+    options = options or DAGEROptions()
     if observation.model.family != "llava":
         return Support("not_applicable", "DAGER adaptation currently requires LLaVA/LLaMA")
     if observation.model.device_map:
         return Support("not_applicable", "DAGER partial forward currently requires a single device")
-    if training.task != "vqa" or training.knowledge not in {"image_known", "image_question_known"}:
-        return Support("not_applicable", "DAGER requires public images and private VQA text")
+    if training.task != "vqa":
+        return Support("not_applicable", "DAGER currently requires VQA text")
+    declared_image = training.knowledge in {"image_known", "image_question_known"}
+    random_surrogate = training.knowledge == "private" and options.image_source == "random"
+    if not ((declared_image and options.image_source == "declared") or random_surrogate):
+        return Support(
+            "not_applicable",
+            "DAGER requires a declared public image or private knowledge with a random surrogate")
     if not training.token_lengths_known:
         return Support("not_applicable", "DAGER currently requires declared public token lengths")
     if training.algorithm != "fedsgd" or observation.sample_count != 1:
@@ -64,7 +71,7 @@ def dager_support(adapter, observation, options=None):
     if decoder.config.model_type != "llama" or len(decoder.layers) < 2:
         return Support("not_applicable", "DAGER requires at least two LLaMA decoder blocks")
     try:
-        groups = gradient_groups(adapter, observation, (options or DAGEROptions()).projections)
+        groups = gradient_groups(adapter, observation, options.projections)
     except ValueError as error:
         return Support("not_applicable", str(error))
     if any(not any(observation.tensors[name].count_nonzero().item() for name in group)
@@ -188,7 +195,19 @@ class DAGERSearch:
 
     def prepare(self):
         self.check_budget()
-        self.view = LlavaTextView(self.adapter, self.observation)
+        if self.options.image_source == "declared":
+            self.search_images = self.observation.public_images
+            context = "declared_public_image"
+        else:
+            generator = torch.Generator(device="cpu").manual_seed(self.spec.seed)
+            size = self.observation.model.image_size
+            self.search_images = torch.rand(
+                self.observation.sample_count, 3, size, size, generator=generator)
+            context = "attacker_generated_random_surrogate"
+        if self.search_images is None:
+            raise ValueError("DAGER image context is unavailable")
+        view_observation = replace(self.observation, public_images=self.search_images)
+        self.view = LlavaTextView(self.adapter, view_observation)
         groups = gradient_groups(self.adapter, self.observation, self.options.projections)
         self.spans = []
         for names, public in zip(groups, (self.view.public_layer0, self.view.public_layer1), strict=True):
@@ -201,7 +220,13 @@ class DAGERSearch:
             "candidate_selection": "observable subspace residuals; optional uploaded-update reranking",
             "exact_recovery_claimed": False,
             "evaluation_unit": "one private prefix extension or one full gradient replay",
-            "private_slot_count": len(self.view.slots)})
+            "private_slot_count": len(self.view.slots),
+            "reconstructed_fields": list(dict.fromkeys(
+                field.removesuffix("s") for field, _, _ in self.view.slots)),
+            "image_context": context,
+            "image_context_sha256": hashlib.sha256(
+                self.search_images.detach().cpu().contiguous().view(torch.uint8).numpy().tobytes()
+            ).hexdigest()})
 
     @torch.no_grad()
     def filter_tokens(self):
@@ -272,7 +297,7 @@ class DAGERSearch:
             self.available(1)
             row = self.state["beam"][self.state["rerank_cursor"]]
             ids = self.view.token_ids(row["tokens"])
-            batch = Batch(self.observation.public_images.to(self.adapter.device, self.adapter.dtype),
+            batch = Batch(self.search_images.to(self.adapter.device, self.adapter.dtype),
                           ids["questions"], ids["targets"])
             self.state["costs"]["full_gradient_replays"] += 1
             update = simulate_update(self.adapter, batch, self.observation.training, False)

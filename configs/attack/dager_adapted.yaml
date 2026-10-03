@@ -6,6 +6,7 @@ restarts: 1
 checkpoint_interval: 1
 dager:
   mode: public_residual
+  image_source: declared
   projections: qkv
   analysis_dtype: float64
   rank_rtol: 1.0e-5

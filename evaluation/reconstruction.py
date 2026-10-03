@@ -79,22 +79,35 @@ def evaluate(reconstruction_dir, truth_dir, spec, device="cpu"):
     training = TrainingSpec(**t)
     private_image, private_q, private_y = (not training.image_public, training.question_private,
                                            not training.target_public)
+    private_fields = [name for name, private in [
+        ("image", private_image), ("question", private_q), ("target", private_y)] if private]
+    reconstructed = result.get("provenance", {}).get("reconstructed_fields")
+    if reconstructed is None:
+        reconstructed = private_fields
+    if (not isinstance(reconstructed, list)
+            or any(field not in {"image", "question", "target"} for field in reconstructed)):
+        raise ValueError("Invalid reconstructed_fields provenance")
+    scored_fields = [field for field in private_fields if field in reconstructed]
+    score_image, score_q, score_y = (field in scored_fields
+                                     for field in ("image", "question", "target"))
+    if not scored_fields:
+        raise ValueError("Completed reconstruction contains no private field to score")
     true_images = read_tensors(truth_dir / "images.safetensors")["images"]
     pred_images = None
-    if private_image:
+    if score_image:
         pred_images = read_tensors(reconstruction_dir / "images.safetensors")["images"]
         if true_images.shape != pred_images.shape or not torch.isfinite(pred_images).all():
             raise ValueError("Invalid reconstructed image tensor")
         if pred_images.min() < 0 or pred_images.max() > 1:
             raise ValueError("Reconstructed RGB images must be in [0,1]")
     elif (reconstruction_dir / "images.safetensors").exists():
-        raise ValueError("A public-image condition must not report reconstructed images")
-    reference_texts = [(r["model_question"] + " " if private_q else "") +
-                       (r["model_target"] if private_y else "") for r in rows]
-    prediction_texts = [(q + " " if private_q else "") + (y if private_y else "")
+        raise ValueError("An unscored image field must not report reconstructed images")
+    reference_texts = [(r["model_question"] + " " if score_q else "") +
+                       (r["model_target"] if score_y else "") for r in rows]
+    prediction_texts = [(q + " " if score_q else "") + (y if score_y else "")
                         for q, y in zip(result["questions"], result["targets"])]
     assignment, agreement = match_pairs(true_images, pred_images, reference_texts, prediction_texts,
-                                        use_text=private_q or private_y)
+                                        use_text=score_q or score_y)
     # The actual start separates the gradient's contribution from the initialization.
     init_images = (read_tensors(reconstruction_dir / "init.safetensors")["images"]
                    if private_image and (reconstruction_dir / "init.safetensors").exists() else None)
@@ -103,19 +116,19 @@ def evaluate(reconstruction_dir, truth_dir, spec, device="cpu"):
     optional = OptionalMetrics(spec, device)
     report.update({"metric_status": optional.status, "pair_assignment": assignment,
                    "pair_assignment_agreement": agreement,
-                   "scored_fields": [name for name, private in [
-                       ("image", private_image), ("question", private_q), ("target", private_y)]
-                       if private],
-                   "alignment": "Hungarian(image_MSE + normalized_private_text_edit) over private fields",
+                   "scored_fields": scored_fields,
+                   "alignment": (
+                       "Hungarian(image_MSE + normalized_private_text_edit) over reconstructed "
+                       "private fields"),
                    "reference_policy": "actual trained tokens after truncation, excluding EOS/pad"})
     for i, j in enumerate(assignment):
-        metrics = image_metrics(true_images[i], pred_images[j]) if private_image else {}
+        metrics = image_metrics(true_images[i], pred_images[j]) if score_image else {}
         if init_images is not None:
             metrics.update({"init_" + k: v for k, v in
                             image_metrics(true_images[i], init_images[j]).items()})
         for field, private, reference, predicted in [
-                ("question", private_q, rows[i]["model_question"], result["questions"]),
-                ("target", private_y, rows[i]["model_target"], result["targets"])]:
+                ("question", score_q, rows[i]["model_question"], result["questions"]),
+                ("target", score_y, rows[i]["model_target"], result["targets"])]:
             if not private:
                 continue
             metrics.update({f"{field}_{k}": v for k, v in
@@ -123,7 +136,7 @@ def evaluate(reconstruction_dir, truth_dir, spec, device="cpu"):
             if init_text is not None:
                 metrics.update({f"init_{field}_{k}": v for k, v in
                                 text_metrics(reference, init_text[field + "s"][j]).items()})
-        if private_image:
+        if score_image:
             metrics.update(optional.score(true_images[i], pred_images[j], rows[i]["model_target"],
                                           result["targets"][j], t["task"]))
         metrics.update(canary_metrics(rows[i], reference_texts[i], prediction_texts[j]))
@@ -136,7 +149,7 @@ def evaluate(reconstruction_dir, truth_dir, spec, device="cpu"):
         else any(row["metrics"]["init_mse"] < INIT_NEAR_REFERENCE_MSE for row in report["samples"]))
     if spec.trajectory:
         report["trajectory"] = (trajectory(reconstruction_dir, true_images, assignment)
-                                if private_image else None)
+                                if score_image else None)
     return report
 
 

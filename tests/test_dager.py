@@ -207,6 +207,33 @@ def test_support_checks_actual_gradients_and_uploaded_subset():
     assert run(adapter, obs, specification(), upload_metadata={"defense": {"name": "sign_sgd"}}).status == "not_applicable"
 
 
+def test_private_image_uses_only_seeded_random_surrogate(tmp_path):
+    adapter, _, obs = fixture(knowledge="private")
+    assert obs.public_images is None
+    assert dager_support(adapter, obs).status == "not_applicable"
+    spec = specification(image_source="random")
+    assert dager_support(adapter, obs, spec.dager).status == "supported"
+
+    first = DAGERSearch(adapter, obs, spec, None)
+    second = DAGERSearch(adapter, obs, spec, None)
+    first.prepare()
+    second.prepare()
+    torch.testing.assert_close(first.search_images, second.search_images)
+    assert first.state["provenance"]["image_context"] == "attacker_generated_random_surrogate"
+    assert (first.state["provenance"]["image_context_sha256"]
+            == second.state["provenance"]["image_context_sha256"])
+
+    changed = DAGERSearch(adapter, obs, replace(spec, seed=spec.seed + 1), None)
+    changed.prepare()
+    assert changed.state["provenance"]["image_context_sha256"] != (
+        first.state["provenance"]["image_context_sha256"])
+
+    result = run(adapter, obs, replace(spec, max_evaluations=1), directory=tmp_path)
+    assert result.status == "budget_exhausted"
+    assert result.images is None
+    assert result.provenance["image_context"] == "attacker_generated_random_surrogate"
+
+
 def test_budget_counts_candidates_not_batches_and_does_not_fake_completion(tmp_path):
     adapter, _, obs = fixture()
     spec = replace(specification(prefix_batch_size=32), max_evaluations=2)
@@ -256,10 +283,12 @@ def test_hydra_and_strict_configuration_expose_self_contained_method():
     parsed = protocol_config(cfg)
     assert parsed.attack.method == "dager_adapted" and parsed.attack.text_method == "none"
     assert isinstance(parsed.attack.dager, DAGEROptions)
+    assert parsed.attack.dager.image_source == "declared"
     with pytest.raises(ValueError, match="text_method=none"):
         load_config(overrides=["attack.method=dager_adapted"])
     for override in ["attack.dager.rank_rtol=-1", "attack.dager.prefix_batch_size=0",
-                     "attack.dager.mode=invalid", "attack.init_text_source=private_reference"]:
+                     "attack.dager.mode=invalid", "attack.dager.image_source=invalid",
+                     "attack.init_text_source=private_reference"]:
         with pytest.raises(ValueError):
             load_config(overrides=["attack.method=dager_adapted", "attack.text_method=none", override])
 
@@ -426,6 +455,36 @@ def test_staged_command_commits_text_only_result_before_evaluation(tmp_path, mon
     assert report["scored_fields"] == ["target"]
     assert report["token_detection"]["candidates"]["recall"] == 1
     assert report["samples"][0]["metrics"]["target_exact_match"] == 1
+
+
+def test_private_image_staged_command_scores_only_reconstructed_text(tmp_path, monkeypatch):
+    from core.commands import build_parser
+    from core.fl import save_observation
+    adapter, batch, obs = fixture(knowledge="private", answer="red", strategy="f_cl")
+    public, output, truth = tmp_path / "public", tmp_path / "attack", tmp_path / "truth"
+    observation_id = save_observation(public, obs)
+    monkeypatch.setattr("core.fl.restore_model", lambda *args: adapter)
+    args = build_parser().parse_args([
+        "attack", "--observation", str(public), "--output", str(output),
+        "--set", "attack.method=dager_adapted", "--set", "attack.text_method=none",
+        "--set", "attack.dager.image_source=random"])
+    args.func(args)
+    result = read_json(output / "result.json")
+    assert result["status"] == "completed"
+    assert result["provenance"]["reconstructed_fields"] == ["question", "target"]
+    assert not (output / "images.safetensors").exists()
+
+    write_json(truth / "truth.json", {"observation_id": observation_id,
+        "training": asdict(obs.training), "samples": [{"image_id": "synthetic", "sample_id": "synthetic",
+        "model_question": adapter.decode(batch.questions)[0], "model_target": adapter.decode(batch.targets)[0]}]})
+    write_tensors(truth / "images.safetensors", {"images": batch.images})
+    write_tensors(truth / "text_tokens.safetensors", {"questions": batch.questions, "targets": batch.targets})
+    args = build_parser().parse_args([
+        "evaluate", "--reconstruction", str(output), "--truth", str(truth)])
+    args.func(args)
+    report = read_json(output / "evaluation.json")
+    assert report["scored_fields"] == ["question", "target"]
+    assert "mse" not in report["samples"][0]["metrics"]
 
 
 def test_changed_upload_and_checkpoint_schema_are_rejected(tmp_path):
