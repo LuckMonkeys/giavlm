@@ -30,6 +30,11 @@ ps -eo pid,etime,cmd | rg 'examples.run_attack|utils.run_cmds'; nvidia-smi
   passed, 3 skipped; Ruff clean. Initial unrelated changes were preserved in
   commit `e1e9557`; local DAGER reference checkout is ignored like the other
   reference projects, with its own untracked PDF left intact.
+- **Projection ablation (2026-10-02):** paired Q/K/V/QKV attacks on the existing
+  `image_known` observation completed on GPU 5. Top-50 hits are 7/9/8/13 of 14
+  unique private IDs, respectively; all four default-threshold sequence searches
+  failed to recover text. QKV vocabulary scores exactly reproduce the previous
+  public-residual scores. See the projection-ablation evidence below.
 - **Finding:** image reconstructions remain noise-like. With the ground-truth image
   and private-text lengths public, TAG recovered no question content in 18 runs;
   answer signal appeared only weakly under F-CL at round 0 (details below).
@@ -430,6 +435,53 @@ oracle advantage is fragile. Repeat the frozen design across independent images
 and add natural public-image surrogates before proposing an image-unknown method.
 GPU 5 was shared with an unrelated roughly 40.5 GiB allocation; this job used
 about 16.3 GiB, completed without OOM, and released its allocation.
+
+### Paired Q K V projection ablation (`n=1`, GPU 5, 2026-10-02)
+
+At the user's request, `evaluation/dager_projection_ablation.py` ran four separate
+attacks with `projections=q/k/v/qkv` against the existing `image_known` public
+observation. No recapture, image change, threshold tuning or victim change was
+performed. All other settings came from the frozen original protocol: F-L round
+10, rank 8, bf16, FedSGD, public lengths, `public_residual`, threshold 0.05, beam
+16, 10,000 evaluations, 3,600 seconds, no gradient reranking. All four results
+committed before evaluation accessed references.
+
+Artifacts: `outputs/diagnostics/dager_projection_qkv_gpu5_n1/`; aggregate metrics
+are in `summary.json`, `top50_comparison.json` and `ranking_validation.json`.
+Launch and completion watcher scripts are under `outputs/diagnostics/analysis_scripts/`
+as `run_dager_projection_gpu5.sh` and `watch_dager_projection_gpu5.sh`.
+
+| Projection | Layer ranks | Top-50 hits | Question recall at 50 | Answer recall at 50 | AP |
+|---|---|---|---|---|---|
+| Q | 8 / 8 | 7/14 | 0.40 | 0.75 | 0.1209 |
+| K | 8 / 8 | 9/14 | 0.60 | 0.75 | 0.2088 |
+| V | 8 / 8 | 8/14 | 0.50 | 0.75 | 0.2051 |
+| QKV | 24 / 24 | 13/14 | 0.90 | 1.00 | 0.3355 |
+
+- At the frozen threshold, Q and QKV each retain 1 informative true token plus
+  9 ambiguous IDs; K and V retain only the 9 ambiguous IDs. None of those
+  ambiguous IDs is a private reference token. Candidate recall is therefore
+  1/14, 0/14, 0/14 and 1/14. No informative-candidate cap is reached.
+- All four commit full candidates but question/answer EM, ROUGE and word recall
+  are zero. The single-projection outputs differ from QKV, despite uniformly
+  failed reconstruction. Each run takes about 6.8--7.3 seconds after model load;
+  Q/QKV use 2,030 prefix checks and K/V 1,818. There is no budget exhaustion or OOM.
+- The rankings differ beyond one cutoff: hits at K=20 are 4/8/7/9, and at K=100
+  are 7/9/11/14 (Q/K/V/QKV). K beats V at 50 but V beats K at 100; no universal
+  ordering between the single projections is established.
+- QKV's saved score vector and ambiguity flags exactly equal the earlier
+  valid-vocabulary public-residual artifact (maximum score difference 0).
+  This verifies the paired comparison preserved that scoring baseline.
+- GPU 5 was shared with about 40.6 GiB already allocated; all experiment
+  processes and the watcher exited, and the GPU returned to about 40.5 GiB.
+  The focused DAGER CPU tests passed (24); Ruff passed for the new runner.
+
+Conclusion: on this one observed gradient, single projections are not equivalent
+in the low-rank LoRA setting, and joint QKV gives better token rankings. This
+supports the utility of joint scoring on this sample, not a general guarantee
+or successful sequence reconstruction. The equal-top-k metrics are post-commit
+ranking evaluations; the complete searches still used threshold 0.05. No new
+top-k sequence attack was run, and no thresholds were adjusted after evaluation.
 
 ## Hypotheses (unverified)
 
