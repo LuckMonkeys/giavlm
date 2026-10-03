@@ -121,6 +121,7 @@ def _aggregate(run_reports, candidates):
 
 def evaluate_committed(output, configs, candidates):
     """Read references only after every planned attack has result.json."""
+    plan = read_json(output / "plan.json")
     run_dirs = sorted(path for path in output.glob("run-*") if path.is_dir())
     for run_dir in run_dirs:
         for name in CONDITIONS:
@@ -186,6 +187,8 @@ def evaluate_committed(output, configs, candidates):
     aggregate.update({
         "schema_version": 1,
         "conditions": aggregate["conditions"],
+        "attack_source_sha256": plan["source_sha256"],
+        "evaluation_source_sha256": source_fingerprint(),
         "reference_policy": "private references read only after all attacks committed",
         "limitations": [
             "Random-surrogate images are fixed attacker-generated pixels; no image optimization.",
