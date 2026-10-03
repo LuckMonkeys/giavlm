@@ -77,7 +77,9 @@ def _curve_row(report, topk):
 def _aggregate(run_reports, candidates):
     grouped = {name: {"statuses": Counter(), "candidate_recall": [],
                       "ranking_recall": [], "average_precision": [], "text": defaultdict(list),
-                      "full_candidate_coverage": 0, "conditional_exact": [], "outputs": []}
+                      "full_candidate_coverage": 0, "full_ranking_coverage": 0,
+                      "conditional_candidate_exact": [], "conditional_ranking_exact": [],
+                      "outputs": []}
                for name in CONDITIONS}
     for run in run_reports:
         for name in CONDITIONS:
@@ -90,9 +92,12 @@ def _aggregate(run_reports, candidates):
             target["outputs"].append({"run": run["run"], **row["reconstruction"]})
             for metric, value in row["text_metrics"].items():
                 target["text"][metric].append(value)
-            if row["ranking_at_k"]["recall"] == 1:
+            if row["candidate_recall"] == 1:
                 target["full_candidate_coverage"] += 1
-                target["conditional_exact"].append(row["text_exact"])
+                target["conditional_candidate_exact"].append(row["text_exact"])
+            if row["ranking_at_k"]["recall"] == 1:
+                target["full_ranking_coverage"] += 1
+                target["conditional_ranking_exact"].append(row["text_exact"])
     summary = {}
     for name, values in grouped.items():
         summary[name] = {
@@ -101,7 +106,11 @@ def _aggregate(run_reports, candidates):
             "ranking_recall_at_k_mean": _mean(values["ranking_recall"]),
             "average_precision_mean": _mean(values["average_precision"]),
             "full_candidate_coverage": values["full_candidate_coverage"],
-            "conditional_sequence_exact_rate": _mean(values["conditional_exact"]),
+            "conditional_sequence_exact_rate_given_full_candidates": _mean(
+                values["conditional_candidate_exact"]),
+            "full_ranking_coverage_at_k": values["full_ranking_coverage"],
+            "conditional_sequence_exact_rate_given_full_ranking_at_k": _mean(
+                values["conditional_ranking_exact"]),
             "text_metrics_mean": {metric: _mean(samples)
                                   for metric, samples in values["text"].items()},
             "reconstructions": values["outputs"],
