@@ -58,6 +58,12 @@ def test_target_known_is_a_declared_public_field():
     assert training.target_public and training.question_private and not training.image_public
 
 
+def test_real_diagnostic_spec_keeps_yaml_boolean_words_as_strings():
+    path = Path(__file__).parents[1] / "configs/diagnostics/slake_llava_text_unknown_discriminability.yaml"
+    guesses = load_spec(path)["text_guesses"]
+    assert all(isinstance(word, str) for word in guesses["target_words"])
+
+
 def test_text_guesses_use_only_declared_known_fields(args):
     spec = load_spec(args.spec)
     cfg = load_config(overrides=["training.knowledge=private",

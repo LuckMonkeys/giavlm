@@ -67,9 +67,13 @@ def load_spec(path):
     if any(set(pair) != {"question", "target"} or not pair["question"] or not pair["target"]
            for pair in guesses["template_pairs"]):
         raise ValueError("Each template pair needs nonempty question and target")
+    if any(not isinstance(pair["question"], str) or not isinstance(pair["target"], str)
+           for pair in guesses["template_pairs"]):
+        raise ValueError("Template questions and targets must be strings")
     for key in ["question_words", "target_words"]:
-        if not isinstance(guesses[key], list) or len(guesses[key]) < 2:
-            raise ValueError(f"{key} needs at least two public words")
+        if (not isinstance(guesses[key], list) or len(guesses[key]) < 2 or
+                any(not isinstance(word, str) or not word for word in guesses[key])):
+            raise ValueError(f"{key} needs at least two nonempty public string words")
     resources = spec["resources"]
     if set(resources) != {"gpu_id", "min_free_mib"} or resources["gpu_id"] != 4:
         raise ValueError("This diagnostic is fixed to physical GPU 4")

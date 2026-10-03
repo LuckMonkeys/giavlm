@@ -88,6 +88,6 @@ text_guesses:
     - question: What is the main finding?
       target: abnormal
   question_words: [what, where, which, region, image, finding, size, color, visible, abnormal]
-  target_words: [yes, no, normal, abnormal, unknown, present, absent, left, right, mild]
+  target_words: ['yes', 'no', normal, abnormal, unknown, present, absent, left, right, mild]
   question_word_count: 8
   target_word_count: 3
