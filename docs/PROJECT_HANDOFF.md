@@ -1,7 +1,7 @@
 # Project Handoff
 
-Updated: 2026-10-02 (Asia/Shanghai) · branch `main`; former
-`gradient-diagnostics` work merged through `cf9411f`
+Updated: 2026-10-03 (Asia/Shanghai) · branch `main`; DAGER projection records
+committed through `691580e`
 
 Resume: read `AGENTS.md` first, then this file. Verify it is current:
 
@@ -19,11 +19,12 @@ ps -eo pid,etime,cmd | rg 'examples.run_attack|utils.run_cmds'; nvidia-smi
 - **Stage:** method/protocol validation and diagnosis. The end-to-end pipeline runs;
   DLG and IG were exercised on SLAKE/LLaVA.
 - **New implementation:** `dager_adapted` adds text-only discrete reconstruction
-  under public images/lengths, with optional known questions. Original `dager`
-  remains unimplemented. One authorized real-model `image_known` diagnostic and
-  its post-commit token-ranking controls are now complete; they show token-set
-  signal but failed sequence reconstruction. See the evidence below and
-  `docs/validation.md` for controls and boundaries.
+  under known token lengths. It accepts a declared public image, or an explicitly
+  configured attacker-generated random surrogate when the image is private; it
+  never reconstructs or optimizes the image. Original `dager` remains
+  unimplemented. Real-model single- and multi-sample diagnostics show strong
+  token-set signal but failed complete sequence reconstruction. See the evidence
+  below and `docs/validation.md` for controls and boundaries.
 - **Validation (2026-10-02):** DAGER mathematical/interface tests, real GPU-4
   diagnostics, paired raw/public-residual top-50 scoring and post-commit random,
   wrong-text and corpus-frequency controls are complete. CPU regression: 247
@@ -35,6 +36,14 @@ ps -eo pid,etime,cmd | rg 'examples.run_attack|utils.run_cmds'; nvidia-smi
   unique private IDs, respectively; all four default-threshold sequence searches
   failed to recover text. QKV vocabulary scores exactly reproduce the previous
   public-residual scores. See the projection-ablation evidence below.
+- **DAGER text reconstruction (`n=10`, 2026-10-03):** 40 paired attacks completed
+  on GPU 5 for true-image/random-surrogate × raw/public-residual. At K=100,
+  public residual raises mean unique-token recall from 0.609 to 0.979 with the
+  true image and 0.958 with a random surrogate. Nevertheless, complete question
+  plus answer recovery is 0/10 in every condition, including 0/8 true-image and
+  0/6 random-surrogate successes conditional on the actual candidate set already
+  containing every reference token. See the multi-sample evidence and artifact
+  index below.
 - **Finding:** image reconstructions remain noise-like. With the ground-truth image
   and private-text lengths public, TAG recovered no question content in 18 runs;
   answer signal appeared only weakly under F-CL at round 0 (details below).
@@ -46,12 +55,14 @@ ps -eo pid,etime,cmd | rg 'examples.run_attack|utils.run_cmds'; nvidia-smi
 
 ## Priorities
 
-Current text-method direction: freeze the DAGER settings and repeat the token
-ranking controls on multiple independent images before doing more sequence search.
-The single-sample diagnostic contains real sample-associated token-set signal but
-does not establish generalization. Initialization with zero LoRA-A gradients is
-explicitly unsupported. The earlier TAG follow-up below remains a separate pending
-comparison, not an active run.
+Current text-method direction: the frozen `n=10` development study confirms that
+public-residual token filtering generalizes beyond the original sample, including
+with attacker-generated random visual surrogates, but complete answers remain
+unrecovered even when the candidate set has full token coverage. Before expanding
+the cohort, diagnose the adapted beam search (for example, post-commit true-prefix
+survival and per-depth rank) and compare it with a separately named, paper-faithful
+threshold decoder. Initialization with zero LoRA-A gradients remains explicitly
+unsupported. The earlier TAG follow-up below is a separate pending comparison.
 
 1. **Interpret and extend the completed gradient-discriminability study.** The
    finite-bank result supports gradient loss as a global ranking signal, while the
@@ -482,6 +493,86 @@ supports the utility of joint scoring on this sample, not a general guarantee
 or successful sequence reconstruction. The equal-top-k metrics are post-commit
 ranking evaluations; the complete searches still used threshold 0.05. No new
 top-k sequence attack was run, and no thresholds were adjusted after evaluation.
+
+### Multi-sample DAGER text reconstruction (`n=10`, GPU 5, 2026-10-03)
+
+`evaluation/dager_reconstruction_study.py` ran a paired development study over 10
+different SLAKE `tune` image groups (offsets 0--9), not 10 attack seeds on one
+sample. The victim is the same LLaVA-1.5-7B F-L round-10 snapshot, FedSGD, LoRA
+rank 8 and bf16 model used by the earlier real DAGER diagnostic. Token lengths are
+public in every condition; questions and answers remain private.
+
+The four conditions are true public image + `public_residual`, true public image
++ `raw`, private image + fixed attacker-generated random-pixel surrogate +
+`public_residual`, and private image + that surrogate + `raw`. The surrogate is
+generated from attack seed 0 and is neither optimized nor selected using a private
+reference. Every private-image observation has no public image artifact. For each
+sample, the known- and private-image captures have identical uploaded-update
+hashes. All 40 attacks committed before evaluation read any private reference.
+
+Search settings are top-K with 100 informative candidates, joint QKV, beam width
+16, at most 200,000 prefix evaluations, 3,600 seconds, and no full-gradient
+reranking. Residual conditions retain 9 additional public-overlap ambiguous IDs,
+so their actual sequence-search candidate set has 109 IDs; raw has exactly 100.
+Fixed K=100 ranking metrics and actual-candidate metrics are reported separately.
+
+Artifacts: `outputs/diagnostics/dager_reconstruction_gpu5_tune_n10_k100/`.
+
+- `plan.json` and `configs/*.json`: frozen study and four condition protocols.
+- `summary.json`: aggregate token and text metrics plus attack/evaluation source
+  fingerprints; `complete.json` binds its final SHA256.
+- `run-*/summary.json`: per-sample aggregate metrics without private text or IDs.
+- `run-*/ranking_validation.json` and `filter_comparison.json`: post-commit
+  equal-K rankings and random controls.
+- `run-*/attacks/<condition>/{result.json,evaluation.json,token_candidates.*}`:
+  committed reconstruction, text metrics, and full vocabulary scores.
+- Launch/watcher scripts and logs are under
+  `outputs/diagnostics/analysis_scripts/` and `outputs/diagnostics/`.
+
+Token filtering uses macro averages over each sample's unique private question
+and answer token-ID union:
+
+| Condition | Actual candidates | Candidate recall | Recall@100 | AP | Full actual / K=100 coverage |
+|---|---:|---:|---:|---:|---:|
+| True image + residual | 109 | 0.9866 | 0.9795 | 0.3526 | 8/10 / 7/10 |
+| Random surrogate + residual | 109 | 0.9580 | 0.9580 | 0.3359 | 6/10 / 6/10 |
+| True image + raw | 100 | 0.6094 | 0.6094 | 0.2540 | 0/10 / 0/10 |
+| Random surrogate + raw | 100 | 0.6094 | 0.6094 | 0.2540 | 0/10 / 0/10 |
+
+Residual improves actual candidate recall over raw on all 10 paired samples. The
+true image improves recall over the random surrogate on only 2/10 samples and ties
+on 8/10 at this candidate size; its mean AP advantage is 0.0167. Raw first-stage
+rankings are identical across image conditions by construction because raw token
+scoring does not subtract an image-derived public space.
+
+Question reconstruction metrics are macro averages over the same 10 samples:
+
+| Condition | EM | ROUGE-1 | ROUGE-2 | ROUGE-L | Word recall | WER |
+|---|---:|---:|---:|---:|---:|---:|
+| True image + residual | 0.400 | 0.700 | 0.516 | 0.685 | 0.670 | 0.368 |
+| Random surrogate + residual | 0.000 | 0.467 | 0.264 | 0.454 | 0.471 | 0.680 |
+| True image + raw | 0.200 | 0.323 | 0.240 | 0.323 | 0.295 | 0.705 |
+| Random surrogate + raw | 0.000 | 0.299 | 0.210 | 0.299 | 0.295 | 0.768 |
+
+For answers, EM, normalized EM, ROUGE-1/2/L and word recall are all zero in all
+four conditions; mean answer WER is 1.32--1.34. Complete question-plus-answer EM
+is 0/10 everywhere. Most importantly, it remains zero conditional on first-stage
+possibility: true-image residual recovers 0/8 complete texts when its actual
+candidate set contains every reference token, and random-surrogate residual
+recovers 0/6. The four exact questions under true-image residual and two under
+true-image raw may include repeated-template effects and do not constitute answer
+or complete-sample recovery.
+
+Conclusion: public-residual filtering is a reproducible first-stage signal rather
+than a one-sample accident, and a generic vision-encoder surrogate retains most
+of its K=100 benefit when the true image is private. Exact image context supplies
+a modest additional token-ranking benefit and improves the adapted second-stage
+question metrics. The decisive failure is sequence recovery, especially answers:
+full candidate coverage is not sufficient for the current fixed-width cumulative
+beam search. This is development evidence for `dager_adapted`, whose decoder is
+not paper-faithful DAGER; it is not an independent validation or an original-DAGER
+claim. All jobs completed without OOM or budget exhaustion and released their GPU
+allocation.
 
 ## Hypotheses (unverified)
 

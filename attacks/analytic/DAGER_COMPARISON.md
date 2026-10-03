@@ -124,12 +124,19 @@ d(x) = ‖xR - proj_rowspan(G̃)(xR)‖₂ / ‖xR‖₂
 
 ## 公开知识与 VQA 训练目标
 
-当前实现只接受两种知识条件：
+当前实现接受两类图像上下文：
 
-- `image_known`：图像公开，问题和答案私有。
-- `image_question_known`：图像与问题公开，只恢复答案。
+- `image_source=declared`：要求 `image_known` 或
+  `image_question_known`；前者图像公开而问题和答案私有，后者图像与问题
+  公开而只恢复答案。
+- `image_source=random`：要求 `private`；公开 observation 不含图像，攻击器
+  根据公开 attack seed 生成固定随机像素图作为内部视觉上下文，同时恢复
+  私有问题和答案。该路径不读取、估计、优化或重构私有图像。
 
-两者都必须设置 `token_lengths_known=true`。因此本项目没有实现未知长度推断，也没有实现图像与文本联合恢复。最终 `Reconstruction.images=None`，图像只是固定的公开输入；公开问题也不会参与优化或恢复评分。
+这些条件都必须设置 `token_lengths_known=true`。因此本项目没有实现未知长度
+推断，也没有实现图像与文本联合恢复。最终 `Reconstruction.images=None`；
+图像只是固定的已声明或攻击者生成的上下文，公开问题也不会参与优化或
+恢复评分。
 
 原版主要处理文本分类或普通 next-token prediction；本项目采用固定布局：
 
@@ -253,7 +260,10 @@ score = Σθ ‖ĝθ - gθ‖₂² / max(Σθ ‖gθ‖₂², 1e-20)
 
 `scripts/dager_dp.sh` 使用 `attack_new.py`；该入口在 `get_matrices_expansions` 调用中有固定 `B=100` 的设置，不应与自动估秩的 `attack.py` 视为完全等价。原版的噪声实验支持也不能自动等同于某个经过隐私会计证明的 DP 保证。
 
-本项目还不接受 F-C、F-2stage、未知图像、未知长度或带防御的上传。即使某些条件理论上可以扩展，当前支持检查仍然会拒绝，也没有自动回退到 TAG 等方法。
+本项目还不接受 F-C、F-2stage、未知长度或带防御的上传。私有图像只支持
+固定随机 surrogate 这一显式条件；自然图像检索、图像估计与图像优化仍未
+实现。即使某些条件理论上可以扩展，当前支持检查仍然会拒绝，也没有自动
+回退到 TAG 等方法。
 
 来源：[原版 FedAvg 更新](../../dager-gradient-inversion/utils/models.py)、[原版 encoder 搜索](../../dager-gradient-inversion/utils/filtering_encoder.py)、[原版噪声距离聚合](../../dager-gradient-inversion/utils/functional.py)、[attack_new.py](../../dager-gradient-inversion/attack_new.py)、[本项目支持边界](dager_adapted.py)。
 
@@ -277,13 +287,17 @@ score = Σθ ‖ĝθ - gθ‖₂² / max(Σθ ‖gθ‖₂², 1e-20)
 
 一次前缀扩展或一次完整梯度 replay 计为一次 evaluation，与 batch 大小无关；词表扫描量另行计数。`iterations`、优化器学习率等连续优化参数不驱动 DAGER 搜索。`checkpoint_interval` 对前缀前向 batch 计数，词表块和阶段转换另行保存。
 
-`init_source=random` 是通用配置中的中性默认标签；本方法没有随机候选初始化，不使用连续图像或 soft-token 优化，且拒绝传入候选初始化。`text_method=none`、`restarts=1` 由配置校验约束。
+`init_source=random` 是通用配置中的中性默认标签；本方法没有随机候选
+初始化，不使用连续图像或 soft-token 优化，且拒绝传入候选初始化。
+`dager.image_source=random` 是另一项独立控制，表示攻击器生成固定随机图像
+上下文，并不表示初始化或优化待恢复图像。`text_method=none`、`restarts=1`
+由配置校验约束。
 
 来源：[原版 reconstruct](../../dager-gradient-inversion/attack.py)、[本项目 DAGERSearch](dager_adapted.py)、[token 评估](../../evaluation/token_recovery.py)、[等规模筛选评估](../../evaluation/dager_ablation.py)、[协议](../../docs/protocol.md)。
 
 ## 已有实验与可支持的结论
 
-截至核对日期，本项目已有以下单样本开发证据：
+截至核对日期，本项目已有以下单样本与多样本开发证据：
 
 | 实验条件 | token 集合结果 | 完整序列结果 |
 |---|---|---|
@@ -291,14 +305,24 @@ score = Σθ ‖ĝθ - gθ‖₂² / max(Σθ ‖gθ‖₂², 1e-20)
 | 仅图像与长度公开，默认阈值 | 问题与答案并集 recall 为 1/14 | 问题、答案均失败 |
 | 同一样本，raw 精确 top-50 | 覆盖 7/14 个私有 token ID | 此消融未验证完整搜索 |
 | 同一样本，public-residual 精确 top-50 | 覆盖 13/14 个私有 token ID | 此消融未验证完整搜索 |
+| 10 个样本，真图 residual，top-100 | 平均 recall 0.9795；实际候选全覆盖 8/10 | 完整问题加答案 0/10；全覆盖条件下 0/8 |
+| 10 个样本，随机 surrogate residual，top-100 | 平均 recall 0.9580；实际候选全覆盖 6/10 | 完整问题加答案 0/10；全覆盖条件下 0/6 |
 
 完整诊断使用训练后的 F-L round 10、FedSGD、LoRA rank 8。未知问题条件下，默认过滤器返回 1 个非歧义候选和 9 个歧义候选，搜索填入 14 个私有内容位置，完成 2,030 次前缀检查和 128 个前向 batch，没有完整梯度重排。`completed` 与最终文本恢复失败可以同时成立。
 
 由实现可以明确推断：默认阈值下候选集合已经漏掉真实 token，后续搜索无论增加多少 beam，都无法恢复完整原文。top-50 结果说明排名中存在更多信号，但没有证明第二层排序能够恢复正确顺序。此处只能确定候选遗漏构成完整恢复的障碍，不能据此断定其他所有改动的相对贡献。
 
-后续随机、错误文本和词频对照显示，排名包含样本相关信号，但常见模板 token 也贡献不少命中。13/14 不能直接理解为 13 个样本特有信息被恢复，更不能理解为完整句子已恢复。这些实验都是同一样本的开发证据，不构成跨样本泛化结论。
+后续随机、错误文本和词频对照显示，排名包含样本相关信号，但常见模板
+token 也贡献不少命中。单样本的 13/14 不能直接理解为 13 个样本特有信息
+被恢复，更不能理解为完整句子已恢复。后续 10 个不同 `tune` 样本的配对
+结果表明 residual 相对 raw 在 10/10 样本提高候选 recall，但仍属于开发集
+证据，不是独立验证。
 
-替代图像实验只测试第一阶段分数对视觉子空间变化的敏感性，尚未形成可用的图像未知攻击。使用真实图像混合构造的条件属于 oracle 敏感性诊断，不能重新标记为图像私有条件。
+早期替代图像敏感性实验只测试第一阶段分数；其中使用真实图像混合构造的
+条件属于 oracle 诊断，不能重新标记为图像私有条件。新的多样本
+`image_source=random` 路径则使用不含公开图像的 `private` observation，并
+执行完整序列搜索；它是可复现的随机-surrogate 文本攻击条件，但仍不恢复
+或优化私有图像。
 
 来源：[PROJECT_HANDOFF 中的真实诊断与后续消融](../../docs/PROJECT_HANDOFF.md)、[验证范围](../../docs/validation.md)。
 
@@ -360,7 +384,10 @@ Q/QKV 各使用 2,030 次前缀评估，K/V 各使用 1,818 次；模型加载�
 /tmp/giavlm-venv/bin/python -m pytest -q tests/test_dager.py
 ```
 
-结果为 `24 passed in 4.89s`。测试覆盖数学恒等式、秩不足反例、部分前向一致性、合成恢复、预算与断点恢复等。
+初始结果为 `24 passed in 4.89s`；加入随机-surrogate 与私有图像文本评分
+接口后，专项测试为 `26 passed`，完整 CPU 回归为 `249 passed, 3 skipped`。
+测试覆盖数学恒等式、秩不足反例、部分前向一致性、合成恢复、预算与断点
+恢复等。
 
 这些测试使用合成矩阵和随机小型模型；它们证明相关实现和接口在测试条件下成立，不替代真实预训练模型上的恢复实验。最初的实现对比没有重新执行 GPU 实验；随后按用户要求执行了上一节记录的四组配对 GPU 实验，并再次通过 24 项 DAGER 专项测试和新实验入口的 Ruff 检查。
 
