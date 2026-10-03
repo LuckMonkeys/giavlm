@@ -1,6 +1,7 @@
 # Project Handoff
 
-Updated: 2026-10-02 (Asia/Shanghai) · branch `main`; former
+Updated: 2026-10-03 (Asia/Shanghai) · active experiment branch
+`text-unknown-discriminability` in `/tmp/giavlm-text-unknown`; former
 `gradient-diagnostics` work merged through `cf9411f`
 
 Resume: read `AGENTS.md` first, then this file. Verify it is current:
@@ -38,6 +39,11 @@ ps -eo pid,etime,cmd | rg 'examples.run_attack|utils.run_cmds'; nvidia-smi
   round 10, but its local pixel-space descent direction is almost orthogonal to the
   direction back to the private image. This reconciles candidate discriminability
   with failed IG optimization. It does not establish unique recovery.
+- **Active run (2026-10-03):** unknown-text image-discriminability development
+  experiment is running sequentially on physical GPU 4 (runner PID 127949,
+  watcher PID 128116). It covers 20 images each for F-C/r0, F-L/r10 and F-CL/r10;
+  status is in
+  `outputs/diagnostics/text_unknown_discriminability/development-status.log`.
 
 ## Priorities
 
@@ -103,6 +109,39 @@ Reports are under `outputs/diagnostics/discriminability/reports/`.
   can look globally similar while reconstruction still fails. The result is limited
   to the declared finite candidates and does not prove identifiability or attack
   success.
+
+## Evidence: Image Discriminability with Unknown Text (2026-10-03, active)
+
+Private-reference diagnostic, not an attack benchmark. Implementation:
+`evaluation/text_unknown_discriminability.py`; configuration:
+`configs/diagnostics/slake_llava_text_unknown_discriminability.yaml`; command:
+`python -m core.commands diagnose-text-unknown-discriminability`. The diagnostic
+holds each public text guess fixed across a 25-image candidate bank, tests
+`text_known`, `question_known`, `target_known` and fully private text, and reports
+both conditional rankings and rank aggregation over four public templates plus
+four deterministic random-word guesses. Reports contain opaque guess IDs rather
+than private or guessed text.
+
+- F-L/r10 pilot completed on 3 images: 1,875/1,875 records, 997 seconds, peak
+  allocated/reserved GPU memory 20.14/20.83 GiB. The report is under
+  `outputs/diagnostics/text_unknown_discriminability/reports/pilot/f_l_r10/`.
+- Mean-rank aggregation gives Spearman correlation between score and image MSE /
+  lower-error-candidate win probability of 0.865/0.980 with correct text,
+  -0.339/0.263 with only the question known, 0.252/0.714 with only the target
+  known, and 0.025/0.528 with neither known. The truth-image percentile is 0.000,
+  0.568, 0.497 and 0.498 respectively (lower is better).
+- Interpretation is provisional because the pilot has only 3 images. It suggests
+  that correct target tokens preserve some image-ordering signal when the question
+  is guessed, while a guessed target can reverse the ordering even when the true
+  question is known; with both text fields guessed, the aggregate is near chance.
+- The first pilot attempt stopped at record 425 because YAML parsed unquoted
+  `yes/no` vocabulary entries as booleans. Commit `eb2a799` quotes them and makes
+  spec loading reject non-string templates/vocabulary; the focused regression has
+  5 passing tests and Ruff is clean. The failed attempt is preserved under
+  `outputs/diagnostics/text_unknown_discriminability_failed_20261003_091114/`.
+- Development scoring is now running on physical GPU 4. Do not edit Python source
+  under `core/`, `attacks/`, `defenses/`, `metrics/`, `evaluation/` or `utils/`
+  until it ends, because the study checks their source fingerprint on every stage.
 
 ## Evidence: Private-Reference Gradient Diagnostics (2026-09-23)
 
