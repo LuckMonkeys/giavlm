@@ -149,6 +149,37 @@ than private or guessed text.
   while trained F-L/F-CL depend strongly on knowing the correct target and lose
   useful aggregate ordering when both fields are guessed. Independent validation
   has not started; development analysis must be frozen before that stage.
+- **Development conclusion:** correct question and target give strong image
+  ordering in every condition. With the correct target but a guessed question,
+  F-L/r10 and F-CL/r10 retain weaker positive ordering (rho 0.363 and 0.248).
+  With the correct question but a guessed target, their ordering reverses
+  (rho -0.248 and -0.220). When both text fields are guessed, F-L/r10 is at
+  chance and F-CL/r10 is weakly anti-correlated. F-C/r0 retains a weak aggregate
+  signal, but it is largely template-dependent: random-word guesses alone give
+  rho 0.082 and near-win 0.540. Thus gradient-matching loss does not provide a
+  robust, model-independent image-ranking signal when text is fully unknown.
+
+### Result index
+
+- Study root and status:
+  `outputs/diagnostics/text_unknown_discriminability/`;
+  `development-status.log` records successful completion and
+  `development-watch.log` records the watcher exit.
+- F-C/r0 development report:
+  `reports/development/f_c_r0/{report.md,report.json,unknown_text_ranking.png,unknown_text_ranking.pdf}`.
+- F-L/r10 development report:
+  `reports/development/f_l_r10/{report.md,report.json,unknown_text_ranking.png,unknown_text_ranking.pdf}`.
+- F-CL/r10 development report:
+  `reports/development/f_cl_r10/{report.md,report.json,unknown_text_ranking.png,unknown_text_ranking.pdf}`.
+- Cross-condition raw cosine-loss versus image-MSE figure:
+  `reports/development/comparison/loss_vs_mse_raw.{png,pdf}`. Points are real
+  non-truth candidate scores; the black curve/band is the binned median/IQR.
+- Cross-condition scale-controlled figure:
+  `reports/development/comparison/loss_rank_vs_mse.{png,pdf}`. Losses are ranked
+  within each fixed text guess and then averaged across guesses; use this figure
+  for the primary comparison because raw loss scales differ across guessed text.
+- Reproducible post-processing script:
+  `outputs/diagnostics/analysis_scripts/plot_text_unknown_loss_mse.py`.
 
 ## Evidence: Private-Reference Gradient Diagnostics (2026-09-23)
 
