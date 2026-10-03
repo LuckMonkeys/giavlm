@@ -150,6 +150,7 @@ def evaluate_committed(output, configs, candidates):
             result = read_json(directories[name] / "result.json")
             ranking = rankings["modes"][name]
             curve = _curve_row(ranking, candidates)
+            token_filter = result.get("provenance", {}).get("token_filter", {})
             metrics = report["samples"][0]["metrics"] if report["samples"] else {}
             text_metrics = {key: value for key, value in metrics.items()
                             if key.startswith(("question_", "target_"))}
@@ -158,8 +159,9 @@ def evaluate_committed(output, configs, candidates):
             run_report["conditions"][name] = {
                 "status": result["status"],
                 "image_context": result.get("provenance", {}).get("image_context"),
-                "selected_candidates": result.get("provenance", {}).get(
-                    "token_filter", {}).get("selected_candidates"),
+                "selected_candidates": (token_filter.get("informative_candidates", 0)
+                                        + token_filter.get("ambiguous_candidates", 0)),
+                "ambiguous_candidates": token_filter.get("ambiguous_candidates"),
                 "candidate_recall": report["token_detection"]["candidates"]["recall"],
                 "ranking_at_k": curve,
                 "average_precision": ranking["ranking"]["average_precision"],
