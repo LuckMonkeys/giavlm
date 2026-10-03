@@ -21,6 +21,7 @@ Knowledge conditions:
 |---|---|---|
 | private | Image, question, target private | Image and target private |
 | question_known | Question public; image/target private | Not applicable |
+| target_known | Target public; image/question private | Target public; image private |
 | text_known | Question/target public; image private | Target public; image private |
 | image_known | Image public; question/target private | Image public; target private |
 | image_question_known | Image/question public; target private | Not applicable |
