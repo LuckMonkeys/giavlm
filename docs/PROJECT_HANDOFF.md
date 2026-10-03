@@ -39,11 +39,10 @@ ps -eo pid,etime,cmd | rg 'examples.run_attack|utils.run_cmds'; nvidia-smi
   round 10, but its local pixel-space descent direction is almost orthogonal to the
   direction back to the private image. This reconciles candidate discriminability
   with failed IG optimization. It does not establish unique recovery.
-- **Active run (2026-10-03):** unknown-text image-discriminability development
-  experiment is running sequentially on physical GPU 4 (runner PID 127949,
-  watcher PID 128116). It covers 20 images each for F-C/r0, F-L/r10 and F-CL/r10;
-  status is in
-  `outputs/diagnostics/text_unknown_discriminability/development-status.log`.
+- **Completed phase (2026-10-03):** unknown-text image-discriminability
+  development experiment completed on physical GPU 4: 20 images and 12,500
+  records each for F-C/r0, F-L/r10 and F-CL/r10. All reports completed, the
+  watcher exited successfully, and no failed records were produced.
 
 ## Priorities
 
@@ -110,7 +109,7 @@ Reports are under `outputs/diagnostics/discriminability/reports/`.
   to the declared finite candidates and does not prove identifiability or attack
   success.
 
-## Evidence: Image Discriminability with Unknown Text (2026-10-03, active)
+## Evidence: Image Discriminability with Unknown Text (2026-10-03, development complete)
 
 Private-reference diagnostic, not an attack benchmark. Implementation:
 `evaluation/text_unknown_discriminability.py`; configuration:
@@ -139,9 +138,17 @@ than private or guessed text.
   spec loading reject non-string templates/vocabulary; the focused regression has
   5 passing tests and Ruff is clean. The failed attempt is preserved under
   `outputs/diagnostics/text_unknown_discriminability_failed_20261003_091114/`.
-- Development scoring is now running on physical GPU 4. Do not edit Python source
-  under `core/`, `attacks/`, `defenses/`, `metrics/`, `evaluation/` or `utils/`
-  until it ends, because the study checks their source fingerprint on every stage.
+- Development scoring completed at 14:31 on physical GPU 4 with 37,500/37,500
+  records and reports for all three conditions. Mean-rank aggregate results
+  (Spearman rho / lower-error-candidate win probability) are: F-C/r0
+  `text_known` 0.658/0.864, `question_known` 0.529/0.793, `target_known`
+  0.569/0.811, neither 0.299/0.692; F-L/r10 0.846/0.966,
+  -0.248/0.348, 0.363/0.765, -0.005/0.547; F-CL/r10 0.800/0.950,
+  -0.220/0.375, 0.248/0.649, -0.118/0.391. Thus unknown text does not have a
+  model-independent effect: the untuned F-C state retains candidate ordering,
+  while trained F-L/F-CL depend strongly on knowing the correct target and lose
+  useful aggregate ordering when both fields are guessed. Independent validation
+  has not started; development analysis must be frozen before that stage.
 
 ## Evidence: Private-Reference Gradient Diagnostics (2026-09-23)
 
