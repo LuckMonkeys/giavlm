@@ -1,7 +1,8 @@
 # Project Handoff
 
-Updated: 2026-10-03 (Asia/Shanghai) · branch `main`; DAGER projection records
-committed through `691580e`
+Updated: 2026-10-03 (Asia/Shanghai) · branch `main`; DAGER multi-sample study
+committed through `388241f`; unknown-text image-discriminability diagnostic merged
+from `text-unknown-discriminability`
 
 Resume: read `AGENTS.md` first, then this file. Verify it is current:
 
@@ -52,6 +53,10 @@ ps -eo pid,etime,cmd | rg 'examples.run_attack|utils.run_cmds'; nvidia-smi
   round 10, but its local pixel-space descent direction is almost orthogonal to the
   direction back to the private image. This reconciles candidate discriminability
   with failed IG optimization. It does not establish unique recovery.
+- **Completed phase (2026-10-03):** unknown-text image-discriminability
+  development experiment completed on physical GPU 4: 20 images and 12,500
+  records each for F-C/r0, F-L/r10 and F-CL/r10. All reports completed, the
+  watcher exited successfully, and no failed records were produced.
 
 ## Priorities
 
@@ -119,6 +124,78 @@ Reports are under `outputs/diagnostics/discriminability/reports/`.
   can look globally similar while reconstruction still fails. The result is limited
   to the declared finite candidates and does not prove identifiability or attack
   success.
+
+## Evidence: Image Discriminability with Unknown Text (2026-10-03, development complete)
+
+Private-reference diagnostic, not an attack benchmark. Implementation:
+`evaluation/text_unknown_discriminability.py`; configuration:
+`configs/diagnostics/slake_llava_text_unknown_discriminability.yaml`; command:
+`python -m core.commands diagnose-text-unknown-discriminability`. The diagnostic
+holds each public text guess fixed across a 25-image candidate bank, tests
+`text_known`, `question_known`, `target_known` and fully private text, and reports
+both conditional rankings and rank aggregation over four public templates plus
+four deterministic random-word guesses. Reports contain opaque guess IDs rather
+than private or guessed text.
+
+- F-L/r10 pilot completed on 3 images: 1,875/1,875 records, 997 seconds, peak
+  allocated/reserved GPU memory 20.14/20.83 GiB. The report is under
+  `outputs/diagnostics/text_unknown_discriminability/reports/pilot/f_l_r10/`.
+- Mean-rank aggregation gives Spearman correlation between score and image MSE /
+  lower-error-candidate win probability of 0.865/0.980 with correct text,
+  -0.339/0.263 with only the question known, 0.252/0.714 with only the target
+  known, and 0.025/0.528 with neither known. The truth-image percentile is 0.000,
+  0.568, 0.497 and 0.498 respectively (lower is better).
+- Interpretation is provisional because the pilot has only 3 images. It suggests
+  that correct target tokens preserve some image-ordering signal when the question
+  is guessed, while a guessed target can reverse the ordering even when the true
+  question is known; with both text fields guessed, the aggregate is near chance.
+- The first pilot attempt stopped at record 425 because YAML parsed unquoted
+  `yes/no` vocabulary entries as booleans. Commit `eb2a799` quotes them and makes
+  spec loading reject non-string templates/vocabulary; the focused regression has
+  5 passing tests and Ruff is clean. The failed attempt is preserved under
+  `outputs/diagnostics/text_unknown_discriminability_failed_20261003_091114/`.
+- Development scoring completed at 14:31 on physical GPU 4 with 37,500/37,500
+  records and reports for all three conditions. Mean-rank aggregate results
+  (Spearman rho / lower-error-candidate win probability) are: F-C/r0
+  `text_known` 0.658/0.864, `question_known` 0.529/0.793, `target_known`
+  0.569/0.811, neither 0.299/0.692; F-L/r10 0.846/0.966,
+  -0.248/0.348, 0.363/0.765, -0.005/0.547; F-CL/r10 0.800/0.950,
+  -0.220/0.375, 0.248/0.649, -0.118/0.391. Thus unknown text does not have a
+  model-independent effect: the untuned F-C state retains candidate ordering,
+  while trained F-L/F-CL depend strongly on knowing the correct target and lose
+  useful aggregate ordering when both fields are guessed. Independent validation
+  has not started; development analysis must be frozen before that stage.
+- **Development conclusion:** correct question and target give strong image
+  ordering in every condition. With the correct target but a guessed question,
+  F-L/r10 and F-CL/r10 retain weaker positive ordering (rho 0.363 and 0.248).
+  With the correct question but a guessed target, their ordering reverses
+  (rho -0.248 and -0.220). When both text fields are guessed, F-L/r10 is at
+  chance and F-CL/r10 is weakly anti-correlated. F-C/r0 retains a weak aggregate
+  signal, but it is largely template-dependent: random-word guesses alone give
+  rho 0.082 and near-win 0.540. Thus gradient-matching loss does not provide a
+  robust, model-independent image-ranking signal when text is fully unknown.
+
+### Result index
+
+- Study root and status:
+  `outputs/diagnostics/text_unknown_discriminability/`;
+  `development-status.log` records successful completion and
+  `development-watch.log` records the watcher exit.
+- F-C/r0 development report:
+  `reports/development/f_c_r0/{report.md,report.json,unknown_text_ranking.png,unknown_text_ranking.pdf}`.
+- F-L/r10 development report:
+  `reports/development/f_l_r10/{report.md,report.json,unknown_text_ranking.png,unknown_text_ranking.pdf}`.
+- F-CL/r10 development report:
+  `reports/development/f_cl_r10/{report.md,report.json,unknown_text_ranking.png,unknown_text_ranking.pdf}`.
+- Cross-condition raw cosine-loss versus image-MSE figure:
+  `reports/development/comparison/loss_vs_mse_raw.{png,pdf}`. Points are real
+  non-truth candidate scores; the black curve/band is the binned median/IQR.
+- Cross-condition scale-controlled figure:
+  `reports/development/comparison/loss_rank_vs_mse.{png,pdf}`. Losses are ranked
+  within each fixed text guess and then averaged across guesses; use this figure
+  for the primary comparison because raw loss scales differ across guessed text.
+- Reproducible post-processing script:
+  `outputs/diagnostics/analysis_scripts/plot_text_unknown_loss_mse.py`.
 
 ## Evidence: Private-Reference Gradient Diagnostics (2026-09-23)
 

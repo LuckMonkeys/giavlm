@@ -68,6 +68,35 @@ retrying or changing the protocol. Development must complete `score` and
 `directions`, then `freeze`, before validation can start. The fp32 control is
 restricted to the three-image pilot.
 
+## Image discriminability with unknown text
+
+`diagnose-text-unknown-discriminability` tests whether matching loss still ranks
+candidate images when the attacker does not know all text. The conditions are
+`text_known`, `question_known`, `target_known` and `private`. Every text guess is
+fixed across the complete image bank before ranking, so image and text variation
+are not confounded. Guesses use only public templates and a public word vocabulary;
+private token values and lengths are never used to generate them.
+
+The diagnostic reports three distinct questions: conditional image ranking under
+one fixed guess, rank aggregation across multiple guesses, and the percentile of
+the true image under attack-visible scores. Reports contain only opaque guess IDs,
+families and aggregate scores. Private text is used in memory to create the victim
+update and authorized known fields reach the scorer through `Observation`.
+
+The frozen real-model spec is
+`configs/diagnostics/slake_llava_text_unknown_discriminability.yaml`. It permits
+only physical GPU 4. Run a pilot with:
+
+```bash
+python -m core.commands diagnose-text-unknown-discriminability --spec configs/diagnostics/slake_llava_text_unknown_discriminability.yaml --output outputs/diagnostics/text_unknown_discriminability --stage prepare
+CUDA_VISIBLE_DEVICES=<GPU-4-UUID> GIAVLM_TEXT_UNKNOWN_GPU=4 python -m core.commands diagnose-text-unknown-discriminability --spec configs/diagnostics/slake_llava_text_unknown_discriminability.yaml --output outputs/diagnostics/text_unknown_discriminability --stage score --cohort pilot --model-condition f_l_r10 --device cuda:0 --resume
+python -m core.commands diagnose-text-unknown-discriminability --spec configs/diagnostics/slake_llava_text_unknown_discriminability.yaml --output outputs/diagnostics/text_unknown_discriminability --stage report --cohort pilot --model-condition f_l_r10 --resume
+```
+
+Pilot results are exploratory. All configured model conditions must complete the
+development score and report before `freeze`; validation refuses to run without
+that matching frozen analysis.
+
 ## Automated Checks
 
 Run `pytest -q` for protocol, data, metrics and model-adapter tests. The offline

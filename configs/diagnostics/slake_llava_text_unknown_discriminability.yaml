@@ -1,0 +1,93 @@
+# Private-reference diagnostic. Public text guesses are fixed across image candidates.
+schema_version: 1
+manifest: data/slake/samples.jsonl
+seed: 42
+pilot_count: 3
+development_count: 20
+validation_count: 20
+resources:
+  gpu_id: 4
+  min_free_mib: 36000
+protocol:
+  model:
+    family: llava
+    name: /home/zx/public/model-hub/huggingface/llava-hf/llava-1.5-7b-hf
+    revision: b234b804b114d9e37bb655e11cbbb5f5e971b7a9
+    seed: 17
+    device: cuda:0
+    dtype: bfloat16
+    image_size: 336
+    patch_size: 14
+    question_length: 64
+    target_length: 32
+    local_files_only: true
+  training:
+    algorithm: fedsgd
+    task: vqa
+    knowledge: private
+    token_lengths_known: false
+    batch_size: 1
+    local_steps: 1
+    gradient_accumulation_steps: 1
+    lr: 0.01
+    local_optimizer: sgd
+    weight_decay: 0.0
+    lora_rank: 8
+    lora_alpha: 16
+    clients: 1
+    clients_per_round: 1
+    seed: 42
+conditions:
+  - name: f_c_r0
+    strategy: f_c
+    round: 0
+  - name: f_l_r10
+    strategy: f_l
+    round: 10
+    snapshot: outputs/federation/slake_llava_f_l_fedavg/round-0010
+  - name: f_cl_r10
+    strategy: f_cl
+    round: 10
+    snapshot: outputs/federation/slake_llava_f_cl_fedavg/round-0010
+knowledge_conditions: [text_known, question_known, target_known, private]
+candidate_ids:
+  - truth
+  - uniform_mix-0-0.0003
+  - uniform_mix-0-0.001
+  - uniform_mix-0-0.003
+  - uniform_mix-0-0.01
+  - uniform_mix-0-0.03
+  - uniform_mix-0-0.1
+  - uniform_mix-0-0.3
+  - uniform_mix-0-1
+  - uniform_mix-1-0.001
+  - uniform_mix-1-0.01
+  - uniform_mix-1-0.1
+  - uniform_mix-1-1
+  - gaussian-0-0.001
+  - gaussian-0-0.01
+  - gaussian-0-0.03
+  - gaussian-0-0.1
+  - gaussian-0-0.3
+  - blur-0.5
+  - blur-2
+  - shift-right-1
+  - shift-right-4
+  - occlude-0.1
+  - occlude-0.5
+  - shuffle-0
+text_guesses:
+  per_family: 4
+  template_pairs:
+    - question: What is shown in the image?
+      target: normal
+    - question: Is there an abnormality in this image?
+      target: 'yes'
+    - question: Which region is affected?
+      target: unknown
+    - question: What is the main finding?
+      target: abnormal
+  question_words: [what, where, which, region, image, finding, size, color, visible, abnormal]
+  target_words: ['yes', 'no', normal, abnormal, unknown, present, absent, left, right, mild]
+  question_word_count: 8
+  target_word_count: 3

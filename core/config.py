@@ -19,6 +19,7 @@ TRAINING_PROTOCOLS = ("native-sft-v2",)
 KNOWLEDGE_FIELDS = {
     "private": frozenset(),
     "question_known": frozenset({"question"}),
+    "target_known": frozenset({"target"}),
     "text_known": frozenset({"question", "target"}),
     "image_known": frozenset({"image"}),
     "image_question_known": frozenset({"image", "question"}),

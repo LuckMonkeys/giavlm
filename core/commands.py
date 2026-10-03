@@ -476,6 +476,11 @@ def diagnose_discriminability(args):
     execute(args)
 
 
+def diagnose_text_unknown_discriminability(args):
+    from evaluation.text_unknown_discriminability import execute
+    execute(args)
+
+
 def doctor(args):
     from attacks import METHODS, supports
     cfg = configuration(args)
@@ -669,6 +674,14 @@ def build_parser():
     p.add_argument("--gpu-ids", default="5,6")
     p.add_argument("--resume", action="store_true")
     p.add_argument("--worker", action="store_true", help=argparse.SUPPRESS)
+    p = command("diagnose-text-unknown-discriminability", diagnose_text_unknown_discriminability)
+    p.add_argument("--spec", required=True)
+    p.add_argument("--output", required=True)
+    p.add_argument("--stage", required=True, choices=["prepare", "score", "report", "freeze"])
+    p.add_argument("--cohort", choices=["pilot", "development", "validation"], default="pilot")
+    p.add_argument("--model-condition")
+    p.add_argument("--device")
+    p.add_argument("--resume", action="store_true")
     p = command("doctor", doctor, True)
     p.add_argument("--probe", action="store_true")
     p.add_argument("--resolve-revision", metavar="HF_MODEL_ID")
