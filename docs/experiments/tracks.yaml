@@ -1,0 +1,39 @@
+# Research tracks in reading order. Every experiment's `track` must be listed here.
+# `summary` is the current judgment for the track, one idea per item; update it when a
+# key result changes. `start_here` names the experiments a new reader should open first.
+# `pages` lists every experiment of the track in reading order (navigation, index and
+# home page follow it; archived pages are grouped under Archive).
+image-ig:
+  title: 图像重建（IG）
+  summary:
+    - 所有测试设置下，IG 都无法从 LLaVA 的更新中重建图像。
+    - 梯度回放是精确的，问题在于匹配目标本身更偏好非真实图像。
+    - 即使从紧挨真实图像的位置出发，IG 也会漂移到约 19–20 dB。
+    - 训练后 F-L 只出现弱的回复力，平衡点约为 24 dB。
+  start_here: [ig-failure-diagnosis]
+  pages: [ig-strategies-and-rounds, ig-failure-diagnosis, ig-parameter-sweep]
+discriminability:
+  title: 梯度可区分性
+  summary:
+    - 匹配损失能在全局上区分离真实图像近和远的候选，训练后更明显。
+    - 但损失的局部像素梯度几乎与指向真实图像的方向正交。
+    - 问题和答案都靠猜时，训练后的模型失去了这种排序能力。
+  start_here: [gradient-discriminability, text-unknown-discriminability]
+  pages: [gradient-discriminability, text-unknown-discriminability, token-image-ordering]
+text-tag:
+  title: 文本重建（TAG）
+  summary:
+    - 已知图像和 token 长度时，TAG 没有恢复出任何问题内容。
+    - 只有 F-CL 第 0 轮出现微弱的答案信号，第 10 轮消失（n=3）。
+  start_here: [tag-text-only-public-image]
+  pages: [tag-text-only-public-image]
+text-dager:
+  title: 文本重建（DAGER）
+  summary:
+    - 私有文本的 token 集合会泄露：rank 32 的 residual 在随机图像条件下达到约 0.994 的 Recall@100。
+    - 已知图像时，完整问答恢复从 rank 8 的 0/10 升到 rank 32 的 5/10，搜索实现和预算不变。
+    - 随机图像时，rank 32 恢复 3/10 个答案，问题更接近原文，但完整问答仍为 0/10。
+    - 候选完整覆盖仍不保证序列恢复，需要同时研究梯度信息、图像上下文和第二阶段打分。
+    - 三种筛选改进都没有通过独立验证，保留现有筛选器。
+  start_here: [dager-lora-rank, dager-multisample-n10]
+  pages: [dager-multisample-n10, dager-filter-phase, dager-lora-rank, dager-single-sample-diagnostics]

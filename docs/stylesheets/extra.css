@@ -1,0 +1,48 @@
+.md-typeset table:not([class]) { font-size: .68rem; }
+.md-typeset .table-filter input {
+  width: 100%;
+  max-width: 28rem;
+  padding: .4rem .6rem;
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: .2rem;
+  background: var(--md-default-bg-color);
+  color: var(--md-default-fg-color);
+  font-size: .75rem;
+}
+.md-typeset .table-filter { margin: 1rem 0; }
+.md-typeset .table-filter__group {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; margin: .35rem 0;
+}
+.md-typeset .table-filter__label {
+  min-width: 6rem; font-size: .7rem; font-weight: 700;
+  color: var(--md-default-fg-color--light);
+}
+.md-typeset .table-filter button {
+  padding: .15rem .6rem; border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 1rem; background: transparent; color: var(--md-default-fg-color);
+  font-size: .7rem; cursor: pointer;
+}
+.md-typeset .table-filter button.is-active {
+  border-color: var(--md-accent-fg-color); background: var(--md-accent-fg-color);
+  color: var(--md-accent-bg-color);
+}
+.md-typeset .table-filter__status { font-size: .7rem; color: var(--md-default-fg-color--light); }
+.md-typeset .badge {
+  display: inline-block; margin: 0 .3rem .3rem 0; padding: .1rem .55rem;
+  border-radius: 1rem; font-size: .68rem; font-weight: 600; line-height: 1.5;
+  border: 1px solid currentColor;
+}
+.md-typeset .badge--private-data { color: #c77700; }
+.md-typeset .badge--uncommitted { color: #1565c0; }
+[data-md-color-scheme="slate"] .md-typeset .badge--private-data { color: #ffb74d; }
+[data-md-color-scheme="slate"] .md-typeset .badge--uncommitted { color: #64b5f6; }
+.md-grid { max-width: var(--page-width, 61rem); }
+.page-width { display: flex; align-items: center; margin: 0 .6rem; }
+.page-width button {
+  height: 1.5rem; padding: 0 .55rem; border: 1px solid currentColor; border-radius: .2rem;
+  background: transparent; color: inherit; font: inherit; font-size: .7rem; line-height: 1;
+  cursor: pointer; opacity: .85;
+}
+.page-width button:hover { opacity: 1; background: var(--md-default-fg-color--lightest); }
+@media screen and (max-width: 76.1875em) { .page-width { display: none; } }
+.md-typeset a > img { border: 1px solid var(--md-default-fg-color--lightest); cursor: zoom-in; }

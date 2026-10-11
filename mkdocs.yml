@@ -1,0 +1,78 @@
+# Local docs site: mkdocs serve (see requirements-docs.txt). Never deploy publicly:
+# experiment pages may quote private token pieces.
+site_name: GIAVLM Notebook
+site_description: FedVLM gradient-inversion benchmark — state, experiments and protocol
+docs_dir: docs
+exclude_docs: |
+  ppt/
+  includes/
+strict: true
+hooks:
+  - utils/mkdocs_hooks.py
+
+nav:
+  - Home: index.md
+  - Handoff: PROJECT_HANDOFF.md
+  - Experiments: experiments/README.md  # expanded by utils/mkdocs_hooks.py
+  - 术语表: glossary.md
+  - Reference:
+      - Protocol: protocol.md
+      - Validation: validation.md
+      - Baselines: baselines.md
+      - Architecture (中文): project_architecture.md
+      - Learning roadmap: learning_roadmap.md
+
+theme:
+  name: material
+  custom_dir: overrides
+  language: zh
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - search.highlight
+    - content.code.copy
+    - content.tooltips
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      toggle:
+        icon: material/weather-night
+        name: Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Light mode
+
+plugins:
+  - search
+
+extra_css:
+  - stylesheets/extra.css
+extra_javascript:
+  - javascripts/table-filter.js
+  - javascripts/page-width.js
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.snippets:
+      auto_append:
+        - docs/includes/abbreviations.md
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format

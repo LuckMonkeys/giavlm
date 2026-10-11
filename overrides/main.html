@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+  {#- Apply the saved page width before first paint, so pages do not open at the default
+      width and then stretch. The header toggle lives in docs/javascripts/page-width.js. -#}
+  <script>
+    try {
+      if (localStorage.getItem("giavlm-full-width") === "1") {
+        document.documentElement.style.setProperty("--page-width", "none");
+      }
+    } catch (error) {}
+  </script>
+{% endblock %}

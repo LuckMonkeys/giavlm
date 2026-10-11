@@ -20,3 +20,6 @@ dager-gradient-inversion/
 
 # Local presentation material (may contain private dataset samples)
 docs/ppt/
+
+# MkDocs build output
+site/

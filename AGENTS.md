@@ -6,7 +6,8 @@ FedVLM gradient-inversion benchmark. Entry: `python examples/run_attack.py`
 
 Docs: `docs/protocol.md` (threat model, artifacts, boundaries) ·
 `docs/project_architecture.md` (Chinese code walkthrough) · `docs/validation.md` ·
-`docs/baselines.md` (paper fidelity). The legacy
+`docs/baselines.md` (paper fidelity) · `docs/experiments/` (one record per
+experiment; index in its `README.md`). The legacy
 `GI-DQA-Gradient-Inversion-of-Multimodal-Models/` and `llm_privacy_eval` are
 read-only references.
 
@@ -100,3 +101,47 @@ Before acting, check `git status`, recent commits, the process table, and GPU
 state. A scheduler row marked `running` does not prove the process is alive.
 Update `docs/PROJECT_HANDOFF.md` after major commits, experiment phases, or
 direction changes; keep transient state there, not here.
+
+## Experiment Records
+
+- Every finished, failed or abandoned experiment phase gets a record
+  `docs/experiments/<date>-<id>.md` (new, or update the existing one) before the
+  handoff is updated. Frontmatter schema lives in `utils/experiment_index.py`;
+  copy `docs/experiments/2026-10-03-dager-multisample-n10.md` as the template.
+- One record per research question. Ablations, controls and post-hoc audits on
+  the same samples are sections of that record, not new records.
+- Set `importance`: `key` only for records that carry a current conclusion,
+  `archive` (with `superseded_by` or `archive_note`) for superseded or caveated
+  ones. When a key conclusion changes, update the track `summary` in
+  `docs/experiments/tracks.yaml` and the core findings in `docs/index.md`.
+- Reading order within a track is the track's `pages` list in `tracks.yaml`;
+  add every new record there. Never encode order in titles.
+- Writing style for experiment pages, the handoff, `tracks.yaml` and `docs/index.md`:
+  - Descriptions in natural Chinese (not literal translation); keep terms, metric
+    names, condition values, code names and table headers in English.
+  - Sections: 要点, 关键数字, 研究问题, 实验设置 (an `Item | Setting` table), 结果
+    (`###` per topic: bullets, then tables), 结论, 局限, 下一步, then a collapsed
+    `??? note "运行记录"` for GPU, failed attempts and test counts.
+  - One idea per bullet and per sentence; `要点` bullets read `**结论**：说明`. The
+    index and home page show the bold leads, so each must stand alone. Track
+    `summary` is a list of such sentences. Use unordered lists.
+  - Tables: conditions as rows, one metric per column. Split orthogonal dimensions
+    into columns (`Method` | `Image`, `Strategy` | `Round`); in prose write
+    `Residual (GT)`. Never join two concepts with `+` or `/` in a name or cell;
+    give combined metrics their own name (`Joint EM`) and define new terms in
+    `docs/glossary.md` and `docs/includes/abbreviations.md`.
+- Figures: copy only aggregate plots (curves, scatter of scores, bar charts) into
+  `docs/experiments/figures/<id>/`, downscaled to ~2400px wide, and link the image
+  to itself so a click opens it full size. Never add sample images, reconstructions
+  or rendered private text; those stay in `outputs/`.
+- Numbers come from committed artifacts; list their repository-relative paths.
+  Mark `uses_private_reference` (with `private_reference_note` saying which
+  private data was used, e.g. "从真实图像附近出发"; the page shows it as
+  "使用私有数据"), `uncommitted` and `contains_private_tokens` honestly; never paste private text beyond token pieces needed for a miss audit,
+  and never list `capture/private/` paths.
+- The handoff keeps only current state, priorities, hypotheses, jobs and notes,
+  linking results as `[[id]]` instead of repeating them.
+- Then run `python -m utils.experiment_index` (regenerates the index; tests fail
+  on a stale index or invalid record). `--check-artifacts` verifies paths locally.
+- Docs site: `conda run -n gia mkdocs serve` (MkDocs installed in `gia` from
+  `requirements-docs.txt`). Local viewing only; never deploy it publicly.
