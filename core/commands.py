@@ -71,6 +71,27 @@ def inject_canaries(args):
     emit({"manifest": str(manifest), "sha256": file_hash(manifest)})
 
 
+@torch.no_grad()
+def selected_client_loss(adapter, batch):
+    """Log the full client's token-mean loss using bounded-size forwards.
+
+    This diagnostic runs after the update and does not participate in training.
+    Weight chunks by supervised token counts (content and EOS), since their
+    target lengths can differ. The existing training microbatch size bounds the
+    forward size even when many local steps are accumulated in one Batch.
+    """
+    numerator, denominator = 0., 0
+    for start in range(0, len(batch.images), adapter.training_spec.batch_size):
+        chunk = batch.slice(start, start + adapter.training_spec.batch_size)
+        count = sum(length + 1 for length in adapter.content_lengths(chunk.targets))
+        loss = adapter(chunk.images, chunk.questions, chunk.targets).item()
+        numerator += loss * count
+        denominator += count
+    if not denominator:
+        raise ValueError("Cannot log loss for an empty client batch")
+    return numerator / denominator
+
+
 def train(args):
     """Run serial federated rounds and persist each recoverable global state."""
     import numpy as np
@@ -164,8 +185,7 @@ def train(args):
         adapter.set_training_spec(replace(round_training,
                                           server_round=round_training.server_round + 1))
 
-        with torch.no_grad():
-            loss = sum(adapter(b.images, b.questions, b.targets).item() for b in batches) / len(batches)
+        loss = sum(selected_client_loss(adapter, batch) for batch in batches) / len(batches)
         history.append({"round": round_id, "mean_selected_client_loss": loss,
                         "client_count": len(selected), "algorithm": algorithm.name,
                         "local_optimizer": cfg.training.local_optimizer,
