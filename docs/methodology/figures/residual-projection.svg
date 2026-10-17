@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1360 460" role="img" aria-labelledby="title desc">
+<title id="title">同一投影处理梯度与候选</title><desc id="desc">教学例子：已知方向为第一维，将梯度及候选的第一坐标同时投影为零。A与残余梯度相同，B与之正交。</desc>
+<rect width="1360" height="460" rx="12" fill="#f7f8fa"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#5c6b78"/></marker></defs>
+<g font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif">
+<text x="30" y="43" font-size="26" font-weight="bold" fill="#182a3a">投影掉已知方向：梯度与候选必须使用同一操作</text>
+<text x="315" y="94" font-size="21" font-weight="normal" fill="#5c6b78">投影前</text>
+<text x="825" y="94" font-size="21" font-weight="normal" fill="#5c6b78">投影后</text>
+<text x="35" y="158" font-size="24" font-weight="bold" fill="#3869b4">观测梯度 g</text>
+<rect x="310" y="125" width="70" height="52" rx="6" fill="#f7ecd6" stroke="#d8e0e6"/>
+<text x="332" y="160" font-size="25" font-weight="normal" fill="#a86d14">10</text>
+<rect x="390" y="125" width="70" height="52" rx="6" fill="#ffffff" stroke="#d8e0e6"/>
+<text x="412" y="160" font-size="25" font-weight="normal" fill="#182a3a">1</text>
+<rect x="470" y="125" width="70" height="52" rx="6" fill="#ffffff" stroke="#d8e0e6"/>
+<text x="492" y="160" font-size="25" font-weight="normal" fill="#182a3a">0</text>
+<path d="M 585 151 L 775 151" stroke="#5c6b78" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="820" y="125" width="70" height="52" rx="6" fill="#e6e9ec" stroke="#d8e0e6"/>
+<text x="844" y="160" font-size="25" font-weight="normal" fill="#5c6b78">0</text>
+<rect x="900" y="125" width="70" height="52" rx="6" fill="#ffffff" stroke="#d8e0e6"/>
+<text x="924" y="160" font-size="25" font-weight="normal" fill="#3869b4">1</text>
+<rect x="980" y="125" width="70" height="52" rx="6" fill="#ffffff" stroke="#d8e0e6"/>
+<text x="1004" y="160" font-size="25" font-weight="normal" fill="#3869b4">0</text>
+<text x="1080" y="158" font-size="21" font-weight="normal" fill="#3869b4">残余梯度方向</text>
+<text x="35" y="241" font-size="24" font-weight="bold" fill="#007f79">出现过的 A</text>
+<rect x="310" y="208" width="70" height="52" rx="6" fill="#f7ecd6" stroke="#d8e0e6"/>
+<text x="332" y="243" font-size="25" font-weight="normal" fill="#a86d14">1</text>
+<rect x="390" y="208" width="70" height="52" rx="6" fill="#ffffff" stroke="#d8e0e6"/>
+<text x="412" y="243" font-size="25" font-weight="normal" fill="#182a3a">1</text>
+<rect x="470" y="208" width="70" height="52" rx="6" fill="#ffffff" stroke="#d8e0e6"/>
+<text x="492" y="243" font-size="25" font-weight="normal" fill="#182a3a">0</text>
+<path d="M 585 234 L 775 234" stroke="#5c6b78" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="820" y="208" width="70" height="52" rx="6" fill="#e6e9ec" stroke="#d8e0e6"/>
+<text x="844" y="243" font-size="25" font-weight="normal" fill="#5c6b78">0</text>
+<rect x="900" y="208" width="70" height="52" rx="6" fill="#ffffff" stroke="#d8e0e6"/>
+<text x="924" y="243" font-size="25" font-weight="normal" fill="#007f79">1</text>
+<rect x="980" y="208" width="70" height="52" rx="6" fill="#ffffff" stroke="#d8e0e6"/>
+<text x="1004" y="243" font-size="25" font-weight="normal" fill="#007f79">0</text>
+<text x="1080" y="241" font-size="21" font-weight="normal" fill="#007f79">与残余梯度一致</text>
+<text x="35" y="324" font-size="24" font-weight="bold" fill="#ba4d4b">没出现的 B</text>
+<rect x="310" y="291" width="70" height="52" rx="6" fill="#f7ecd6" stroke="#d8e0e6"/>
+<text x="332" y="326" font-size="25" font-weight="normal" fill="#a86d14">10</text>
+<rect x="390" y="291" width="70" height="52" rx="6" fill="#ffffff" stroke="#d8e0e6"/>
+<text x="412" y="326" font-size="25" font-weight="normal" fill="#182a3a">0</text>
+<rect x="470" y="291" width="70" height="52" rx="6" fill="#ffffff" stroke="#d8e0e6"/>
+<text x="492" y="326" font-size="25" font-weight="normal" fill="#182a3a">1</text>
+<path d="M 585 317 L 775 317" stroke="#5c6b78" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="820" y="291" width="70" height="52" rx="6" fill="#e6e9ec" stroke="#d8e0e6"/>
+<text x="844" y="326" font-size="25" font-weight="normal" fill="#5c6b78">0</text>
+<rect x="900" y="291" width="70" height="52" rx="6" fill="#ffffff" stroke="#d8e0e6"/>
+<text x="924" y="326" font-size="25" font-weight="normal" fill="#ba4d4b">0</text>
+<rect x="980" y="291" width="70" height="52" rx="6" fill="#ffffff" stroke="#d8e0e6"/>
+<text x="1004" y="326" font-size="25" font-weight="normal" fill="#ba4d4b">1</text>
+<text x="1080" y="324" font-size="21" font-weight="normal" fill="#ba4d4b">与残余梯度正交</text>
+<text x="35" y="412" font-size="20" font-weight="normal" fill="#5c6b78">金色：已知方向上的分量。这里只为便于手算把它设为第一维；真实代码计算的是空间投影。</text>
+</g></svg>

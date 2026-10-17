@@ -17,9 +17,11 @@ artifacts/
 GI-DQA-Gradient-Inversion-of-Multimodal-Models/
 FedVLMBench/
 dager-gradient-inversion/
+/GIA/
 
 # Local presentation material (may contain private dataset samples)
 docs/ppt/
+/docs/experiments/examples/
 
 # MkDocs build output
 site/

@@ -1,0 +1,844 @@
+{
+  "schema_version": 1,
+  "scope": "Post-commit aggregate metrics; no private text, images or source IDs",
+  "sources": [
+    {
+      "path": "outputs/diagnostics/synthetic_ct_property_gpu5_20261016/report.json",
+      "sha256": "1a063eaf485ab55501e2796e5992d12440934807740331d231b309e9f28ecc2b"
+    }
+  ],
+  "results": {
+    "classes": [
+      "head",
+      "abdomen"
+    ],
+    "primary_method": "centered",
+    "text_recovery": {
+      "answer_em": 8,
+      "joint_em": 8,
+      "question_em": 10
+    },
+    "phases": {
+      "oracle": {
+        "metrics": {
+          "centered": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": 1.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 1.0,
+              "head": 1.0
+            },
+            "confusion": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "abdomen",
+              "invalid"
+            ],
+            "correct": 10,
+            "invalid": 0,
+            "macro_f1": 1.0,
+            "n": 10,
+            "recall": {
+              "abdomen": 1.0,
+              "head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 5,
+              "head": 5
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "centered_equal_tensor": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": 1.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 1.0,
+              "head": 1.0
+            },
+            "confusion": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "abdomen",
+              "invalid"
+            ],
+            "correct": 10,
+            "invalid": 0,
+            "macro_f1": 1.0,
+            "n": 10,
+            "recall": {
+              "abdomen": 1.0,
+              "head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 5,
+              "head": 5
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "equal_tensor": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": 1.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 1.0,
+              "head": 1.0
+            },
+            "confusion": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "abdomen",
+              "invalid"
+            ],
+            "correct": 10,
+            "invalid": 0,
+            "macro_f1": 1.0,
+            "n": 10,
+            "recall": {
+              "abdomen": 1.0,
+              "head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 5,
+              "head": 5
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "global": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": 1.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 1.0,
+              "head": 1.0
+            },
+            "confusion": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "abdomen",
+              "invalid"
+            ],
+            "correct": 10,
+            "invalid": 0,
+            "macro_f1": 1.0,
+            "n": 10,
+            "recall": {
+              "abdomen": 1.0,
+              "head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 5,
+              "head": 5
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "model_only": {
+            "accuracy": 0.6,
+            "accuracy_ci95": [
+              0.5,
+              0.8
+            ],
+            "balanced_accuracy": 0.6,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.26,
+              "head": 0.26
+            },
+            "confusion": [
+              [
+                1,
+                4,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "abdomen",
+              "invalid"
+            ],
+            "correct": 6,
+            "invalid": 0,
+            "macro_f1": 0.5238095238095238,
+            "n": 10,
+            "recall": {
+              "abdomen": 1.0,
+              "head": 0.2
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 5,
+              "head": 5
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.8
+            ],
+            "supported_class_balanced_accuracy": 0.6,
+            "supported_class_macro_f1": 0.5238095238095238
+          },
+          "text_only": {
+            "accuracy": 0.5,
+            "accuracy_ci95": [
+              0.5,
+              0.5
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.9,
+              "head": 0.9
+            },
+            "confusion": [
+              [
+                0,
+                5,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "abdomen",
+              "invalid"
+            ],
+            "correct": 5,
+            "invalid": 0,
+            "macro_f1": 0.3333333333333333,
+            "n": 10,
+            "recall": {
+              "abdomen": 1.0,
+              "head": 0.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 5,
+              "head": 5
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.3333333333333333
+          }
+        },
+        "paired_gain_ci95": {
+          "model_only": {
+            "accuracy_ci95": [
+              0.2,
+              0.5
+            ],
+            "bootstrap_method": "stratified image bootstrap",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.2,
+              0.5
+            ]
+          },
+          "text_only": {
+            "accuracy_ci95": [
+              0.5,
+              0.5
+            ],
+            "bootstrap_method": "stratified image bootstrap",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ]
+          }
+        },
+        "wrong_gradient": {
+          "centered": {
+            "accuracy": 0.5555555555555556,
+            "independent_images": 10,
+            "opposite_class_accuracy": 0.34,
+            "pairs": 90,
+            "per_target_accuracy": [
+              1.0,
+              0.2222222222222222,
+              0.2222222222222222,
+              0.3333333333333333,
+              0.2222222222222222,
+              0.6666666666666666,
+              0.6666666666666666,
+              0.6666666666666666,
+              0.5555555555555556,
+              1.0
+            ],
+            "same_class_accuracy": 0.825
+          },
+          "centered_equal_tensor": {
+            "accuracy": 0.5666666666666667,
+            "independent_images": 10,
+            "opposite_class_accuracy": 0.4,
+            "pairs": 90,
+            "per_target_accuracy": [
+              0.8888888888888888,
+              0.1111111111111111,
+              0.2222222222222222,
+              0.3333333333333333,
+              0.2222222222222222,
+              0.7777777777777778,
+              0.7777777777777778,
+              0.7777777777777778,
+              0.5555555555555556,
+              1.0
+            ],
+            "same_class_accuracy": 0.775
+          },
+          "equal_tensor": {
+            "accuracy": 0.4666666666666667,
+            "independent_images": 10,
+            "opposite_class_accuracy": 0.18,
+            "pairs": 90,
+            "per_target_accuracy": [
+              0.7777777777777778,
+              0.3333333333333333,
+              0.4444444444444444,
+              0.3333333333333333,
+              0.4444444444444444,
+              0.4444444444444444,
+              0.4444444444444444,
+              0.4444444444444444,
+              0.5555555555555556,
+              0.4444444444444444
+            ],
+            "same_class_accuracy": 0.825
+          },
+          "global": {
+            "accuracy": 0.44444444444444436,
+            "independent_images": 10,
+            "opposite_class_accuracy": 0.08,
+            "pairs": 90,
+            "per_target_accuracy": [
+              0.3333333333333333,
+              0.4444444444444444,
+              0.4444444444444444,
+              0.4444444444444444,
+              0.4444444444444444,
+              0.4444444444444444,
+              0.4444444444444444,
+              0.4444444444444444,
+              0.4444444444444444,
+              0.5555555555555556
+            ],
+            "same_class_accuracy": 0.9
+          }
+        }
+      },
+      "reconstructed": {
+        "metrics": {
+          "centered": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": 1.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 1.0,
+              "head": 1.0
+            },
+            "confusion": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "abdomen",
+              "invalid"
+            ],
+            "correct": 10,
+            "invalid": 0,
+            "macro_f1": 1.0,
+            "n": 10,
+            "recall": {
+              "abdomen": 1.0,
+              "head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 5,
+              "head": 5
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "centered_equal_tensor": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": 1.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 1.0,
+              "head": 1.0
+            },
+            "confusion": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "abdomen",
+              "invalid"
+            ],
+            "correct": 10,
+            "invalid": 0,
+            "macro_f1": 1.0,
+            "n": 10,
+            "recall": {
+              "abdomen": 1.0,
+              "head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 5,
+              "head": 5
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "equal_tensor": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": 1.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 1.0,
+              "head": 1.0
+            },
+            "confusion": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "abdomen",
+              "invalid"
+            ],
+            "correct": 10,
+            "invalid": 0,
+            "macro_f1": 1.0,
+            "n": 10,
+            "recall": {
+              "abdomen": 1.0,
+              "head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 5,
+              "head": 5
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "global": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": 1.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 1.0,
+              "head": 1.0
+            },
+            "confusion": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "abdomen",
+              "invalid"
+            ],
+            "correct": 10,
+            "invalid": 0,
+            "macro_f1": 1.0,
+            "n": 10,
+            "recall": {
+              "abdomen": 1.0,
+              "head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 5,
+              "head": 5
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "model_only": {
+            "accuracy": 0.8,
+            "accuracy_ci95": [
+              0.6,
+              1.0
+            ],
+            "balanced_accuracy": 0.8,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.66,
+              "head": 0.66
+            },
+            "confusion": [
+              [
+                3,
+                2,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "abdomen",
+              "invalid"
+            ],
+            "correct": 8,
+            "invalid": 0,
+            "macro_f1": 0.7916666666666667,
+            "n": 10,
+            "recall": {
+              "abdomen": 1.0,
+              "head": 0.6
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 5,
+              "head": 5
+            },
+            "supported_class_ba_ci95": [
+              0.6,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 0.8,
+            "supported_class_macro_f1": 0.7916666666666667
+          },
+          "text_only": {
+            "accuracy": 0.5,
+            "accuracy_ci95": [
+              0.5,
+              0.5
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.9,
+              "head": 0.9
+            },
+            "confusion": [
+              [
+                0,
+                5,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "abdomen",
+              "invalid"
+            ],
+            "correct": 5,
+            "invalid": 0,
+            "macro_f1": 0.3333333333333333,
+            "n": 10,
+            "recall": {
+              "abdomen": 1.0,
+              "head": 0.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 5,
+              "head": 5
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.3333333333333333
+          }
+        },
+        "paired_gain_ci95": {
+          "model_only": {
+            "accuracy_ci95": [
+              0.0,
+              0.4
+            ],
+            "bootstrap_method": "stratified image bootstrap",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.4
+            ]
+          },
+          "text_only": {
+            "accuracy_ci95": [
+              0.5,
+              0.5
+            ],
+            "bootstrap_method": "stratified image bootstrap",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ]
+          }
+        },
+        "wrong_gradient": {
+          "centered": {
+            "accuracy": 0.711111111111111,
+            "independent_images": 10,
+            "opposite_class_accuracy": 0.54,
+            "pairs": 90,
+            "per_target_accuracy": [
+              1.0,
+              0.2222222222222222,
+              1.0,
+              0.3333333333333333,
+              1.0,
+              0.6666666666666666,
+              0.6666666666666666,
+              0.6666666666666666,
+              0.5555555555555556,
+              1.0
+            ],
+            "same_class_accuracy": 0.925
+          },
+          "centered_equal_tensor": {
+            "accuracy": 0.7222222222222221,
+            "independent_images": 10,
+            "opposite_class_accuracy": 0.6,
+            "pairs": 90,
+            "per_target_accuracy": [
+              0.8888888888888888,
+              0.1111111111111111,
+              1.0,
+              0.3333333333333333,
+              1.0,
+              0.7777777777777778,
+              0.7777777777777778,
+              0.7777777777777778,
+              0.5555555555555556,
+              1.0
+            ],
+            "same_class_accuracy": 0.875
+          },
+          "equal_tensor": {
+            "accuracy": 0.5555555555555556,
+            "independent_images": 10,
+            "opposite_class_accuracy": 0.34,
+            "pairs": 90,
+            "per_target_accuracy": [
+              0.7777777777777778,
+              0.3333333333333333,
+              0.8888888888888888,
+              0.3333333333333333,
+              0.8888888888888888,
+              0.4444444444444444,
+              0.4444444444444444,
+              0.4444444444444444,
+              0.5555555555555556,
+              0.4444444444444444
+            ],
+            "same_class_accuracy": 0.825
+          },
+          "global": {
+            "accuracy": 0.5111111111111111,
+            "independent_images": 10,
+            "opposite_class_accuracy": 0.24,
+            "pairs": 90,
+            "per_target_accuracy": [
+              0.3333333333333333,
+              0.4444444444444444,
+              0.7777777777777778,
+              0.4444444444444444,
+              0.7777777777777778,
+              0.4444444444444444,
+              0.4444444444444444,
+              0.4444444444444444,
+              0.4444444444444444,
+              0.5555555555555556
+            ],
+            "same_class_accuracy": 0.85
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "scope": "Post-commit aggregate metrics; no private text, images or source IDs",
+  "sources": [
+    {
+      "path": "outputs/diagnostics/qwen_image_gpu5_20261016/complete.json",
+      "sha256": "42fb265365eeb10d5b6a9a5371e32a7da48b8dc5f70f4f43939ea5c315edb222"
+    }
+  ],
+  "results": {
+    "status": "complete",
+    "load_seconds": 15.98838144610636,
+    "total_seconds": 76.71969584398903,
+    "timing_note": "Sequential requests; repeated prompts can reuse text conditioning. Includes PNG save.",
+    "generated_cases": [
+      {
+        "case": "control_en",
+        "seed": 42,
+        "generation_and_save_seconds": 4.4100769381038845,
+        "sha256": "3493e88c4cd9631f73c80836e45e91b17a1b7b1a3a1cc946d0028ba7b3e05253",
+        "mode": "RGBA",
+        "size": [
+          1024,
+          1024
+        ],
+        "rgb_mean": [
+          190.72920417785645,
+          181.40798091888428,
+          184.53481197357178
+        ],
+        "rgb_stddev": [
+          51.06866408092183,
+          58.74000299637257,
+          55.58798521758279
+        ]
+      },
+      {
+        "case": "control_zh",
+        "seed": 42,
+        "generation_and_save_seconds": 4.047526495996863,
+        "sha256": "afc35d26dca5809416300965bc21da5b90e096cef38b34b2d841fa27567f5b3c",
+        "mode": "RGBA",
+        "size": [
+          1024,
+          1024
+        ],
+        "rgb_mean": [
+          193.55466747283936,
+          186.29873657226562,
+          186.94777584075928
+        ],
+        "rgb_stddev": [
+          45.21137538896485,
+          50.42395449663461,
+          48.00787786719561
+        ]
+      },
+      {
+        "case": "abdomen_ct",
+        "seed": 42,
+        "generation_and_save_seconds": 4.009779633954167,
+        "sha256": "bb53ae60d773c3190986abcffd933061be755e28544278533ba7fc4c5a3590d5",
+        "mode": "RGBA",
+        "size": [
+          1024,
+          1024
+        ],
+        "rgb_mean": [
+          64.03031730651855,
+          64.59976482391357,
+          64.62957763671875
+        ],
+        "rgb_stddev": [
+          74.36595316905793,
+          74.90702670781705,
+          74.79376983111467
+        ]
+      },
+      {
+        "case": "abdomen_ct",
+        "seed": 43,
+        "generation_and_save_seconds": 3.758767456980422,
+        "sha256": "15f2685f95919be8bd6581be44285d69224ba42eea663e001b09ebe909c058c3",
+        "mode": "RGBA",
+        "size": [
+          1024,
+          1024
+        ],
+        "rgb_mean": [
+          59.03049087524414,
+          59.60792541503906,
+          59.14406204223633
+        ],
+        "rgb_stddev": [
+          70.71930323274879,
+          71.26290202725227,
+          70.82474283364853
+        ]
+      },
+      {
+        "case": "abdomen_mri",
+        "seed": 42,
+        "generation_and_save_seconds": 3.7271460578776896,
+        "sha256": "d8003c90166113efc4d491849f48def978c551901ca9a2ef92e32733adb0a8f9",
+        "mode": "RGBA",
+        "size": [
+          1024,
+          1024
+        ],
+        "rgb_mean": [
+          49.09476661682129,
+          49.65196228027344,
+          49.5475959777832
+        ],
+        "rgb_stddev": [
+          57.27146794832324,
+          57.74063754233521,
+          57.48560274563772
+        ]
+      },
+      {
+        "case": "abdomen_mri",
+        "seed": 43,
+        "generation_and_save_seconds": 3.7460020249709487,
+        "sha256": "8ccc717a67931c8d77ec185052b53bc3a33a2d6a527d942a09dbe0f3dbf5968e",
+        "mode": "RGBA",
+        "size": [
+          1024,
+          1024
+        ],
+        "rgb_mean": [
+          48.606191635131836,
+          49.0950288772583,
+          48.367369651794434
+        ],
+        "rgb_stddev": [
+          56.26233910380114,
+          56.69732298147095,
+          56.21644254807744
+        ]
+      },
+      {
+        "case": "chest_ct",
+        "seed": 42,
+        "generation_and_save_seconds": 4.107018921058625,
+        "sha256": "157ca8cc9deae1951b4655c21adf6e9798dc72e19723fa1e22d90388bf5a2fc1",
+        "mode": "RGBA",
+        "size": [
+          1024,
+          1024
+        ],
+        "rgb_mean": [
+          51.49843692779541,
+          52.00390148162842,
+          52.23602294921875
+        ],
+        "rgb_stddev": [
+          77.46782395054801,
+          77.798490000189,
+          77.82654286807207
+        ]
+      },
+      {
+        "case": "chest_ct",
+        "seed": 43,
+        "generation_and_save_seconds": 3.752696114126593,
+        "sha256": "4f10317e74a1277b675944e8db7936cd30c40dd1c12f58e8d4b776d9aed7b3a3",
+        "mode": "RGBA",
+        "size": [
+          1024,
+          1024
+        ],
+        "rgb_mean": [
+          54.72121524810791,
+          55.23764896392822,
+          54.91585445404053
+        ],
+        "rgb_stddev": [
+          76.97160708050933,
+          77.30796376656059,
+          76.77937648467632
+        ]
+      },
+      {
+        "case": "chest_xray",
+        "seed": 42,
+        "generation_and_save_seconds": 4.237882168032229,
+        "sha256": "3fcbcd19df39f0f1943cac90ba9c97fcc5d0ff12931110c58fdcd16150647804",
+        "mode": "RGBA",
+        "size": [
+          1024,
+          1024
+        ],
+        "rgb_mean": [
+          112.08600616455078,
+          112.47748470306396,
+          112.45564460754395
+        ],
+        "rgb_stddev": [
+          85.97375061966524,
+          86.07798859554862,
+          86.11337468139091
+        ]
+      },
+      {
+        "case": "chest_xray",
+        "seed": 43,
+        "generation_and_save_seconds": 3.9967259250115603,
+        "sha256": "5bcaf426a4354dcae9ce8c1148b5275512aaafb2459b78383b6dbe93697ba6e7",
+        "mode": "RGBA",
+        "size": [
+          1024,
+          1024
+        ],
+        "rgb_mean": [
+          112.48728084564209,
+          112.67360782623291,
+          111.16893768310547
+        ],
+        "rgb_stddev": [
+          87.93484558331286,
+          87.931180054534,
+          87.49032934809361
+        ]
+      }
+    ]
+  }
+}

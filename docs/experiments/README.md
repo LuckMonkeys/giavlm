@@ -11,7 +11,7 @@ tracks.yaml; edit those, not this page. -->
 - **uncommitted**：代码或结果还没有提交到 git。
 - **private-tokens**：页面引用了私有 token 片段，只能在本地查看。
 
-<div class="table-filter" data-groups='{"Importance": ["key", "supporting", "archive"], "Level": ["diagnostic", "development", "validation"], "Outcome": ["negative", "mixed"], "Flags": ["使用私有数据", "private-tokens"]}'></div>
+<div class="table-filter" data-groups='{"Importance": ["key", "supporting", "archive"], "Level": ["smoke", "diagnostic", "development", "validation"], "Outcome": ["positive", "negative", "mixed", "inconclusive"], "Flags": ["使用私有数据", "private-tokens"]}'></div>
 
 ## 图像重建（IG）
 
@@ -32,14 +32,23 @@ tracks.yaml; edit those, not this page. -->
 
 - 匹配损失能在全局上区分离真实图像近和远的候选，训练后更明显。
 - 但损失的局部像素梯度几乎与指向真实图像的方向正交。
-- 问题和答案都靠猜时，训练后的模型失去了这种排序能力。
+- 问题和答案都用模板或随机词猜测时，训练后的模型失去了这种排序能力。
+- 正确 token 全部保留但问题和答案都乱序时，rank 8、32 的图像排序都接近随机。
+- 关闭语言先验时，Residual 重构文本在 rank 32 保留部分排序，在 rank 8 反转。
+- 固定语言先验权重 0.01 后，两个 rank 的开发集排序均改善，rank 32 接近正确文本；验证均值也改善，但增益区间跨 0，错误问题或答案仍可能使排序反转。
+- 公开库模态推断扩展至三类平衡的三十张新图像；重构文本下主库梯度准确率为 0.600，高于 Model-only 的 0.400，但相对校准文本对照的优势及同部位泛化仍不确定。
+- 合成库头部属性推断在混合模态二十图上，重构文本下主方法为 18/20，Model-only 为 14/20；增益区间包含零，十三图与此前 pilot 重叠，仍需独立验证。
 
 **先读：** [梯度-图像可区分性](2026-09-27-gradient-discriminability.md)、[文本未知时的梯度-图像可区分性](2026-10-03-text-unknown-discriminability.md)
 
 | Importance | Dates | Experiment | Condition | n | Level | Outcome | Flags | Findings |
 |---|---|---|---|---:|---|---|---|---|
 | **key** | 2026-09-27 | [梯度-图像可区分性](2026-09-27-gradient-discriminability.md) | text_known | 43 | validation | mixed | 使用私有数据 | • 损失能区分远近候选<br>• 这个信号不只来自共享成分<br>• 局部梯度不指向真实图像<br>• 所以 IG 利用不了这个信号 |
-| **key** | 2026-10-03 | [文本未知时的梯度-图像可区分性](2026-10-03-text-unknown-discriminability.md) | text_known / question_known / target_known / private | 20 | development | negative | 使用私有数据 | • 文本已知时排序很强<br>• 只知道答案时还保留部分排序<br>• 只知道问题时排序反转<br>• 问题和答案都靠猜时排序消失<br>• 未训练的 F-C 保留了弱信号，但主要依赖模板 |
+| **key** | 2026-10-03 – 2026-10-12 | [文本未知时的梯度-图像可区分性](2026-10-03-text-unknown-discriminability.md) | text_known / question_known / target_known / private | 20 | development | mixed | 使用私有数据 | • 语言先验让两个 rank 的开发集排序都改善<br>• rank 32 验证均值改善，但文本错误仍可使排序反转<br>• 正确 token 全部保留仍不足以维持排序<br>• 无先验的 Residual 重构效果取决于恢复质量和模型状态<br>• 纯乱序对照中，答案顺序更敏感<br>• 文本已知时排序很强<br>• 只知道答案时还保留部分排序<br>• 只知道问题时排序反转<br>• 问题和答案都靠猜时排序消失<br>• 未训练的 F-C 保留了弱信号，但主要依赖模板 |
+| **key** | 2026-10-16 | [图像模态推断综合报告：重构文本与公开原型库](2026-10-16-image-property-inference.md) | F-L · round 10 · private / text_known · lengths known | 50 | diagnostic | inconclusive | 使用私有数据 | • 冻结主方法在新三类队列上出现正向增益<br>• 评分确实依赖目标观测梯度<br>• 正确文本和重构文本仍有差距<br>• 同部位主方法尚不稳定，等权评分值得独立验证<br>• 两轮不能简单合并准确率 |
+| supporting | 2026-10-16 | [Qwen-Image 本地生成测试：医学候选图像的外观与模态可信度](2026-10-16-qwen-image-generation.md) | private | 10 | smoke | mixed |  | • 本地文生图模型已跑通<br>• 普通场景的中英文描述均得到遵循<br>• 医学外观可生成，但 MRI 标签尚不可信<br>• 本轮没有测试梯度区分性 |
+| supporting | 2026-10-16 | [合成 CT 候选的部位推断：头部与腹部](2026-10-16-synthetic-ct-property.md) | F-L · round 10 · private / text_known · lengths known | 10 | diagnostic | positive | 使用私有数据, private-tokens | • 合成原型库已完成 CT 部位推断 pilot<br>• 相同问答的一对图像能够由观测梯度区分<br>• 文本未完全恢复也保留了本轮部位判断<br>• Text-only 的低准确率不等于没有文本线索<br>• 本轮只判断 CT 内的部位 |
+| supporting | 2026-10-17 | [混合模态下的头部属性推断：二十图评估](2026-10-17-synthetic-head-property.md) | F-L · round 10 · private / text_known · lengths known | 20 | diagnostic | positive | 使用私有数据 | • 混合模态下的头部属性推断正确十八张<br>• 梯度评分相对模型对照有正向增益，但稳定性尚未确定<br>• 文本未完全恢复不必然导致属性判断失败<br>• 高排序分数不等于固定判别规则全对<br>• 本轮仍是有历史重叠的小规模诊断<br>• 生成提示不能直接当作模态真值 |
 | supporting | 2026-10-06 | [用图像远近排序检验候选 token](2026-10-06-token-image-ordering.md) | F-L · round 10 · private · lengths known | 6 | diagnostic | mixed | 使用私有数据 | • 全梯度排序尚不能用作通用 token 筛选器<br>• 正确图像排序不意味着 token 正确<br>• LoRA-A 的答案信号值得独立验证<br>• 本轮只验证使用真值的诊断假设 |
 
 ## 文本重建（TAG）
@@ -57,15 +66,19 @@ tracks.yaml; edit those, not this page. -->
 
 - 私有文本的 token 集合会泄露：rank 32 的 residual 在随机图像条件下达到约 0.994 的 Recall@100。
 - 已知图像时，完整问答恢复从 rank 8 的 0/10 升到 rank 32 的 5/10，搜索实现和预算不变。
-- 随机图像时，rank 32 恢复 3/10 个答案，问题更接近原文，但完整问答仍为 0/10。
+- 原 Residual 在随机图像时，rank 32 恢复 3/10 个答案，但完整问答为 0/10。
+- rank 32 增加纯文本语言先验并冻结权重 0.01 后，十个新问答样本的完整恢复从 0/10 升到 8/10。
+- rank 8 使用相同权重时，原十样本的完整恢复只从 0/10 升到 2/10，成功对应同一种问答；另外四个候选完整的样本仍在问题阶段被剪枝。
+- rank 32 先验验证集中，正确完整问答均留在最终 beam，仍有两个最终排序错误；默认先验权重保持 0，实现已提交。
 - 候选完整覆盖仍不保证序列恢复，需要同时研究梯度信息、图像上下文和第二阶段打分。
 - 三种筛选改进都没有通过独立验证，保留现有筛选器。
 
-**先读：** [LoRA rank 对 DAGER 文本重构的影响](2026-10-10-dager-lora-rank.md)、[DAGER 多样本文本重建（n=10）](2026-10-03-dager-multisample-n10.md)
+**先读：** [纯文本语言先验辅助 DAGER 序列搜索](2026-10-11-dager-lm-prior.md)、[LoRA rank 对 DAGER 文本重构的影响](2026-10-10-dager-lora-rank.md)、[DAGER 多样本文本重建（n=10）](2026-10-03-dager-multisample-n10.md)
 
 | Importance | Dates | Experiment | Condition | n | Level | Outcome | Flags | Findings |
 |---|---|---|---|---:|---|---|---|---|
 | **key** | 2026-10-03 – 2026-10-05 | [DAGER 多样本文本重建（n=10）](2026-10-03-dager-multisample-n10.md) | F-L · round 10 · image_known / private · lengths known | 10 | development | mixed | private-tokens | • 私有文本中的大部分token能正确过滤<br>• 梯度空间中减去公开方向效果明显<br>• rank 8 的完整文本恢复失败 |
 | **key** | 2026-10-05 | [第一阶段 token 筛选改进](2026-10-05-dager-filter-phase.md) | F-L · round 10 · image_known / private · lengths known | 50 | validation | negative | 使用私有数据, private-tokens | • 没有一种方法能稳定替代现有筛选器<br>• 稀疏字典排序只在已知图像时有效<br>• 公开图像统计加权没有通过验证<br>• 逐 token 校准只有局部提升<br>• 决定保留现有筛选器 |
 | **key** | 2026-10-10 | [LoRA rank 对 DAGER 文本重构的影响](2026-10-10-dager-lora-rank.md) | F-L · round 10 · image_known / private · lengths known | 10 | development | mixed |  | • 增大 rank 明显改善已知图像时的文本恢复<br>• 随机图像下仍未恢复完整问答<br>• 提升不只来自 token 候选覆盖<br>• rank 32 的筛选接近完整覆盖 |
+| **key** | 2026-10-11 – 2026-10-12 | [纯文本语言先验辅助 DAGER 序列搜索](2026-10-11-dager-lm-prior.md) | F-L · round 10 · private · lengths known | 20 | validation | positive | 使用私有数据 | • rank 8 使用相同权重只得到有限改善<br>• rank 8 仍有候选漏检和早期剪枝两种限制<br>• rank 32 冻结权重后，完整问答恢复在新样本上升到 8/10<br>• rank 32 语言先验改善了真实前缀的保留<br>• rank 32 开发集的完整问答恢复升到 9/10<br>• rank 32 原搜索同时存在剪枝失败和最终排序失败<br>• rank 32 首次淘汰不由候选漏检直接触发<br>• 语言先验采用软评分<br>• 默认行为尚未切换 |
 | archive | 2026-10-02 | [DAGER 单样本开发诊断（n=1）](2026-10-02-dager-single-sample-diagnostics.md) | F-L · round 10 · image_question_known / image_known · lengths known | 1 | diagnostic | mixed | 使用私有数据 | • residual 明显优于 raw<br>• 信号远高于随机，但问题 token 的命中多半来自词频<br>• 视觉编码器生成的子空间都有帮助<br>• 联合 QKV 的打分最好<br>• 所有句子搜索都失败 |

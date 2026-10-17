@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1360 625" role="img" aria-labelledby="title desc">
+<title id="title">Residual 第一阶段的共同投影</title><desc id="desc">已知输入特征P形成正交行基U。QKV梯度归一化后与词表候选分别应用同一个投影。由残余梯度提取S，再计算残余候选到S的相对距离。</desc>
+<rect width="1360" height="625" rx="12" fill="#f7f8fa"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#5c6b78"/></marker></defs>
+<g font-family="Noto Sans CJK SC, Microsoft YaHei, sans-serif">
+<text x="30" y="44" font-size="26" font-weight="bold" fill="#182a3a">第一阶段：用共同投影去掉已知方向，再给词表候选打分</text>
+<rect x="385" y="82" width="590" height="110" rx="6" fill="#ffffff" stroke="#d8e0e6"/>
+<text x="410" y="118" font-size="24" font-weight="bold" fill="#a86d14">已知图像与模板特征 P → 正交行基 U</text>
+<text x="410" y="157" font-size="23" font-weight="normal" fill="#a86d14">共同操作 R(z) = z − (z Uᵀ) U</text>
+<rect x="30" y="260" width="600" height="135" rx="6" fill="#ffffff" stroke="#d8e0e6"/>
+<text x="55" y="301" font-size="24" font-weight="bold" fill="#3869b4">上传的 Q、K、V LoRA-A 梯度</text>
+<text x="55" y="343" font-size="22" font-weight="normal" fill="#182a3a">分别归一化 → 应用 R → 堆叠 → 提取 S</text>
+<text x="55" y="375" font-size="20" font-weight="normal" fill="#5c6b78">S：残余梯度的正交行基</text>
+<rect x="730" y="260" width="600" height="135" rx="6" fill="#ffffff" stroke="#d8e0e6"/>
+<text x="755" y="301" font-size="22" font-weight="bold" fill="#007f79">词表 token embedding → RMSNorm → x</text>
+<text x="755" y="343" font-size="22" font-weight="normal" fill="#182a3a">应用同一个 R，得到残余候选 x⊥</text>
+<text x="755" y="375" font-size="20" font-weight="normal" fill="#5c6b78">每个 token 单独计算，尚无位置和顺序</text>
+<path d="M 490 196 L 340 251" stroke="#5c6b78" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M 870 196 L 1030 251" stroke="#5c6b78" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="240" y="473" width="880" height="110" rx="6" fill="#ffffff" stroke="#d8e0e6"/>
+<text x="270" y="512" font-size="24" font-weight="bold" fill="#007f79">比较 x⊥ 到 S 的相对距离：越小，候选排名越靠前</text>
+<text x="270" y="553" font-size="20" font-weight="normal" fill="#5c6b78">剩余向量几乎为零时标为 ambiguous，单独保留，不算检测阳性。</text>
+<path d="M 335 401 L 500 465" stroke="#5c6b78" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M 1030 401 L 870 465" stroke="#5c6b78" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+</g></svg>

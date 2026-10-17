@@ -17,9 +17,14 @@ discriminability:
   summary:
     - 匹配损失能在全局上区分离真实图像近和远的候选，训练后更明显。
     - 但损失的局部像素梯度几乎与指向真实图像的方向正交。
-    - 问题和答案都靠猜时，训练后的模型失去了这种排序能力。
+    - 问题和答案都用模板或随机词猜测时，训练后的模型失去了这种排序能力。
+    - 正确 token 全部保留但问题和答案都乱序时，rank 8、32 的图像排序都接近随机。
+    - 关闭语言先验时，Residual 重构文本在 rank 32 保留部分排序，在 rank 8 反转。
+    - 固定语言先验权重 0.01 后，两个 rank 的开发集排序均改善，rank 32 接近正确文本；验证均值也改善，但增益区间跨 0，错误问题或答案仍可能使排序反转。
+    - 公开库模态推断扩展至三类平衡的三十张新图像；重构文本下主库梯度准确率为 0.600，高于 Model-only 的 0.400，但相对校准文本对照的优势及同部位泛化仍不确定。
+    - 合成库头部属性推断在混合模态二十图上，重构文本下主方法为 18/20，Model-only 为 14/20；增益区间包含零，十三图与此前 pilot 重叠，仍需独立验证。
   start_here: [gradient-discriminability, text-unknown-discriminability]
-  pages: [gradient-discriminability, text-unknown-discriminability, token-image-ordering]
+  pages: [gradient-discriminability, text-unknown-discriminability, image-property-inference, qwen-image-generation, synthetic-ct-property, synthetic-head-property, token-image-ordering]
 text-tag:
   title: 文本重建（TAG）
   summary:
@@ -32,8 +37,11 @@ text-dager:
   summary:
     - 私有文本的 token 集合会泄露：rank 32 的 residual 在随机图像条件下达到约 0.994 的 Recall@100。
     - 已知图像时，完整问答恢复从 rank 8 的 0/10 升到 rank 32 的 5/10，搜索实现和预算不变。
-    - 随机图像时，rank 32 恢复 3/10 个答案，问题更接近原文，但完整问答仍为 0/10。
+    - 原 Residual 在随机图像时，rank 32 恢复 3/10 个答案，但完整问答为 0/10。
+    - rank 32 增加纯文本语言先验并冻结权重 0.01 后，十个新问答样本的完整恢复从 0/10 升到 8/10。
+    - rank 8 使用相同权重时，原十样本的完整恢复只从 0/10 升到 2/10，成功对应同一种问答；另外四个候选完整的样本仍在问题阶段被剪枝。
+    - rank 32 先验验证集中，正确完整问答均留在最终 beam，仍有两个最终排序错误；默认先验权重保持 0，实现已提交。
     - 候选完整覆盖仍不保证序列恢复，需要同时研究梯度信息、图像上下文和第二阶段打分。
     - 三种筛选改进都没有通过独立验证，保留现有筛选器。
-  start_here: [dager-lora-rank, dager-multisample-n10]
-  pages: [dager-multisample-n10, dager-filter-phase, dager-lora-rank, dager-single-sample-diagnostics]
+  start_here: [dager-lm-prior, dager-lora-rank, dager-multisample-n10]
+  pages: [dager-multisample-n10, dager-filter-phase, dager-lora-rank, dager-lm-prior, dager-single-sample-diagnostics]

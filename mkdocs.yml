@@ -6,6 +6,7 @@ docs_dir: docs
 exclude_docs: |
   ppt/
   includes/
+  experiments/examples/**/*.md
 strict: true
 hooks:
   - utils/mkdocs_hooks.py
@@ -14,6 +15,16 @@ nav:
   - Home: index.md
   - Handoff: PROJECT_HANDOFF.md
   - Experiments: experiments/README.md  # expanded by utils/mkdocs_hooks.py
+  - Methodology:
+      - methodology/README.md
+      - 优化类方法: methodology/optimization.md
+      - DAGER 文本恢复:
+          - methodology/dager/README.md
+          - Raw 对照: methodology/dager/raw.md
+          - Residual v1（当前方案）: methodology/dager/residual-v1.md
+          - 纯文本语言先验（实验变体）: methodology/dager/text-prior.md
+          - 候选改进与验证状态: methodology/dager/refinements.md
+      - 方案迭代模板: methodology/iteration-template.md
   - 术语表: glossary.md
   - Reference:
       - Protocol: protocol.md

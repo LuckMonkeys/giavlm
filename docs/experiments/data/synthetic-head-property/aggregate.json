@@ -1,0 +1,924 @@
+{
+  "schema_version": 1,
+  "scope": "Post-commit aggregate metrics; no private text, images or source IDs",
+  "sources": [
+    {
+      "path": "outputs/diagnostics/synthetic_head_n20_gpu5_20261017/report.json",
+      "sha256": "8599707006726ace1d795857867a0eddc6cee986c6146e4d835759285af516cd"
+    }
+  ],
+  "results": {
+    "classes": [
+      "head",
+      "non-head"
+    ],
+    "primary_method": "centered",
+    "text_recovery": {
+      "answer_em": 16,
+      "joint_em": 14,
+      "question_em": 15
+    },
+    "phases": {
+      "oracle": {
+        "metrics": {
+          "centered": {
+            "accuracy": 0.95,
+            "accuracy_ci95": [
+              0.85,
+              1.0
+            ],
+            "balanced_accuracy": 0.95,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "confusion": [
+              [
+                9,
+                1,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 19,
+            "invalid": 0,
+            "macro_f1": 0.949874686716792,
+            "n": 20,
+            "recall": {
+              "head": 0.9,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 10,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              0.85,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 0.95,
+            "supported_class_macro_f1": 0.949874686716792
+          },
+          "centered_equal_tensor": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": 1.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "confusion": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 20,
+            "invalid": 0,
+            "macro_f1": 1.0,
+            "n": 20,
+            "recall": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 10,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "equal_tensor": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": 1.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "confusion": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 20,
+            "invalid": 0,
+            "macro_f1": 1.0,
+            "n": 20,
+            "recall": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 10,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "global": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": 1.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "confusion": [
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 20,
+            "invalid": 0,
+            "macro_f1": 1.0,
+            "n": 20,
+            "recall": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 10,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "model_only": {
+            "accuracy": 0.8,
+            "accuracy_ci95": [
+              0.6,
+              0.95
+            ],
+            "balanced_accuracy": 0.8,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.93,
+              "non-head": 0.93
+            },
+            "confusion": [
+              [
+                8,
+                2,
+                0
+              ],
+              [
+                2,
+                8,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 16,
+            "invalid": 0,
+            "macro_f1": 0.8,
+            "n": 20,
+            "recall": {
+              "head": 0.8,
+              "non-head": 0.8
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 10,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              0.6,
+              0.95
+            ],
+            "supported_class_balanced_accuracy": 0.8,
+            "supported_class_macro_f1": 0.8
+          },
+          "text_only": {
+            "accuracy": 0.5,
+            "accuracy_ci95": [
+              0.5,
+              0.5
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.74,
+              "non-head": 0.74
+            },
+            "confusion": [
+              [
+                0,
+                10,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 10,
+            "invalid": 0,
+            "macro_f1": 0.3333333333333333,
+            "n": 20,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 10,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.3333333333333333
+          }
+        },
+        "paired_gain_ci95": {
+          "model_only": {
+            "accuracy_ci95": [
+              -0.05,
+              0.35
+            ],
+            "bootstrap_method": "stratified image bootstrap",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              -0.05,
+              0.35
+            ]
+          },
+          "text_only": {
+            "accuracy_ci95": [
+              0.35,
+              0.5
+            ],
+            "bootstrap_method": "stratified image bootstrap",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.35,
+              0.5
+            ]
+          }
+        },
+        "wrong_gradient": {
+          "centered": {
+            "accuracy": 0.7947368421052632,
+            "independent_images": 20,
+            "opposite_class_accuracy": 0.795,
+            "pairs": 380,
+            "per_target_accuracy": [
+              0.9473684210526315,
+              0.15789473684210525,
+              0.0,
+              1.0,
+              0.9473684210526315,
+              0.05263157894736842,
+              1.0,
+              1.0,
+              0.9473684210526315,
+              1.0,
+              0.8421052631578947,
+              1.0,
+              0.9473684210526315,
+              1.0,
+              0.15789473684210525,
+              1.0,
+              1.0,
+              0.9473684210526315,
+              0.9473684210526315,
+              1.0
+            ],
+            "same_class_accuracy": 0.7944444444444445
+          },
+          "centered_equal_tensor": {
+            "accuracy": 0.8026315789473685,
+            "independent_images": 20,
+            "opposite_class_accuracy": 0.7949999999999999,
+            "pairs": 380,
+            "per_target_accuracy": [
+              1.0,
+              0.15789473684210525,
+              0.0,
+              1.0,
+              1.0,
+              0.0,
+              1.0,
+              1.0,
+              0.9473684210526315,
+              1.0,
+              0.8947368421052632,
+              1.0,
+              1.0,
+              1.0,
+              0.05263157894736842,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "same_class_accuracy": 0.8111111111111111
+          },
+          "equal_tensor": {
+            "accuracy": 0.6473684210526315,
+            "independent_images": 20,
+            "opposite_class_accuracy": 0.6399999999999999,
+            "pairs": 380,
+            "per_target_accuracy": [
+              0.7368421052631579,
+              0.47368421052631576,
+              0.47368421052631576,
+              0.5789473684210527,
+              0.8947368421052632,
+              0.3684210526315789,
+              0.5789473684210527,
+              0.631578947368421,
+              0.42105263157894735,
+              0.6842105263157895,
+              0.3684210526315789,
+              0.9473684210526315,
+              0.7368421052631579,
+              0.9473684210526315,
+              0.21052631578947367,
+              0.9473684210526315,
+              0.7368421052631579,
+              0.6842105263157895,
+              0.7894736842105263,
+              0.7368421052631579
+            ],
+            "same_class_accuracy": 0.6555555555555557
+          },
+          "global": {
+            "accuracy": 0.6289473684210527,
+            "independent_images": 20,
+            "opposite_class_accuracy": 0.6199999999999999,
+            "pairs": 380,
+            "per_target_accuracy": [
+              0.631578947368421,
+              0.47368421052631576,
+              0.5789473684210527,
+              0.7368421052631579,
+              0.6842105263157895,
+              0.5263157894736842,
+              0.47368421052631576,
+              0.5789473684210527,
+              0.3157894736842105,
+              0.631578947368421,
+              0.5263157894736842,
+              0.7894736842105263,
+              0.8421052631578947,
+              0.7894736842105263,
+              0.5263157894736842,
+              0.8421052631578947,
+              0.5789473684210527,
+              0.5789473684210527,
+              0.7368421052631579,
+              0.7368421052631579
+            ],
+            "same_class_accuracy": 0.638888888888889
+          }
+        }
+      },
+      "reconstructed": {
+        "metrics": {
+          "centered": {
+            "accuracy": 0.9,
+            "accuracy_ci95": [
+              0.75,
+              1.0
+            ],
+            "balanced_accuracy": 0.9,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "confusion": [
+              [
+                8,
+                2,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 18,
+            "invalid": 0,
+            "macro_f1": 0.898989898989899,
+            "n": 20,
+            "recall": {
+              "head": 0.8,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 10,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              0.75,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 0.9,
+            "supported_class_macro_f1": 0.898989898989899
+          },
+          "centered_equal_tensor": {
+            "accuracy": 0.9,
+            "accuracy_ci95": [
+              0.75,
+              1.0
+            ],
+            "balanced_accuracy": 0.9,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "confusion": [
+              [
+                8,
+                2,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 18,
+            "invalid": 0,
+            "macro_f1": 0.898989898989899,
+            "n": 20,
+            "recall": {
+              "head": 0.8,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 10,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              0.75,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 0.9,
+            "supported_class_macro_f1": 0.898989898989899
+          },
+          "equal_tensor": {
+            "accuracy": 0.95,
+            "accuracy_ci95": [
+              0.85,
+              1.0
+            ],
+            "balanced_accuracy": 0.95,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.99,
+              "non-head": 0.99
+            },
+            "confusion": [
+              [
+                9,
+                1,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 19,
+            "invalid": 0,
+            "macro_f1": 0.949874686716792,
+            "n": 20,
+            "recall": {
+              "head": 0.9,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 10,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              0.85,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 0.95,
+            "supported_class_macro_f1": 0.949874686716792
+          },
+          "global": {
+            "accuracy": 0.95,
+            "accuracy_ci95": [
+              0.85,
+              1.0
+            ],
+            "balanced_accuracy": 0.95,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.99,
+              "non-head": 0.99
+            },
+            "confusion": [
+              [
+                9,
+                1,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 19,
+            "invalid": 0,
+            "macro_f1": 0.949874686716792,
+            "n": 20,
+            "recall": {
+              "head": 0.9,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 10,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              0.85,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 0.95,
+            "supported_class_macro_f1": 0.949874686716792
+          },
+          "model_only": {
+            "accuracy": 0.7,
+            "accuracy_ci95": [
+              0.5,
+              0.9
+            ],
+            "balanced_accuracy": 0.7,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.77,
+              "non-head": 0.77
+            },
+            "confusion": [
+              [
+                7,
+                3,
+                0
+              ],
+              [
+                3,
+                7,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 14,
+            "invalid": 0,
+            "macro_f1": 0.7,
+            "n": 20,
+            "recall": {
+              "head": 0.7,
+              "non-head": 0.7
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 10,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.9
+            ],
+            "supported_class_balanced_accuracy": 0.7,
+            "supported_class_macro_f1": 0.7
+          },
+          "text_only": {
+            "accuracy": 0.5,
+            "accuracy_ci95": [
+              0.5,
+              0.5
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.64,
+              "non-head": 0.64
+            },
+            "confusion": [
+              [
+                0,
+                10,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 10,
+            "invalid": 0,
+            "macro_f1": 0.3333333333333333,
+            "n": 20,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 10,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.3333333333333333
+          }
+        },
+        "paired_gain_ci95": {
+          "model_only": {
+            "accuracy_ci95": [
+              0.0,
+              0.4
+            ],
+            "bootstrap_method": "stratified image bootstrap",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.4
+            ]
+          },
+          "text_only": {
+            "accuracy_ci95": [
+              0.25,
+              0.5
+            ],
+            "bootstrap_method": "stratified image bootstrap",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.25,
+              0.5
+            ]
+          }
+        },
+        "wrong_gradient": {
+          "centered": {
+            "accuracy": 0.6921052631578948,
+            "independent_images": 20,
+            "opposite_class_accuracy": 0.6900000000000001,
+            "pairs": 380,
+            "per_target_accuracy": [
+              0.9473684210526315,
+              0.15789473684210525,
+              0.0,
+              0.0,
+              0.9473684210526315,
+              0.05263157894736842,
+              1.0,
+              1.0,
+              0.0,
+              1.0,
+              0.8421052631578947,
+              1.0,
+              0.8421052631578947,
+              1.0,
+              0.15789473684210525,
+              1.0,
+              1.0,
+              0.9473684210526315,
+              0.9473684210526315,
+              1.0
+            ],
+            "same_class_accuracy": 0.6944444444444444
+          },
+          "centered_equal_tensor": {
+            "accuracy": 0.7052631578947368,
+            "independent_images": 20,
+            "opposite_class_accuracy": 0.695,
+            "pairs": 380,
+            "per_target_accuracy": [
+              1.0,
+              0.15789473684210525,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              1.0,
+              1.0,
+              0.0,
+              1.0,
+              0.8947368421052632,
+              1.0,
+              1.0,
+              1.0,
+              0.05263157894736842,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "same_class_accuracy": 0.7166666666666666
+          },
+          "equal_tensor": {
+            "accuracy": 0.5973684210526315,
+            "independent_images": 20,
+            "opposite_class_accuracy": 0.58,
+            "pairs": 380,
+            "per_target_accuracy": [
+              0.7368421052631579,
+              0.47368421052631576,
+              0.47368421052631576,
+              0.5263157894736842,
+              0.8947368421052632,
+              0.3684210526315789,
+              0.3157894736842105,
+              0.631578947368421,
+              0.42105263157894735,
+              0.6842105263157895,
+              0.3684210526315789,
+              0.9473684210526315,
+              0.3684210526315789,
+              0.9473684210526315,
+              0.21052631578947367,
+              0.9473684210526315,
+              0.5263157894736842,
+              0.5789473684210527,
+              0.7894736842105263,
+              0.7368421052631579
+            ],
+            "same_class_accuracy": 0.6166666666666666
+          },
+          "global": {
+            "accuracy": 0.581578947368421,
+            "independent_images": 20,
+            "opposite_class_accuracy": 0.6099999999999999,
+            "pairs": 380,
+            "per_target_accuracy": [
+              0.631578947368421,
+              0.47368421052631576,
+              0.5789473684210527,
+              0.42105263157894735,
+              0.6842105263157895,
+              0.5263157894736842,
+              0.3684210526315789,
+              0.5789473684210527,
+              0.47368421052631576,
+              0.631578947368421,
+              0.5263157894736842,
+              0.7894736842105263,
+              0.5263157894736842,
+              0.7894736842105263,
+              0.5263157894736842,
+              0.8421052631578947,
+              0.3684210526315789,
+              0.42105263157894735,
+              0.7368421052631579,
+              0.7368421052631579
+            ],
+            "same_class_accuracy": 0.55
+          }
+        }
+      }
+    }
+  }
+}
