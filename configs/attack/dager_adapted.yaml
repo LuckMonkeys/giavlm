@@ -19,3 +19,4 @@ dager:
   vocab_chunk_size: 1024
   prefix_batch_size: 16
   rerank_candidates: 0
+  lm_prior_weight: 0.0

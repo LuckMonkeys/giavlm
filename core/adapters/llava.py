@@ -26,6 +26,8 @@ class LlavaTextView:
         self.decoder = adapter.backend.language_model.model
         self.device = adapter.embedding().weight.device
         model, training = observation.model, observation.training
+        self.question_content_length = observation.public_question_lengths[0]
+        self.question_is_public = training.question_public
         self.question_ids = self._slots(model.question_length, adapter.eos, adapter.pad,
                                         observation.public_question_lengths[0])
         if training.question_public:
@@ -101,6 +103,45 @@ class LlavaTextView:
         for (field, index, _), token in zip(self.slots, prefix, strict=True):
             fields[field][index] = token
         return {key: torch.tensor([ids], device=self.device) for key, ids in fields.items()}
+
+    def text_prior_ids(self, prefixes):
+        """Text-only parent contexts; no images, future content, EOS or padding.
+
+        Public USER/newline/ASSISTANT pieces are tokenized separately as in the
+        victim protocol. Only candidate content (or declared public questions)
+        enters the prior. This is a language regularizer, not a victim replay.
+        """
+        depth = len(prefixes[0])
+        if any(len(p) != depth for p in prefixes) or depth >= len(self.slots):
+            raise ValueError("Prior requires equal-length unfinished parent prefixes")
+        encode = self.adapter.tokenizer.encode
+        before = encode("USER: ", add_special_tokens=False) + encode("\n", add_special_tokens=False)
+        boundary = encode(" ASSISTANT: ", add_special_tokens=False)
+        rows = []
+        for prefix in prefixes:
+            if self.question_is_public:
+                question = self.question_ids[:self.question_content_length]
+                answer = prefix
+            else:
+                question = prefix[:self.question_content_length]
+                answer = prefix[self.question_content_length:]
+            values = before + question
+            if self.slots[depth][0] == "targets":
+                values += boundary + answer
+            rows.append(values)
+        return torch.tensor(rows, device=self.device, dtype=torch.long)
+
+    @torch.no_grad()
+    def text_prior_nll(self, prefixes, candidates):
+        """One full text-only forward per parent; score all children together."""
+        ids = self.text_prior_ids(prefixes)
+        lm = self.adapter.backend.language_model
+        hidden = lm.model(input_ids=ids, use_cache=False, return_dict=True).last_hidden_state[:, -1]
+        logits = lm.lm_head(hidden).float()
+        if not torch.isfinite(logits).all():
+            raise ValueError("Nonfinite text-prior logits")
+        nll = -logits.log_softmax(dim=-1)[:, candidates]
+        return nll, ids.numel()
 
 
 class LlavaAdapter(HFAdapter):

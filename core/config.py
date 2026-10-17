@@ -143,6 +143,7 @@ class DAGEROptions:
     vocab_chunk_size: int = 1024
     prefix_batch_size: int = 16
     rerank_candidates: int = 0
+    lm_prior_weight: float = 0.0
 
 
 @dataclass
@@ -272,7 +273,7 @@ def validate_attack_config(attack: AttackSpec) -> None:
         _require_choice("DAGER projections", options.projections, ("q", "k", "v", "qkv"))
         _require_choice("DAGER analysis dtype", options.analysis_dtype, ("float32", "float64"))
         _require_choice("DAGER token selection", options.token_selection, ("threshold", "topk"))
-        for name in ("rank_rtol", "rank_atol", "zero_tolerance", "token_threshold"):
+        for name in ("rank_rtol", "rank_atol", "zero_tolerance", "token_threshold", "lm_prior_weight"):
             value = getattr(options, name)
             if not math.isfinite(value) or value < 0:
                 raise ValueError(f"DAGER {name} must be finite and nonnegative")

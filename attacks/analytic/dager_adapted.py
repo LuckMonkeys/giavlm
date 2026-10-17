@@ -118,7 +118,7 @@ class DAGERAdaptedAttacker(BaseAttacker):
 
 
 class DAGERSearch:
-    SCHEMA = 1
+    SCHEMA = 2
 
     def __init__(self, adapter, observation, spec, directory):
         self.adapter, self.observation, self.spec = adapter, observation, spec
@@ -130,10 +130,11 @@ class DAGERSearch:
         self.state = {"stage": "tokens", "vocab_cursor": 0, "candidates": [],
                       "beam": [{"tokens": [], "score": 0.0}], "depth": 0,
                       "expansion_cursor": 0, "next_beam": [], "rerank_cursor": 0,
-                      "reranked": [], "history": [], "provenance": {},
+                      "reranked": [], "history": [], "provenance": {}, "prior_nll": None,
                       "costs": {"vocab_tokens_scored": 0, "prefix_candidates_evaluated": 0,
                                 "prefix_forward_batches": 0, "full_gradient_replays": 0,
-                                "ambiguous_prefix_checks": 0}}
+                                "ambiguous_prefix_checks": 0, "lm_prior_prefixes": 0,
+                                "lm_prior_forward_batches": 0, "lm_prior_input_tokens": 0}}
         self.scores = torch.zeros(adapter.vocab_size, dtype=getattr(torch, self.options.analysis_dtype))
         self.ambiguous = torch.zeros(adapter.vocab_size, dtype=torch.bool)
 
@@ -147,7 +148,8 @@ class DAGERSearch:
     def available(self, requested):
         self.check_budget()
         costs = self.state["costs"]
-        used = costs["prefix_candidates_evaluated"] + costs["full_gradient_replays"]
+        used = (costs["prefix_candidates_evaluated"] + costs["full_gradient_replays"]
+                + costs["lm_prior_prefixes"])
         if self.spec.max_evaluations is not None:
             requested = min(requested, self.spec.max_evaluations - used)
         if requested <= 0:
@@ -219,7 +221,10 @@ class DAGERSearch:
             "gradient_names": groups, "subspaces": [s.diagnostics for s in self.spans],
             "candidate_selection": "observable subspace residuals; optional uploaded-update reranking",
             "exact_recovery_claimed": False,
-            "evaluation_unit": "one private prefix extension or one full gradient replay",
+            "evaluation_unit": "one private prefix extension, text-prior parent, or full gradient replay",
+            "text_prior": {"weight": self.options.lm_prior_weight,
+                           "context": "text-only USER/newline/question/ASSISTANT/answer; no EOS/pad/image",
+                           "scoring": "content-only cumulative full-vocabulary NLL; no hard LM pruning"},
             "private_slot_count": len(self.view.slots),
             "reconstructed_fields": list(dict.fromkeys(
                 field.removesuffix("s") for field, _, _ in self.view.slots)),
@@ -263,6 +268,15 @@ class DAGERSearch:
     def search(self):
         while self.state["depth"] < len(self.view.slots):
             beam, candidates = self.state["beam"], self.state["candidates"]
+            if self.options.lm_prior_weight > 0 and self.state["prior_nll"] is None:
+                if self.available(len(beam)) < len(beam):
+                    raise SearchBudgetExhausted()
+                self.state["costs"]["lm_prior_prefixes"] += len(beam)
+                self.state["costs"]["lm_prior_forward_batches"] += 1
+                nll, input_tokens = self.view.text_prior_nll([row["tokens"] for row in beam], candidates)
+                self.state["costs"]["lm_prior_input_tokens"] += input_tokens
+                self.state["prior_nll"] = nll.cpu().tolist()
+                self.save()
             total = len(beam) * len(candidates)
             while self.state["expansion_cursor"] < total:
                 count = self.available(min(self.options.prefix_batch_size,
@@ -273,8 +287,17 @@ class DAGERSearch:
                 features = self.view.prefix_features([row["tokens"] for row in additions])
                 scores, ambiguous = self.spans[1].score(features)
                 self.state["costs"]["ambiguous_prefix_checks"] += int(ambiguous.sum())
-                for row, score in zip(additions, scores.cpu().tolist(), strict=True):
-                    row["score"] += score
+                for offset, (row, score) in enumerate(zip(additions, scores.cpu().tolist(), strict=True)):
+                    if self.options.lm_prior_weight > 0:
+                        parent_index, token_index = divmod(
+                            self.state["expansion_cursor"] + offset, len(candidates))
+                        parent = beam[parent_index]
+                        row["span_score"] = parent.get("span_score", 0.0) + score
+                        row["lm_nll"] = (parent.get("lm_nll", 0.0)
+                                         + self.state["prior_nll"][parent_index][token_index])
+                        row["score"] = row["span_score"] + self.options.lm_prior_weight * row["lm_nll"]
+                    else:
+                        row["score"] += score
                 self.state["next_beam"] = retain_best(
                     self.state["next_beam"], additions, self.options.beam_width)
                 self.state["expansion_cursor"] += len(additions)
@@ -283,10 +306,14 @@ class DAGERSearch:
             self.state["beam"] = self.state["next_beam"]
             self.state["next_beam"] = []
             self.state["expansion_cursor"] = 0
+            self.state["prior_nll"] = None
             self.state["depth"] += 1
             self.state["history"].append({"private_tokens_filled": self.state["depth"],
                                           "beam_size": len(self.state["beam"]),
-                                          "best_span_score": self.state["beam"][0]["score"]})
+                                          "best_span_score": self.state["beam"][0].get(
+                                              "span_score", self.state["beam"][0]["score"]),
+                                          "best_search_score": self.state["beam"][0]["score"],
+                                          "best_lm_nll": self.state["beam"][0].get("lm_nll", 0.0)})
             self.save()
         self.state["stage"] = "rerank"
         self.save()
@@ -344,7 +371,9 @@ class DAGERSearch:
             winner = retain_best([], ranked, 1)[0]
             self.state["provenance"]["final_score"] = winner["score"]
             self.state["provenance"]["final_score_type"] = (
-                "relative_l2_update" if self.state["reranked"] else "summed_prefix_span_distance")
+                "relative_l2_update" if self.state["reranked"] else
+                "span_distance_with_text_prior" if self.options.lm_prior_weight > 0 else
+                "summed_prefix_span_distance")
             if self.directory is not None:
                 write_tensors(self.directory / "text_tokens.safetensors", self.view.token_ids(winner["tokens"]))
             return self.result("completed", prefix=winner["tokens"])
