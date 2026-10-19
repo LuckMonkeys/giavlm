@@ -1,9 +1,9 @@
 # 项目交接
 
-- 更新时间：2026-10-18（Asia/Shanghai）；分支 `dager-rank-and-experiment-records`，基于 `main` 的 `73ebac2`，尚未合并回 `main`。
+- 更新时间：2026-10-18（Asia/Shanghai）；分支 `dager-rank-and-experiment-records`，基于 `main` 的 `73ebac2`，最新 commit `cedd460`。工作区干净，分支尚未推送，也未合并回 `main`。
 - 用户已明确要求提交现有内容。2026-10-11 至 10-18 的代码按研究主题拆分提交，相关实验页已登记代码 commit，方法文档与聚合图同步整理；原始产物继续保存在本地 `outputs/`。
 - `lm_prior_weight=0` 仍是默认值。提交不表示将先验、属性评分或生成候选切换为新的默认攻击；原版 `dager` 仍未实现。
-- 本次全量 CPU 回归为 331 通过、3 跳过，Ruff 通过；实验索引测试 19 项通过，16 份实验记录及本地产物检查通过。本地与不含私有示例的干净检出均通过 MkDocs 严格构建。
+- 本轮五个新 commit 均在干净检出中逐一验证：全量 CPU 回归最终为 355 通过、4 跳过，Ruff 通过；文档相关测试 36 项通过。14 份实验记录及本地产物检查通过，MkDocs 严格构建通过。
 
 接手顺序：`AGENTS.md` → 本文件 → `docs/experiments/README.md`。开始前检查 git、进程和 GPU，不能以调度器中的 `running` 字样判断任务存活。
 
@@ -20,8 +20,10 @@
 | `2440189` | Qwen3.5 adapter 与 DAGER 线性注意力输入 |
 | `6beafa7` | 跨模型文本恢复 benchmark 与只读巡检 |
 | `e2ce836` | 通用摄影候选库的头部属性对照 |
+| `eb0c5a4` | 仅限 loopback 的文档在线编辑器、首页与索引卡片、中文搜索 |
+| `cedd460` | 合并实验记录、记录结构校验、benchmark 实验页与 WN-A100 规则 |
 
-此前筛选研究 `7be400e`、图像排序诊断 `de95a9f`、rank 对比 `4bae2c8` 和日志修复 `e9a05eb` 已提交。历史展示材料位于 `docs/ppt/dager_branch_summary_20261011_v2/`，保留本地，不纳入 Git。
+此前筛选研究 `7be400e`、图像排序诊断 `de95a9f`、rank 对比 `4bae2c8` 和日志修复 `e9a05eb` 已提交。`cedd460` 将 `dager-multisample-n10`、`dager-lora-rank` 合并为 [[dager-multisample]]，将 Qwen 图像生成、合成 CT 与头部属性三页合并为 [[synthetic-property]]；旧 id 已不可链接。历史展示材料位于 `docs/ppt/dager_branch_summary_20261011_v2/`，保留本地，不纳入 Git。
 
 ## 当前结论
 
@@ -54,8 +56,8 @@
 - 用户要求的每 10 分钟后台巡检已正常退出，原 PID 1525580；`monitor/timer.json` 为 finished，完成 31 次检查，最终 health 为 completed。最新报告为 `monitor/latest.md`，历史为 `monitor/history.jsonl`；没有下一次检查，不需要重启已完成实验的监控。
 - 用户要求的会话主动监控也已执行至实验完成；最后巡检为 2026-10-18 03:18，`monitor/live-session.json` 记录 completed、288/288。监控期间未自动重试 OOM、改预算或改实验条件。
 - 工作区盘点与 SLAKE 初步审计保存于 `outputs/diagnostics/workspace_audit_20261017/`。Q64、A64 容量变化使旧 SLAKE 快照不再直接复用，本轮六个组合均需重新训练。
-- `gia-qwen35` 已在本机创建于共享 NAS，安装 Transformers 5.20.1、PEFT 0.21.2、Accelerate 1.15.0，保留 Torch 2.6.0；新环境 `pip check` 通过，旧 `gia` 的 pip 快照前后一致。本轮产物根目录为 `outputs/diagnostics/crossmodel_text_20261017/`；训练使用冻结 `source-smoke-v1`，正式攻击使用 `source-benchmark-v1`。数据准备完成：`data/*/frozen.json` 共冻结 72 个 QA，正式配对矩阵为 288 次攻击；VQAv2 固定训练与评估调度使用的 816 张图片已校验。CPU 回归 335 通过、4 跳过。
-- 2026-10-17 检查时，PID 1151928 的 `train_stealth.py` 是其他任务；不要终止或修改。GPU 5 是共享 GPU，启动前重新核验空闲显存。
+- `gia-qwen35` 已在本机创建于共享 NAS，安装 Transformers 5.20.1、PEFT 0.21.2、Accelerate 1.15.0，保留 Torch 2.6.0；新环境 `pip check` 通过，旧 `gia` 的 pip 快照前后一致。本轮产物根目录为 `outputs/diagnostics/crossmodel_text_20261017/`；训练使用冻结 `source-smoke-v1`，正式攻击使用 `source-benchmark-v1`。数据准备完成：`data/*/frozen.json` 共冻结 72 个 QA，正式配对矩阵为 288 次攻击；VQAv2 固定训练与评估调度使用的 816 张图片已校验。
+- 2026-10-18 检查时，本机没有本项目的运行进程；此前其他任务 PID 1151928 已不在进程表中。
 - rank 8 快照：`outputs/federation/slake_llava_f_l_fedavg/round-0010/`。
 - rank 16、32 快照：`outputs/diagnostics/dager_rank_gpu5_20261010_v2/models/rank-16/round-0010/`、`rank-32/round-0010/`。
 - GPU 环境为 Conda `gia`，CPU 测试为 `/tmp/giavlm-venv`；文档仅在本地查看。长任务必须 detached 启动并配 watcher，首个 capture/checkpoint 验证通过后才能离开。
@@ -67,7 +69,7 @@
 - 私有图像、完整重构文本及样例图继续留在 `outputs/`。CT 讲解与用户要求的头部属性六图对照，通过 `docs/experiments/examples/` 下的本地片段和符号链接展示，该目录已忽略；页面使用可选片段，Git 中只保存说明与聚合结果。六图对照见 [[synthetic-property]] 的图像直观对比，真图及两类候选按固定记录顺序选择，未按推断结果挑选。
 - `GIA/`、其他参考项目、数据、模型和展示压缩包均按既有规则忽略。不要将生成图的模态提示直接当作真实模态标签。
 - 本轮文档页将 `uncommitted` 标记改为 false，并记录相应代码 commit；这不意味着原始本地数据或大型产物被纳入 Git。
-- 六组小型聚合结果保存在 `docs/experiments/data/` 并纳入 Git，包含对应本地来源的 SHA256；不包含逐样本文本、图像或原始样本标识。
+- 小型聚合结果按实验保存在 `docs/experiments/data/` 并纳入 Git，包含对应本地来源的 SHA256；不包含逐样本文本、图像或原始样本标识。
 
 ---
 重要提交、实验阶段结束或方向改变后更新本文件。具体数字与运行记录写入实验页，链接为 `[[id]]`；保持测量结果、假设与后续计划的区分。
