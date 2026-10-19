@@ -1,0 +1,362 @@
+[
+  {
+    "dataset": "slake",
+    "mean_selected_client_loss": 3.435872425978211,
+    "model": "llava",
+    "round": 1
+  },
+  {
+    "dataset": "slake",
+    "mean_selected_client_loss": 2.9457236514901215,
+    "model": "llava",
+    "round": 2
+  },
+  {
+    "dataset": "slake",
+    "mean_selected_client_loss": 2.900554551563648,
+    "model": "llava",
+    "round": 3
+  },
+  {
+    "dataset": "slake",
+    "mean_selected_client_loss": 2.8313166178970515,
+    "model": "llava",
+    "round": 4
+  },
+  {
+    "dataset": "slake",
+    "mean_selected_client_loss": 1.5542790147124743,
+    "model": "llava",
+    "round": 5
+  },
+  {
+    "dataset": "slake",
+    "mean_selected_client_loss": 1.2192353803623206,
+    "model": "llava",
+    "round": 6
+  },
+  {
+    "dataset": "slake",
+    "mean_selected_client_loss": 1.1952448512423677,
+    "model": "llava",
+    "round": 7
+  },
+  {
+    "dataset": "slake",
+    "mean_selected_client_loss": 1.8282907829148534,
+    "model": "llava",
+    "round": 8
+  },
+  {
+    "dataset": "slake",
+    "mean_selected_client_loss": 0.9890172408241442,
+    "model": "llava",
+    "round": 9
+  },
+  {
+    "dataset": "slake",
+    "mean_selected_client_loss": 0.7518190193894135,
+    "model": "llava",
+    "round": 10
+  },
+  {
+    "dataset": "vqa_rad",
+    "mean_selected_client_loss": 3.7684368387235865,
+    "model": "llava",
+    "round": 1
+  },
+  {
+    "dataset": "vqa_rad",
+    "mean_selected_client_loss": 3.348688365552372,
+    "model": "llava",
+    "round": 2
+  },
+  {
+    "dataset": "vqa_rad",
+    "mean_selected_client_loss": 3.083502967931606,
+    "model": "llava",
+    "round": 3
+  },
+  {
+    "dataset": "vqa_rad",
+    "mean_selected_client_loss": 2.439431648426019,
+    "model": "llava",
+    "round": 4
+  },
+  {
+    "dataset": "vqa_rad",
+    "mean_selected_client_loss": 3.519679449836293,
+    "model": "llava",
+    "round": 5
+  },
+  {
+    "dataset": "vqa_rad",
+    "mean_selected_client_loss": 2.4366172223293474,
+    "model": "llava",
+    "round": 6
+  },
+  {
+    "dataset": "vqa_rad",
+    "mean_selected_client_loss": 2.0311533667539297,
+    "model": "llava",
+    "round": 7
+  },
+  {
+    "dataset": "vqa_rad",
+    "mean_selected_client_loss": 1.8994051102548837,
+    "model": "llava",
+    "round": 8
+  },
+  {
+    "dataset": "vqa_rad",
+    "mean_selected_client_loss": 2.092967645518641,
+    "model": "llava",
+    "round": 9
+  },
+  {
+    "dataset": "vqa_rad",
+    "mean_selected_client_loss": 1.2547718363247837,
+    "model": "llava",
+    "round": 10
+  },
+  {
+    "dataset": "vqav2",
+    "mean_selected_client_loss": 2.171028161402976,
+    "model": "llava",
+    "round": 1
+  },
+  {
+    "dataset": "vqav2",
+    "mean_selected_client_loss": 1.5257825513475949,
+    "model": "llava",
+    "round": 2
+  },
+  {
+    "dataset": "vqav2",
+    "mean_selected_client_loss": 1.274553691759342,
+    "model": "llava",
+    "round": 3
+  },
+  {
+    "dataset": "vqav2",
+    "mean_selected_client_loss": 0.9980308457845595,
+    "model": "llava",
+    "round": 4
+  },
+  {
+    "dataset": "vqav2",
+    "mean_selected_client_loss": 1.123955950913034,
+    "model": "llava",
+    "round": 5
+  },
+  {
+    "dataset": "vqav2",
+    "mean_selected_client_loss": 0.7235162314591985,
+    "model": "llava",
+    "round": 6
+  },
+  {
+    "dataset": "vqav2",
+    "mean_selected_client_loss": 0.9329482682049275,
+    "model": "llava",
+    "round": 7
+  },
+  {
+    "dataset": "vqav2",
+    "mean_selected_client_loss": 0.557074190325384,
+    "model": "llava",
+    "round": 8
+  },
+  {
+    "dataset": "vqav2",
+    "mean_selected_client_loss": 0.7560949509509316,
+    "model": "llava",
+    "round": 9
+  },
+  {
+    "dataset": "vqav2",
+    "mean_selected_client_loss": 0.6754699218925089,
+    "model": "llava",
+    "round": 10
+  },
+  {
+    "dataset": "slake",
+    "mean_selected_client_loss": 0.5515704950652062,
+    "model": "qwen35",
+    "round": 1
+  },
+  {
+    "dataset": "slake",
+    "mean_selected_client_loss": 0.4414594216603723,
+    "model": "qwen35",
+    "round": 2
+  },
+  {
+    "dataset": "slake",
+    "mean_selected_client_loss": 0.3759759539524661,
+    "model": "qwen35",
+    "round": 3
+  },
+  {
+    "dataset": "slake",
+    "mean_selected_client_loss": 0.3665673034597069,
+    "model": "qwen35",
+    "round": 4
+  },
+  {
+    "dataset": "slake",
+    "mean_selected_client_loss": 0.15271339148892898,
+    "model": "qwen35",
+    "round": 5
+  },
+  {
+    "dataset": "slake",
+    "mean_selected_client_loss": 0.1721685444311006,
+    "model": "qwen35",
+    "round": 6
+  },
+  {
+    "dataset": "slake",
+    "mean_selected_client_loss": 0.23419633954445915,
+    "model": "qwen35",
+    "round": 7
+  },
+  {
+    "dataset": "slake",
+    "mean_selected_client_loss": 0.39992683610455554,
+    "model": "qwen35",
+    "round": 8
+  },
+  {
+    "dataset": "slake",
+    "mean_selected_client_loss": 0.3462238780349114,
+    "model": "qwen35",
+    "round": 9
+  },
+  {
+    "dataset": "slake",
+    "mean_selected_client_loss": 0.3137885241623735,
+    "model": "qwen35",
+    "round": 10
+  },
+  {
+    "dataset": "vqa_rad",
+    "mean_selected_client_loss": 0.6896480576301268,
+    "model": "qwen35",
+    "round": 1
+  },
+  {
+    "dataset": "vqa_rad",
+    "mean_selected_client_loss": 0.32424350903602317,
+    "model": "qwen35",
+    "round": 2
+  },
+  {
+    "dataset": "vqa_rad",
+    "mean_selected_client_loss": 0.4445456214688294,
+    "model": "qwen35",
+    "round": 3
+  },
+  {
+    "dataset": "vqa_rad",
+    "mean_selected_client_loss": 0.3556031321583331,
+    "model": "qwen35",
+    "round": 4
+  },
+  {
+    "dataset": "vqa_rad",
+    "mean_selected_client_loss": 0.46157316681464766,
+    "model": "qwen35",
+    "round": 5
+  },
+  {
+    "dataset": "vqa_rad",
+    "mean_selected_client_loss": 0.28610011448066336,
+    "model": "qwen35",
+    "round": 6
+  },
+  {
+    "dataset": "vqa_rad",
+    "mean_selected_client_loss": 0.30251865898857694,
+    "model": "qwen35",
+    "round": 7
+  },
+  {
+    "dataset": "vqa_rad",
+    "mean_selected_client_loss": 0.3428784835152328,
+    "model": "qwen35",
+    "round": 8
+  },
+  {
+    "dataset": "vqa_rad",
+    "mean_selected_client_loss": 0.3929038161558597,
+    "model": "qwen35",
+    "round": 9
+  },
+  {
+    "dataset": "vqa_rad",
+    "mean_selected_client_loss": 0.33063313773805825,
+    "model": "qwen35",
+    "round": 10
+  },
+  {
+    "dataset": "vqav2",
+    "mean_selected_client_loss": 0.4464722626548719,
+    "model": "qwen35",
+    "round": 1
+  },
+  {
+    "dataset": "vqav2",
+    "mean_selected_client_loss": 0.2564112022721573,
+    "model": "qwen35",
+    "round": 2
+  },
+  {
+    "dataset": "vqav2",
+    "mean_selected_client_loss": 0.27116391809173174,
+    "model": "qwen35",
+    "round": 3
+  },
+  {
+    "dataset": "vqav2",
+    "mean_selected_client_loss": 0.16520657655707074,
+    "model": "qwen35",
+    "round": 4
+  },
+  {
+    "dataset": "vqav2",
+    "mean_selected_client_loss": 0.15894022011575668,
+    "model": "qwen35",
+    "round": 5
+  },
+  {
+    "dataset": "vqav2",
+    "mean_selected_client_loss": 0.1555103925491051,
+    "model": "qwen35",
+    "round": 6
+  },
+  {
+    "dataset": "vqav2",
+    "mean_selected_client_loss": 0.17519970091714246,
+    "model": "qwen35",
+    "round": 7
+  },
+  {
+    "dataset": "vqav2",
+    "mean_selected_client_loss": 0.17896493092405968,
+    "model": "qwen35",
+    "round": 8
+  },
+  {
+    "dataset": "vqav2",
+    "mean_selected_client_loss": 0.3025925377144772,
+    "model": "qwen35",
+    "round": 9
+  },
+  {
+    "dataset": "vqav2",
+    "mean_selected_client_loss": 0.15561954828695224,
+    "model": "qwen35",
+    "round": 10
+  }
+]

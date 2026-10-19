@@ -1,0 +1,76 @@
+{
+  "uncommitted": true,
+  "contains_private_examples": false,
+  "files": [
+    {
+      "source": "outputs/diagnostics/crossmodel_text_20261017/report/aggregate.json",
+      "destination": "docs/experiments/data/crossmodel-text-benchmark/aggregate.json",
+      "sha256": "302f50992084e7a3604a23d94e585afb56419eea63da073530208b3ad4fdbe01"
+    },
+    {
+      "source": "outputs/diagnostics/crossmodel_text_20261017/report/training-loss.json",
+      "destination": "docs/experiments/data/crossmodel-text-benchmark/training-loss.json",
+      "sha256": "3fc60f4b6f9132380c952598bcbfedbba85bf544fb7943fb75b2c2ff320151fb"
+    },
+    {
+      "source": "outputs/diagnostics/crossmodel_text_20261017/report/training-qa-overlap.json",
+      "destination": "docs/experiments/data/crossmodel-text-benchmark/training-qa-overlap.json",
+      "sha256": "302f9f5896175e897ad63c7f0ed871ea00dbb7ff835f2bd7cb1c4c40fea86e69"
+    },
+    {
+      "source": "outputs/diagnostics/crossmodel_text_20261017/report/main.csv",
+      "destination": "docs/experiments/data/crossmodel-text-benchmark/main.csv",
+      "sha256": "1f3b3b5862b6ea361bf4071400c3b2b9a4e4b9597709c65edd876cb138e9eede"
+    },
+    {
+      "source": "outputs/diagnostics/crossmodel_text_20261017/report/by-length.csv",
+      "destination": "docs/experiments/data/crossmodel-text-benchmark/by-length.csv",
+      "sha256": "b45760c0c4c4b3becd6396d2ca9d7f4c447a0d1f8a900190b7fd8b325e3f5729"
+    },
+    {
+      "source": "outputs/diagnostics/crossmodel_text_20261017/report/token-filter.csv",
+      "destination": "docs/experiments/data/crossmodel-text-benchmark/token-filter.csv",
+      "sha256": "e9edaae63185c8b2e0e189baa57103e1c3047488d251454f28a513b80741fe2b"
+    },
+    {
+      "source": "outputs/diagnostics/crossmodel_text_20261017/report/joint-em-by-length.png",
+      "destination": "docs/experiments/figures/crossmodel-text-benchmark/joint-em-by-length.png",
+      "sha256": "b06532ed54ef900878237b2d0ccac2e5cc74328cba530be7029d388253ba1554"
+    },
+    {
+      "source": "outputs/diagnostics/crossmodel_text_20261017/report/joint-em-by-length.svg",
+      "destination": "docs/experiments/figures/crossmodel-text-benchmark/joint-em-by-length.svg",
+      "sha256": "ee3f6697e3e5b3f13c6a71ae1458b5233f476867a33934419b161cf67731be61"
+    },
+    {
+      "source": "outputs/diagnostics/crossmodel_text_20261017/report/token-recall-by-length.png",
+      "destination": "docs/experiments/figures/crossmodel-text-benchmark/token-recall-by-length.png",
+      "sha256": "48c0082cdc9cab91b6efae33ac873df1aaf796dcdd35325d16a32fc20469790e"
+    },
+    {
+      "source": "outputs/diagnostics/crossmodel_text_20261017/report/token-recall-by-length.svg",
+      "destination": "docs/experiments/figures/crossmodel-text-benchmark/token-recall-by-length.svg",
+      "sha256": "c3b5d6b597ec7edc5cbfff6f59b5fc8222cb4eae406deedef539a037ae71a555"
+    },
+    {
+      "source": "outputs/diagnostics/crossmodel_text_20261017/report/training-loss.png",
+      "destination": "docs/experiments/figures/crossmodel-text-benchmark/training-loss.png",
+      "sha256": "2898b4966ec550accc5001a2a18a866e87db0d078744edcbee8a3c6c9c516559"
+    },
+    {
+      "source": "outputs/diagnostics/crossmodel_text_20261017/report/training-loss.svg",
+      "destination": "docs/experiments/figures/crossmodel-text-benchmark/training-loss.svg",
+      "sha256": "07f2231d965b249a2574ef1604296059cd568754a87159574aa35121c243ba2e"
+    },
+    {
+      "source": "outputs/diagnostics/crossmodel_text_20261017/report/native-token-lengths.png",
+      "destination": "docs/experiments/figures/crossmodel-text-benchmark/native-token-lengths.png",
+      "sha256": "7f5e2c6a3736d5881f791b0bf7d464db7c58bbc86d2758133e354f9b075f49d9"
+    },
+    {
+      "source": "outputs/diagnostics/crossmodel_text_20261017/report/native-token-lengths.svg",
+      "destination": "docs/experiments/figures/crossmodel-text-benchmark/native-token-lengths.svg",
+      "sha256": "e8a0da9581d85f86ca53bf5c50d7ac9990f866ee0fdcce7b5f184cc4112bf1de"
+    }
+  ]
+}

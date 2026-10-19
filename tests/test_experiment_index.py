@@ -25,6 +25,16 @@ related: []
 - **Pipeline runs**：all stages finish.
 - A point without a bold lead.
 
+## 研究问题
+
+- **Pipeline**：Does every stage finish?
+
+## 结果
+
+### Pipeline
+
+**回答**：Yes.
+
 Body linking [[tiny-run]].
 """
 TRACKS = """smoke:
@@ -79,6 +89,12 @@ def test_key_points_feed_the_findings_column(tmp_path):
     ("uses_private_reference: false", "uses_private_reference: true", "private_reference_note"),
     ("uses_private_reference: false",
      "uses_private_reference: false\nprivate_reference_note: 从真实图像出发", "private_reference_note"),
+    ("title: Tiny run", "title: 一个很长的标题，在文档侧栏里放不下一行", "title is wider"),
+    ("- A point without a bold lead.", "- A point without a bold lead.\n" + "- More.\n" * 4,
+     "more than 5 bullets"),
+    ("- **Pipeline**：Does", "- Does", "bold topic"),
+    ("### Pipeline", "### Other", "repeat the question topics"),
+    ("**回答**：Yes.", "Yes.", "must open with"),
 ])
 def test_invalid_records_are_rejected(tmp_path, old, new, message):
     write(tmp_path, RECORD.replace(old, new))

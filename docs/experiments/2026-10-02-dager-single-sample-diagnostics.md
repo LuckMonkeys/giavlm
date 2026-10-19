@@ -1,6 +1,6 @@
 ---
 id: dager-single-sample-diagnostics
-title: DAGER 单样本开发诊断（n=1）
+title: DAGER 单样本诊断
 date: 2026-10-02
 track: text-dager
 importance: archive
@@ -17,7 +17,7 @@ outcome: mixed
 uses_private_reference: true
 private_reference_note: 仅“替代图敏感性”一节把真实图像和随机像素混合
 contains_private_tokens: false
-superseded_by: dager-multisample-n10
+superseded_by: dager-multisample
 archive_note: >-
   只有一个样本、一个梯度；residual 和 random surrogate 的主要结论已在 10 个样本上复测。
   保留这页是因为空白对照、QKV 消融和混合图像分析没有在多样本上重复。
@@ -52,7 +52,7 @@ artifacts:
     note: summary.json, top50_comparison.json, ranking_validation.json
   - path: outputs/diagnostics/analysis_scripts/run_dager_projection_gpu5.sh
   - path: outputs/diagnostics/analysis_scripts/watch_dager_projection_gpu5.sh
-related: [dager-multisample-n10]
+related: [dager-multisample]
 ---
 
 ## 要点
@@ -67,7 +67,7 @@ related: [dager-multisample-n10]
 
 这 5 项分析用的是**同一个**样本和同一个梯度，都在 2026-10-02 完成，早于多样本研究。
 
-| Analysis | 发现 | 在 [[dager-multisample-n10]] 中的情况 |
+| Analysis | 发现 | 在 [[dager-multisample]] 中的情况 |
 |---|---|---|
 | 第一次真实诊断 | token 检测准确但不完整；句子 EM 为 0 | 已复现：句子恢复仍然失败 |
 | Raw vs residual | Top-50 recall 从 7/14 升到 13/14 | 已在 10 个样本上复现（K=100 时 0.61 → 0.98） |
@@ -77,10 +77,10 @@ related: [dager-multisample-n10]
 
 ## 研究问题
 
-- `dager_adapted` 在真实训练后的 LLaVA 更新上，能否检测出 token 集合或恢复出句子？
-- residual 打分比 raw 好多少？这个优势是不是只来自模板和词频？
-- residual 的收益有多少依赖真实图像，多少来自视觉编码器的通用子空间？
-- 单个 LoRA 投影和联合 QKV 打分是否等价？
+- **第一次诊断**：`dager_adapted` 在真实训练后的 LLaVA 更新上，能否检测出 token 集合或恢复出句子？
+- **Raw 与 Residual**：residual 打分比 raw 好多少？这个优势是不是只来自模板和词频？
+- **替代图**：residual 的收益有多少依赖真实图像，多少来自视觉编码器的通用子空间？
+- **Q/K/V 投影**：单个 LoRA 投影和联合 QKV 打分是否等价？
 
 ## 实验设置
 
@@ -96,7 +96,9 @@ related: [dager-multisample-n10]
 
 ## 结果
 
-### 第一次真实诊断
+### 第一次诊断
+
+**回答**：informative 候选全部正确但覆盖不全；两种知识条件下句子 EM 都是 0。
 
 - 扫描了全部 32,064 个词表 ID。
 - 两种知识条件下，informative 候选都全部正确（precision 1.0），但数量太少，覆盖不全。
@@ -112,7 +114,9 @@ related: [dager-multisample-n10]
 - `image_question_known` 下，第一、二层商空间的秩都是 24（隐藏维度 4096 中，公开子空间的秩分别为 597 和 653），两个空间都没有饱和。
 - 搜索开销很小：`image_question_known` 用 1,029 次前缀评估（65 个 batch），模型加载后 5.5 秒；`image_known` 用 2,030 次（128 个 batch），6.1 秒。都没有做全梯度重排。
 
-### Raw vs residual
+### Raw 与 Residual
+
+**回答**：Residual 的 Top-50 命中从 7/14 升到 13/14，远高于随机；问题 token 的命中多半来自词频，答案 token 才是样本信号。
 
 - residual 的 Top-50 命中从 7/14 升到 13/14，问题和答案的召回都明显提高。
 - 两个 Top-50 集合只有 22 个 ID 重合（Jaccard 0.282），说明去除公开方向大幅改变了词表排序。
@@ -124,7 +128,7 @@ related: [dager-multisample-n10]
 | Raw | 0.14 | 0.50（7/14） | 0.40 | 0.75 | 2–26,249 | 389.5 |
 | Residual | 0.26 | 0.929（13/14） | 0.90 | 1.0 | 10–98 | 16.5 |
 
-### 空白对照
+#### 空白对照
 
 - **远高于均匀随机**：随机取 Top-50 时，期望只命中 14 个私有 ID 中的 0.0219 个。
     - raw 至少命中 7 个的精确概率为 4.99e-17，residual 至少命中 13 个的概率为 8.41e-37。
@@ -144,7 +148,9 @@ related: [dager-multisample-n10]
 | Residual | 9/14 | 13/14 | 14/14 | – | 0.336 |
 | Raw | 5/14 | 7/14 | 7/14 | 8/14 | 0.187 |
 
-### 替代图敏感性（使用私有数据）
+### 替代图
+
+**回答**：纯随机像素图已能达到 10/14，真实图像为 13/14；视觉编码器的通用子空间贡献了大部分收益。
 
 - **任何来自视觉编码器的子空间都比 raw 好**：纯随机像素图也能达到 10/14，比 raw 多 3 个，比同秩的随机子空间多 2 个。
 - **真实图像额外贡献 3 个命中**，其中包括第 4 个答案 token。
@@ -169,7 +175,9 @@ related: [dager-multisample-n10]
 - 候选集大小的影响：一张典型的纯随机图像在 K=20、50、100、200、500 时分别命中 9、10、11、13、14 个；真实图像在 K=100 时就达到 14/14；raw 到 K=1000 也只有 8/14。
 - 这一节在 GPU 打分阶段从不读取私有文本；27 个打分产物全部提交后，评估才对齐 token ID。
 
-### Q/K/V 投影消融
+### Q/K/V 投影
+
+**回答**：不等价。联合 QKV 的 Top-50 命中为 13/14，单个投影只有 7–9/14。
 
 - **联合 QKV 的排序最好**：Top-50 命中 13/14，单个投影只有 7–9/14。
 - **单个投影之间没有稳定的优劣**：K=50 时 K 优于 V，K=100 时 V 优于 K。
@@ -205,7 +213,7 @@ related: [dager-multisample-n10]
 
 ## 下一步
 
-- 主要结论已在 [[dager-multisample-n10]] 中用 10 个样本复测。
+- 主要结论已在 [[dager-multisample]] 中用 10 个样本复测。
 - 空白对照和 QKV 消融尚未在多样本上重复。
 
 ??? note "运行记录"

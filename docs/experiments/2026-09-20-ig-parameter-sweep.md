@@ -1,6 +1,6 @@
 ---
 id: ig-parameter-sweep
-title: IG 超参数扫描（LR、TV、迭代次数）
+title: IG 超参数扫描
 date: 2026-09-20
 track: image-ig
 importance: archive
@@ -37,7 +37,7 @@ related: [ig-failure-diagnosis]
 
 ## 研究问题
 
-- IG 在 SLAKE / LLaVA 上失败，是不是因为攻击超参数没调好？
+- **超参数**：IG 在 SLAKE / LLaVA 上失败，是不是因为攻击超参数没调好？
 
 ## 实验设置
 

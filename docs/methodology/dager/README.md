@@ -12,8 +12,8 @@
 
 | Scheme | Change | Status | Evidence |
 |---|---|---|---|
-| Raw | 使用原梯度行空间 | 保留作对照 | [[dager-multisample-n10]] |
-| [Residual v1](residual-v1.md) | 从梯度与候选中同时去掉已知输入方向 | 当前采用的打分机制 | [[dager-multisample-n10]]、[[dager-lora-rank]] |
+| Raw | 使用原梯度行空间 | 保留作对照 | [[dager-multisample]] |
+| [Residual v1](residual-v1.md) | 从梯度与候选中同时去掉已知输入方向 | 当前采用的打分机制 | [[dager-multisample]] |
 | [第一阶段候选改进](refinements.md) | 修改 token 排序或候选证据 | 研究变体，未替代 Residual | [[dager-filter-phase]] |
 | [纯文本语言先验](text-prior.md) | 在第二阶段加入内容 NLL 软惩罚 | 本轮冻结验证有提升，默认关闭 | [[dager-lm-prior]] |
 | [图像排序信号](refinements.md#image-ordering) | 利用 token 与图像排序之间的关系 | 真值诊断；待独立验证 | [[token-image-ordering]] |

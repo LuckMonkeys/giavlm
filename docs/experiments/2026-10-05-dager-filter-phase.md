@@ -1,6 +1,6 @@
 ---
 id: dager-filter-phase
-title: 第一阶段 token 筛选改进
+title: DAGER token 筛选改进
 date: 2026-10-05
 track: text-dager
 importance: key
@@ -58,7 +58,7 @@ artifacts:
   - path: outputs/diagnostics/dager_evidence_findings_20261005.json
   - path: outputs/diagnostics/dager_evidence_case_audit_20261005.json
   - path: outputs/diagnostics/dager_evidence_replication_case_audit_20261005.json
-related: [dager-multisample-n10, dager-single-sample-diagnostics]
+related: [dager-multisample, dager-single-sample-diagnostics]
 ---
 
 ## 要点
@@ -83,8 +83,11 @@ Informative K=50（实际 59 个候选，含 9 个 ambiguous ID）；箭头表�
 
 ## 研究问题
 
-- 改进第一阶段的打分规则，能否在可控的候选数量下完整覆盖私有 token 集合？
-- 这种改进能否在新的独立样本上保持？
+- **稀疏字典排序**：用 group lasso 让少数候选共同解释梯度，覆盖能否提高并在新样本上保持？
+- **公开图像统计加权**：图像私有时，用公开图像的视觉统计代替随机替代图，覆盖能否提高并在新样本上保持？
+- **逐 token 校准**：按每个 token 的 null 分布校准距离，覆盖能否提高并在新样本上保持？
+
+三种方法都先在开发集上冻结，再在新的独立样本上验证；目标是在可控的候选数量下完整覆盖私有 token 集合。
 
 ## 实验设置
 
@@ -102,7 +105,9 @@ Informative K=50（实际 59 个候选，含 9 个 ambiguous ID）；箭头表�
 
 ## 结果
 
-### 方法一：稀疏字典排序
+### 稀疏字典排序
+
+**回答**：只在已知图像时有效：验证集 full coverage 从 5/10 升到 9/10；改用 random surrogate 后从 5/10 降到 2/10。
 
 **原理**：基线逐个判断 token；稀疏字典排序把基线排名前 2000 的候选当作"字典"，用 group lasso 求解"最少用几个候选 token 就能共同重构出观测到的梯度"，再按每个 token 分到的系数大小排序。真正出现过的 token 应该能用少数几个联合解释梯度。
 
@@ -146,7 +151,9 @@ Informative K=50（实际 59 个候选，含 9 个 ambiguous ID）；箭头表�
 - 原生计算与重新计算之间的相对误差只有 0.00153–0.00188，但 span 的归属却变化很大。
 - 答案末尾的弱信号不是普遍原因：被漏掉的 `ay` 系数并不小，而 Run 9 的末尾系数约为问题部分中位数的 0.017。
 
-### 方法二：公开图像统计加权
+### 公开图像统计加权
+
+**回答**：没有通过验证：开发集 full coverage 从 6/10 升到 8/10，验证集从 8/10 降到 5/10 和 6/10。
 
 **原理**：图像私有时，基线只能用随机替代图来估计"视觉信息张成的方向"。这个方法改用 12 张公开示例图片，统计视觉输入最常出现的方向及其强度（二阶矩），对这些方向做软抑制：方向越强，压得越多（ridge 加权；ridge 为 0 时等同于把这些方向直接投影掉）。然后在加权后的空间里做方法一的稀疏字典排序。
 
@@ -187,7 +194,9 @@ Informative K=50（实际 59 个候选，含 9 个 ambiguous ID）；箭头表�
 | 冻结参数 | Random-surrogate joint fit：λ/λmax = 0.01<br>Public-visual joint fit：视觉秩 256，相对 ridge 1e-7，联合 λ 比例 0.01<br>两者都用 float64，最多 4000 次 FISTA 迭代，未激活候选按原顺序补齐 |
 | 验证集 | 10 个新的 eval client-0 图像组（offset 10–19，与稀疏字典的验证集不重叠） |
 
-### 方法三：逐 token 校准
+### 逐 token 校准
+
+**回答**：只有局部提升：第一组验证集略有改善，随机复现时没有提升，recall 还略有下降。
 
 **原理**：有些 token（比如常见词）不管是否出现在文本里，到梯度子空间的距离都偏小，容易被误选。这个方法用 48 个攻击者自己构造的公开样本（知道其中出现了哪些 token），估计每个 token "没有出现时"的距离分布（null 分布），再把私有样本上的距离换算成相对这个分布的 z 分数；z 越低，越说明这个 token 真的出现了。
 

@@ -1,6 +1,6 @@
 ---
 id: ig-strategies-and-rounds
-title: IG方法重构效果
+title: IG 策略与轮次对比
 date: 2026-09-25
 end_date: 2026-09-27
 track: image-ig
@@ -54,8 +54,8 @@ related: [ig-failure-diagnosis, gradient-discriminability]
 
 ## 研究问题
 
-- 第 0 轮时，F-L 或 F-CL 的更新能否比 F-C 更好地引导 IG？
-- 训练后 LoRA-A 梯度变为非零，F-L 和 F-CL 的更新能否把 IG 拉向真实图像？
+- **第 0 轮**：第 0 轮时，F-L 或 F-CL 的更新能否比 F-C 更好地引导 IG？
+- **训练后**：训练后 LoRA-A 梯度变为非零，F-L 和 F-CL 的更新能否把 IG 拉向真实图像？
 
 ## 实验设置
 
@@ -84,7 +84,9 @@ related: [ig-failure-diagnosis, gradient-discriminability]
 
 ## 结果
 
-### 第 0 轮：三种策略对比（2026-09-25）
+### 第 0 轮
+
+**回答**：不能。三种策略的 PSNR 和 SSIM 轨迹无法区分；F-L 的匹配损失更低，PSNR 却相同。
 
 - PSNR 和 SSIM 轨迹在每个 α 下都无法区分，SSIM 都在 0.15–0.32。
 - 三种策略都有 bf16 死区（α ≤ 1e-4），并在 α = 3e-4 处跳变。
@@ -95,16 +97,9 @@ related: [ig-failure-diagnosis, gradient-discriminability]
 - F-L 下 IG 的匹配损失更低（0.007–0.015，F-C 为 0.03–0.06），PSNR 却相同。
 - 第 0 轮、r=8 时，仅靠秩不太可能有帮助：B 的梯度秩 ≤ r，且混合了图像和文本 token。
 
-### 训练过程
+### 训练后
 
-- 每轮损失：F-L 从 4.36 降到 1.32，F-CL 从 3.80 降到 1.16。
-- LoRA B 变为非零：‖B‖_F 在第 5 轮约为 3，第 10 轮约为 4；各模块 ‖ΔW‖_F 的中位数约为 0.2–0.3。
-- 第 5、10 轮的捕获中，全部 224 个 LoRA-A 梯度都非零。
-- F-C 于 2026-09-29 在 GPU 5 上用相同设置训练（`slake_llava_f_c_pipeline.sh`，只训练）：
-    - 每轮损失依次为 4.51、3.70、3.77、3.61、2.24、2.10、2.06、3.11、2.18、1.58。
-    - 第 8 轮的尖峰在 F-L 和 F-CL 中也出现了。
-
-### 训练后：F-L 与 F-CL（2026-09-27）
+**回答**：F-L 出现弱的回复力，第 10 轮最终 PSNR 约 24 dB，但离真实图像仍远；F-CL 第 5 轮略有改善，第 10 轮又回落。
 
 - **F-L 随训练单调改善**：
     - 每个 α、每张图像上，最终 PSNR 都随第 0 → 5 → 10 轮上升；α=0.01 时 SSIM 从约 0.2 升到约 0.38。
@@ -128,6 +123,15 @@ related: [ig-failure-diagnosis, gradient-discriminability]
 - (c) 2000 次迭代后的最终 PSNR：灰色虚线是起点；所有终点都远低于起点，F-L 第 10 轮最高，约 24 dB。
 
 [![Training rounds comparison](figures/ig-strategies-and-rounds/rounds_comparison.png)](figures/ig-strategies-and-rounds/rounds_comparison.png)
+
+#### 训练过程
+
+- 每轮损失：F-L 从 4.36 降到 1.32，F-CL 从 3.80 降到 1.16。
+- LoRA B 变为非零：‖B‖_F 在第 5 轮约为 3，第 10 轮约为 4；各模块 ‖ΔW‖_F 的中位数约为 0.2–0.3。
+- 第 5、10 轮的捕获中，全部 224 个 LoRA-A 梯度都非零。
+- F-C 于 2026-09-29 在 GPU 5 上用相同设置训练（`slake_llava_f_c_pipeline.sh`，只训练）：
+    - 每轮损失依次为 4.51、3.70、3.77、3.61、2.24、2.10、2.06、3.11、2.18、1.58。
+    - 第 8 轮的尖峰在 F-L 和 F-CL 中也出现了。
 
 ## 结论
 

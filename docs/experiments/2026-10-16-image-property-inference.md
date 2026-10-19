@@ -1,8 +1,8 @@
 ---
 id: image-property-inference
-title: 图像模态推断综合报告：重构文本与公开原型库
+title: 公开原型库推断模态
 date: 2026-10-16
-track: discriminability
+track: property
 importance: key
 data: slake
 model: llava-1.5-7b
@@ -58,11 +58,11 @@ related: [text-unknown-discriminability, dager-lm-prior]
 
 ## 要点
 
-- **冻结主方法在新三类队列上出现正向增益**：实际重构文本下，主公开库正确 18/30，Model-only 为 12/30，校准后的 Text-only 为 16/30；相对文本对照的优势仍不确定。
-- **评分确实依赖目标观测梯度**：实际重构文本下，正确梯度准确率为 0.600，错配梯度为 0.401，配对增益区间为 [0.056, 0.353]；这不等于已经分离出纯视觉模态信息。
-- **正确文本和重构文本仍有差距**：新队列正确文本下为 21/30，实际重构文本下为 18/30；完整问答恢复为 17/30，不能沿用首轮 8/10 的文本恢复率。
-- **同部位主方法尚不稳定，等权评分值得独立验证**：腹部子集的冻结方法在三个库上为 4–5/8，探索性的中心化等权评分均为 7/8；后者不替换本轮主结果。
-- **两轮不能简单合并准确率**：首轮二十张独立图像包含大量模态字面信息且验证缺 MRI；扩展三十张图像补齐三类并排除显式提示，但仍有部位等间接线索。
+- **新队列上梯度评分优于 Model-only**：重构文本下主方法正确 18/30，Model-only 为 12/30；相对校准 Text-only（16/30）的优势仍不确定。
+- **评分依赖目标梯度**：重构文本下正确梯度准确率 0.600，错配梯度 0.401，配对增益区间 [0.056, 0.353]；这不等于分离出了纯视觉信息。
+- **文本恢复误差带来小幅损失**：正确文本下 21/30，重构文本下 18/30；新队列完整问答恢复 17/30。
+- **同部位子集尚不稳定**：腹部子集上冻结方法在三个公开库为 4–5/8；探索性的中心化等权评分均为 7/8，不替换主结果。
+- **两轮准确率不能合并**：首轮二十张的问答常直接透露模态，且验证集缺 MRI；新队列补齐三类并排除显式提示，但仍有部位等间接线索。
 
 ## 关键数字
 
@@ -77,7 +77,7 @@ related: [text-unknown-discriminability, dager-lm-prior]
 |---:|---:|---:|
 | 23/30 | 21/30 | 17/30 |
 
-### 首轮 pilot（复用重构产物）
+**首轮 pilot**（复用重构产物）：
 
 主结果使用在 rank 32 开发集选择、验证前冻结的 Centered cosine。所有队列的候选类别始终为 CT、MRI、X-Ray。
 
@@ -91,11 +91,14 @@ Residual 的先验权重为 0；LM-prior 为 0.01；Model-only 使用同一份�
 
 ## 研究问题
 
-- 在固定重构问答后，梯度匹配能否通过独立公开图像库预测目标图像的成像模态？
-- 语言先验带来的文本改善，能否提高实际属性分类效果？
-- 中心化和张量等权是否有用，观测梯度是否提供 Text-only 与 Model-only 之外的信息？
+- **首轮 pilot**：固定重构问答后，梯度匹配能否通过独立公开图像库预测目标图像的成像模态？语言先验带来的文本改善能否提高分类效果？
+- **扩展队列**：在三类平衡、文本不显式透露模态的新队列上，梯度评分能否超过不使用梯度的对照？
+- **评分方式**：中心化和张量等权是否值得采用？
+- **两轮综合**：两轮条件不同，结果应如何合并解释？
 
 ## 实验设置
+
+### 首轮 pilot
 
 下表描述首轮 pilot。扩展保留评分和模型设置，改用三十张新图像、三个公开库，并重新运行固定权重的文本重构；差异见后面的扩展结果。
 
@@ -123,9 +126,7 @@ Text-only LM 不输入图像，用同一语言模型比较三个类别名称的�
 
 AUROC 使用类别相对最强竞争类别的分差，即 `min(other scores) - class score`；没有正例或负例时记为不可评估。验证集只另报 Supported-class balanced accuracy，不把它称为三分类 Balanced accuracy。
 
-## 结果
-
-### 标签与候选库准备
+### 标签与候选库
 
 - 现有数据导入没有保留模态元数据，使用作者发布的 [SLAKE 标注](https://huggingface.co/datasets/BoKelvin/SLAKE/tree/a9083ce6c34ac3ffb17671a605962924d8a8f9e9)，按每张图像的完整英文问答多重集合精确匹配。
 - 只在全部匹配记录的模态一致时接受标签；一张开发图像存在多个原始图像匹配，但模态一致。
@@ -145,7 +146,29 @@ AUROC 使用类别相对最强竞争类别的分差，即 `min(other scores) - c
 | MRI | 14 | 5 | Brain_Tissue 4；Abdomen 1 |
 | X-Ray | 9 | 5 | Lung 5 |
 
-### 文本条件与评分消融
+### 扩展队列
+
+- 本轮新增三十张 eval 图像，与首轮二十张目标隔离；CT、MRI、X-Ray 各十张，三十组原始问答互不相同。
+- 预先排除模态名称、扫描方式及相关提示，再逐条复核选中的问答；仍可能存在部位、病变、切面和外观的间接线索。
+- 三种模态无法完全匹配部位，因此预设腹部 CT 与 MRI 同部位子集，目标每类四张，候选每类三张；该子集按两类重新计算候选均值。
+- 同部位子集由评估端定义，用于控制部位混淆；不能解释为攻击者已经恢复了目标部位。
+- 主库 seed 2026101601；另两个种子为 2026101602、2026101603。公开库有重叠，三个种子不是三批独立目标。
+- 仅用上一轮 rank 32 开发集选择 Text-only 的类别偏置，新目标未参与校准。冻结偏置为 CT 0、MRI −2、X-Ray 0，施加于平均续写 NLL。
+- 主方法继续为 Centered cosine、类内 Top-3；Global cosine 作为预先声明的消融，不事后替换主方法。
+
+| Class | Target region distribution | Bank region distribution |
+| --- | --- | --- |
+| CT | Abdomen 4；Chest 4；Head 2 | Abdomen 3；Chest 1；Head 1 |
+| MRI | Abdomen 4；Head 6 | Abdomen 3；Head 2 |
+| X-Ray | Chest 10 | Chest 5 |
+
+## 结果
+
+### 首轮 pilot
+
+**回答**：带先验文本的准确率较高（rank 32 开发 0.900），但很大程度来自文本字面信息：验证集始终猜 X-Ray 也有 0.600，梯度评分没有稳定超过 Model-only。
+
+#### 文本条件与评分消融
 
 - 带先验文本在两个开发队列上改善模态预测。
 - Centered cosine 的 rank 32 开发 Balanced accuracy 为 0.889，其他三项均为 0.806，因此选择并冻结 Centered cosine。
@@ -169,7 +192,7 @@ AUROC 使用类别相对最强竞争类别的分差，即 `min(other scores) - c
 
 [![文本与评分消融](figures/image-property-inference/text_and_scoring.png)](figures/image-property-inference/text_and_scoring.png)
 
-### 梯度是否提供额外信息
+#### 梯度是否提供额外信息
 
 - rank 32 开发的 Model-only 正确率高于梯度评分；rank 8 开发和 rank 32 验证的小幅优势均未得到配对区间支持。
 - 错配观测梯度后，两个开发队列仍保留较高准确率；它不是随机猜测，候选文本与公开图像库仍含有信息。
@@ -193,7 +216,7 @@ Wrong-gradient 是每张图像与其他九个上传梯度错配后的平均准�
 | Development | 32 | Gradient vs Model-only | −0.100 | [−0.300, 0.000] |
 | Validation | 32 | Gradient vs Model-only | 0.100 | [−0.200, 0.400] |
 
-### 文本字面判别的事后诊断
+#### 文本字面判别的事后诊断
 
 - 发现 Text-only LM 类别偏置后，补充固定字面规则：答案恰为模态名称，或对只提及一种模态的确认问句回答 Yes；其余拒答。
 - 规则只读取带先验重构文本，不读取参考问答或标签；预测保存后才评估，没有改变冻结评分。
@@ -209,7 +232,7 @@ Wrong-gradient 是每张图像与其他九个上传梯度错配后的平均准�
 
 图中区间是固定类别组成下的分层 bootstrap，不能覆盖公开库抽样、模型训练或总体类别比例的不确定性；全对、全错或始终猜同一类时，区间可能退化。
 
-### 分类细节与非显式文本子集
+#### 分类细节与非显式文本子集
 
 | Cohort | Rank | Accuracy | Accuracy 95% CI | Balanced accuracy | Supported-class balanced accuracy | Macro-F1 | CT AUROC | MRI AUROC | X-Ray AUROC |
 |---|---:|---:|---|---:|---:|---:|---:|---:|---:|
@@ -223,23 +246,28 @@ Wrong-gradient 是每张图像与其他九个上传梯度错配后的平均准�
 
 [![混淆矩阵](figures/image-property-inference/confusion.png)](figures/image-property-inference/confusion.png)
 
-### 扩展队列：三类平衡且文本不显式透露模态
+### 扩展队列
 
-- 本轮新增三十张 eval 图像，与首轮二十张目标隔离；CT、MRI、X-Ray 各十张，三十组原始问答互不相同。
-- 预先排除模态名称、扫描方式及相关提示，再逐条复核选中的问答；仍可能存在部位、病变、切面和外观的间接线索。
-- 三种模态无法完全匹配部位，因此预设腹部 CT 与 MRI 同部位子集，目标每类四张，候选每类三张；该子集按两类重新计算候选均值。
-- 同部位子集由评估端定义，用于控制部位混淆；不能解释为攻击者已经恢复了目标部位。
-- 主库 seed 2026101601；另两个种子为 2026101602、2026101603。公开库有重叠，三个种子不是三批独立目标。
-- 仅用上一轮 rank 32 开发集选择 Text-only 的类别偏置，新目标未参与校准。冻结偏置为 CT 0、MRI −2、X-Ray 0，施加于平均续写 NLL。
-- 主方法继续为 Centered cosine、类内 Top-3；Global cosine 作为预先声明的消融，不事后替换主方法。
+**回答**：主方法在重构文本下正确 18/30，高于 Model-only 的 12/30，且依赖正确梯度；相对校准 Text-only 的优势仍不确定。
 
-| Class | Target region distribution | Bank region distribution |
+#### 预先冻结的继续条件
+
+- 启动私有文本重构的条件：主公开库上的 oracle Centered cosine 准确率同时严格超过 Model-only 与错配梯度平均准确率。该条件只决定是否继续，不筛选个别样本，也不是显著性检验。
+- 正确文本诊断通过预设门槛，因此继续对全部三十张图像运行原 Residual v1、固定 LM Prior 权重 0.01、random surrogate 的文本重构，并评估三个公开库。
+- 私有重构只接收独立 private Observation；正确文本诊断的问答不会传给重构器。
+
+| Question EM | Answer EM | Joint EM |
 | --- | --- | --- |
-| CT | Abdomen 4；Chest 4；Head 2 | Abdomen 3；Chest 1；Head 1 |
-| MRI | Abdomen 4；Head 6 | Abdomen 3；Head 2 |
-| X-Ray | Chest 10 | Chest 5 |
+| 0.767 | 0.700 | 0.567 |
 
-### 正确文本诊断与公开库稳定性
+| Subset | Joint text exact | Images | Centered accuracy |
+| --- | --- | --- | --- |
+| all | True | 17 | 0.647 |
+| all | False | 13 | 0.538 |
+| abdomen | True | 5 | 0.600 |
+| abdomen | False | 3 | 0.667 |
+
+#### 正确文本诊断与公开库稳定性
 
 - 正确问答通过独立的 `text_known` Observation 提供；这属于正确文本诊断，不能称为 private 条件的级联攻击成功。
 - 每个阶段的全部预测保存后才读属性标签；错配梯度在各目标内部平均，置信区间以图像为单位。
@@ -280,7 +308,7 @@ Wrong-gradient 是每张图像与其他九个上传梯度错配后的平均准�
 
 [![Reconstructed text 配对增益](figures/image-property-inference/reconstructed_gains.png)](figures/image-property-inference/reconstructed_gains.png)
 
-### 分类细节与小样本敏感性
+#### 分类细节与小样本敏感性
 
 - 主库中，正确文本下 CT、MRI、X-Ray 的 Recall 分别为 0.300、0.800、1.000；重构文本下为 0.400、0.600、0.800，CT 仍是薄弱类别。
 - 重构文本下，主方法相对 Model-only 增益为 0.200，预设分层 bootstrap 的 95% CI 为 [0.0325, 0.3675]；相对校准 Text-only 增益仅 0.067，区间为 [−0.133, 0.267]。
@@ -289,7 +317,9 @@ Wrong-gradient 是每张图像与其他九个上传梯度错配后的平均准�
 - 正确梯度优于错配梯度，说明评分对目标观测有依赖；这仍可能包含图文交互，不能直接解释为独立视觉属性泄漏。
 - 字面规则在新队列的正确文本和重构文本下都拒答，覆盖率为 0；其准确率 0 是拒答计失败，不代表无图语言模型完全没有间接信息。
 
-### 等权评分的探索性线索
+### 评分方式
+
+**回答**：首轮选中的 Centered cosine 在验证集不如 Global cosine；扩展队列中，中心化等权在腹部子集三个库都是 7/8，但只是探索性结果。
 
 - 扩展阶段的主比较冻结为 Centered cosine，正式消融为 Global cosine；同次评分缓存还保存了张量等权版本，以下作为探索性分析，不重新选择主方法。
 - 中心化等权在正确文本下的三类结果较高，但重构文本下跨库波动仍明显。
@@ -302,25 +332,9 @@ Wrong-gradient 是每张图像与其他九个上传梯度错配后的平均准�
 | Correct text | Abdomen | 0.750 | 0.875 | 0.875 |
 | Reconstructed text | Abdomen | 0.875 | 0.875 | 0.875 |
 
-### 预先冻结的继续条件
+### 两轮综合
 
-- 启动私有文本重构的条件：主公开库上的 oracle Centered cosine 准确率同时严格超过 Model-only 与错配梯度平均准确率。该条件只决定是否继续，不筛选个别样本，也不是显著性检验。
-
-- 正确文本诊断通过预设门槛，因此继续对全部三十张图像运行原 Residual v1、固定 LM Prior 权重 0.01、random surrogate 的文本重构，并评估三个公开库。
-- 私有重构只接收独立 private Observation；正确文本诊断的问答不会传给重构器。
-
-| Question EM | Answer EM | Joint EM |
-| --- | --- | --- |
-| 0.767 | 0.700 | 0.567 |
-
-| Subset | Joint text exact | Images | Centered accuracy |
-| --- | --- | --- | --- |
-| all | True | 17 | 0.647 |
-| all | False | 13 | 0.538 |
-| abdomen | True | 5 | 0.600 |
-| abdomen | False | 3 | 0.667 |
-
-### 与首轮 pilot 的综合解释
+**回答**：两轮条件不同，不能合并准确率；当前支持继续研究，但不足以宣称得到独立于文本和部位线索的模态恢复。
 
 - 首轮使用实际重构文本，很多问答直接透露模态；新轮排除了显式模态信息，并加入 MRI，但先以正确文本诊断检验公开库评分。两轮条件不同，不能把准确率变化归因于单一因素。
 - 两轮合计五十张独立目标图像；两个 rank 的首轮开发使用同十张图像，三个公开库也共享本轮目标，因此不按重复运行数量扩大独立样本数。

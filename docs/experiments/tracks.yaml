@@ -2,31 +2,45 @@
 # `summary` is the current judgment for the track, one idea per item; update it when a
 # key result changes. `start_here` names the experiments a new reader should open first.
 # `pages` lists every experiment of the track in reading order (navigation, index and
-# home page follow it; archived pages are grouped under Archive).
+# home page follow it; archived pages are grouped under Archive). Optional `headline` (one
+# sentence) and `icon` (a Material icon such as material-text-search) feed the home page cards.
 image-ig:
   title: 图像重建（IG）
+  icon: material-image-broken-variant
+  headline: IG 无法从 LLaVA 的更新中重建图像，匹配目标本身更偏好非真实图像。
   summary:
     - 所有测试设置下，IG 都无法从 LLaVA 的更新中重建图像。
     - 梯度回放是精确的，问题在于匹配目标本身更偏好非真实图像。
     - 即使从紧挨真实图像的位置出发，IG 也会漂移到约 19–20 dB。
     - 训练后 F-L 只出现弱的回复力，平衡点约为 24 dB。
   start_here: [ig-failure-diagnosis]
-  pages: [ig-strategies-and-rounds, ig-failure-diagnosis, ig-parameter-sweep]
+  pages: [ig-failure-diagnosis, ig-strategies-and-rounds, ig-parameter-sweep]
 discriminability:
   title: 梯度可区分性
+  icon: material-chart-scatter-plot
+  headline: 匹配损失能区分图像远近，但局部梯度不指向真实图像；文本未知时，排序取决于文本恢复质量。
   summary:
-    - 匹配损失能在全局上区分离真实图像近和远的候选，训练后更明显。
-    - 但损失的局部像素梯度几乎与指向真实图像的方向正交。
-    - 问题和答案都用模板或随机词猜测时，训练后的模型失去了这种排序能力。
-    - 正确 token 全部保留但问题和答案都乱序时，rank 8、32 的图像排序都接近随机。
-    - 关闭语言先验时，Residual 重构文本在 rank 32 保留部分排序，在 rank 8 反转。
-    - 固定语言先验权重 0.01 后，两个 rank 的开发集排序均改善，rank 32 接近正确文本；验证均值也改善，但增益区间跨 0，错误问题或答案仍可能使排序反转。
-    - 公开库模态推断扩展至三类平衡的三十张新图像；重构文本下主库梯度准确率为 0.600，高于 Model-only 的 0.400，但相对校准文本对照的优势及同部位泛化仍不确定。
-    - 合成库头部属性推断在混合模态二十图上，重构文本下主方法为 18/20，Model-only 为 14/20；增益区间包含零，十三图与此前 pilot 重叠，仍需独立验证。
+    - 文本已知时，匹配损失能在全局上区分离真实图像近和远的候选，训练后更明显。
+    - 但损失的局部像素梯度几乎与指向真实图像的方向正交，IG 用不上这个信号。
+    - 问题和答案都靠模板或随机词猜测时，训练后的模型失去这种排序能力。
+    - 正确 token 全部保留但顺序打乱时，rank 8、32 的排序都接近随机。
+    - 语言先验重构文本让 rank 32 开发集排序接近正确文本；验证集均值改善，但增益区间跨 0。
   start_here: [gradient-discriminability, text-unknown-discriminability]
-  pages: [gradient-discriminability, text-unknown-discriminability, image-property-inference, qwen-image-generation, synthetic-ct-property, synthetic-head-property, token-image-ordering]
+  pages: [gradient-discriminability, text-unknown-discriminability, token-image-ordering]
+property:
+  title: 属性推断
+  icon: material-tag-search-outline
+  headline: 公开原型库和医学合成候选都显示出模态或部位信号，但相对文本对照的优势仍不确定。
+  summary:
+    - 公开原型库推断模态：三十张新图像上重构文本准确率 0.600，高于 Model-only 的 0.400；相对校准文本对照的优势仍不确定。
+    - 医学合成候选能判断部位：CT 队列 10/10，混合模态队列 18/20；样本与此前 pilot 重叠，仍需独立验证。
+    - 换成通用摄影候选后平均只有 0.550，现有成功证据限于具有医学外观的候选库。
+  start_here: [image-property-inference]
+  pages: [image-property-inference, synthetic-property]
 text-tag:
   title: 文本重建（TAG）
+  icon: material-text-search
+  headline: 已知图像和 token 长度时，TAG 没有恢复出任何问题内容。
   summary:
     - 已知图像和 token 长度时，TAG 没有恢复出任何问题内容。
     - 只有 F-CL 第 0 轮出现微弱的答案信号，第 10 轮消失（n=3）。
@@ -34,14 +48,15 @@ text-tag:
   pages: [tag-text-only-public-image]
 text-dager:
   title: 文本重建（DAGER）
+  icon: material-text-recognition
+  headline: 私有文本的 token 集合会泄露；rank 32 加语言先验后新问答完整恢复 8/10，但效果随模型和数据集变化。
   summary:
-    - 私有文本的 token 集合会泄露：rank 32 的 residual 在随机图像条件下达到约 0.994 的 Recall@100。
-    - 已知图像时，完整问答恢复从 rank 8 的 0/10 升到 rank 32 的 5/10，搜索实现和预算不变。
-    - 原 Residual 在随机图像时，rank 32 恢复 3/10 个答案，但完整问答为 0/10。
-    - rank 32 增加纯文本语言先验并冻结权重 0.01 后，十个新问答样本的完整恢复从 0/10 升到 8/10。
-    - rank 8 使用相同权重时，原十样本的完整恢复只从 0/10 升到 2/10，成功对应同一种问答；另外四个候选完整的样本仍在问题阶段被剪枝。
-    - rank 32 先验验证集中，正确完整问答均留在最终 beam，仍有两个最终排序错误；默认先验权重保持 0，实现已提交。
-    - 候选完整覆盖仍不保证序列恢复，需要同时研究梯度信息、图像上下文和第二阶段打分。
-    - 三种筛选改进都没有通过独立验证，保留现有筛选器。
-  start_here: [dager-lm-prior, dager-lora-rank, dager-multisample-n10]
-  pages: [dager-multisample-n10, dager-filter-phase, dager-lora-rank, dager-lm-prior, dager-single-sample-diagnostics]
+    - 两模型、三数据集、72 个 QA 共 288 次攻击已完成（rank 32、先验权重 0.01）。
+    - Random 条件下，Qwen3.5 在 SLAKE、VQA-RAD、VQAv2 的 Joint EM 为 25/30、11/21、8/21，LLaVA 为 11/30、3/21、2/21；两者结构不同，不能单独归因于架构。
+    - 私有文本的 token 集合会泄露：rank 32 的 Residual 在随机图像下 Recall@100 约 0.994。
+    - 提高 LoRA rank 改善恢复：已知图像时完整问答从 rank 8 的 0/10 升到 rank 32 的 5/10。
+    - rank 32 加入语言先验后，十个新问答的完整恢复从 0/10 升到 8/10；rank 8 只升到 2/10；默认权重仍为 0。
+    - 候选找齐仍不保证恢复：LLaVA 在 VQA-RAD 候选全部覆盖，完整恢复只有 GT 8/21、Random 3/21。
+    - 三种第一阶段筛选改进都没有通过独立验证，保留现有筛选器。
+  start_here: [crossmodel-text-benchmark]
+  pages: [crossmodel-text-benchmark, dager-lm-prior, dager-multisample, dager-filter-phase, dager-single-sample-diagnostics]

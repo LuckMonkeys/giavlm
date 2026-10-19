@@ -17,6 +17,9 @@ EXPERIMENTS = ROOT / "docs" / "experiments"
 LINKED_DOCS = (ROOT / "docs" / "PROJECT_HANDOFF.md", ROOT / "docs" / "index.md")
 INDEX_NAME = "README.md"
 TRACKS_NAME = "tracks.yaml"
+TRACK_KEYS = {"title", "summary", "start_here", "pages"}
+# Shown on the home page track cards: a one-sentence current answer and a Material icon name.
+TRACK_OPTIONAL = {"headline", "icon"}
 IMPORTANCE = ("key", "supporting", "archive")
 EVIDENCE_LEVELS = ("smoke", "diagnostic", "development", "validation", "benchmark")
 OUTCOMES = ("positive", "negative", "mixed", "inconclusive", "invalid")
@@ -38,6 +41,12 @@ COMMIT_PATTERN = re.compile(r"[0-9a-f]{7,40}")
 LINK_PATTERN = re.compile(r"\[\[([^\]]+)\]\]")
 CODE_PATTERN = re.compile(r"`[^`\n]*`")
 KEY_POINTS_HEADING = "## 要点"
+# A title must fit on one line of the docs sidebar; CJK and full-width characters count 2.
+MAX_TITLE_WIDTH = 28
+MAX_KEY_POINTS = 5
+QUESTIONS_HEADING = "## 研究问题"
+RESULTS_HEADING = "## 结果"
+ANSWER_LEAD = "**回答**："
 BOLD_LEAD = re.compile(r"^\*\*(.+?)\*\*")
 
 
@@ -95,6 +104,11 @@ def validate_record(meta, body, name):
         errors.append(f"knowledge must list conditions from core.config: {unknown}")
     if not key_points(body):
         errors.append(f"body needs a '{KEY_POINTS_HEADING}' section with bullets")
+    elif len(key_points(body)) > MAX_KEY_POINTS:
+        errors.append(f"'{KEY_POINTS_HEADING}' has more than {MAX_KEY_POINTS} bullets")
+    if title_width(meta["title"]) > MAX_TITLE_WIDTH:
+        errors.append(f"title is wider than {MAX_TITLE_WIDTH} (CJK characters count 2)")
+    errors += structure_errors(body)
     if meta["n"] < 1:
         errors.append("n must be positive")
     if not all(isinstance(c, str) and COMMIT_PATTERN.fullmatch(c) for c in meta["commits"]):
@@ -125,6 +139,44 @@ def validate_record(meta, body, name):
     return paths
 
 
+def _section(body, heading):
+    lines, inside = [], False
+    for line in body.splitlines():
+        if line.startswith("## "):
+            inside = line.strip() == heading
+        elif inside:
+            lines.append(line)
+    return lines
+
+
+def structure_errors(body):
+    """研究问题 bullets carry bold topics; each ### under 结果 answers one, in order."""
+    questions = [line[2:] for line in _section(body, QUESTIONS_HEADING) if line.startswith("- ")]
+    topics = [BOLD_LEAD.match(question) for question in questions]
+    errors = []
+    if not questions or not all(topics):
+        errors.append(f"'{QUESTIONS_HEADING}' needs bullets starting with a bold topic")
+    elif len(questions) > MAX_KEY_POINTS:
+        errors.append(f"'{QUESTIONS_HEADING}' has more than {MAX_KEY_POINTS} questions")
+    results = _section(body, RESULTS_HEADING)
+    sections = [index for index, line in enumerate(results) if line.startswith("### ")]
+    if sections and all(topics):
+        names = [results[index][4:].strip() for index in sections]
+        if names != [topic.group(1) for topic in topics]:
+            errors.append(f"'{RESULTS_HEADING}' ### headings must repeat the question topics "
+                          f"in order: {names}")
+        for index in sections:
+            first = next((line for line in results[index + 1:] if line.strip()), "")
+            if not first.startswith(ANSWER_LEAD):
+                errors.append(f"result section '{results[index][4:].strip()}' must open with "
+                              f"'{ANSWER_LEAD}'")
+    return errors
+
+
+def title_width(title):
+    return sum(2 if ord(char) >= 0x2E80 else 1 for char in title)
+
+
 def key_points(body, lead_only=False):
     """Top-level bullets of the 要点 section; with lead_only, just their bold leads."""
     points, inside = [], False
@@ -150,7 +202,8 @@ def load_tracks(directory):
         raise ValueError(f"{TRACKS_NAME}: must map track names to definitions")
     for name, track in tracks.items():
         if not isinstance(track, dict) \
-                or set(track) != {"title", "summary", "start_here", "pages"} \
+                or not TRACK_KEYS <= set(track) <= TRACK_KEYS | TRACK_OPTIONAL \
+                or not all(isinstance(track[key], str) for key in TRACK_OPTIONAL & set(track)) \
                 or not isinstance(track["title"], str) \
                 or not isinstance(track["summary"], (str, list)) \
                 or not all(isinstance(track[key], list) and track[key]

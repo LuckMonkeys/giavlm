@@ -95,6 +95,41 @@ python examples/run_attack.py attack.iterations=2 attack.checkpoint_interval=1
 python -m utils.run_cmds --cmd-config-yaml run_yaml/tiny_smoke.yaml
 ```
 
+### Remote experiments on WN-A100
+
+- WN-A100 is an available execution host when this workstation's GPUs are busy.
+  Use the SSH config alias `zx-wn-a100` (`zx@192.168.1.50`, port `1022`);
+  `WN-A100` is the machine name, not the configured SSH alias. An existing Codex
+  session can launch and monitor jobs over SSH; a new remote session is optional.
+- Hardware: 8 NVIDIA A100-SXM4 GPUs with 80 GB each. GPU availability is dynamic;
+  inspect remote processes and `nvidia-smi` immediately before launching. GPU
+  indices and UUIDs belong to the execution host: never reuse this workstation's
+  GPU UUID on WN-A100 or assume a previously idle card is still available.
+- User resource limit: use only idle GPUs on WN-A100, with **at most two physical
+  GPUs occupied by this project's jobs in total at any time**. Prefer one GPU
+  per job; include training, attacks and GPU smoke tests in the same limit. Do
+  not stop other users' jobs or automatically expand beyond the selected GPUs.
+- Verified shared paths: repository `/home/zx/nas/GitRepos/giavlm`, existing
+  Python `/home/zx/nas/miniconda3/envs/gia/bin/python`, and model directory
+  `/home/zx/public/model-hub/huggingface/` (including `Qwen/Qwen3.5-4B`). Run from
+  the repository directory explicitly; do not rely on remote shell activation.
+- Preserve `gia` for existing experiments. Create and install a separate Conda
+  environment for Qwen3.5 **on this workstation**, under the shared NAS prefix;
+  WN-A100 directly uses it for GPU execution. Verify CUDA/driver compatibility there;
+  shared environment files alone do not establish GPU runtime compatibility.
+- Launch long jobs detached **on the remote host**, with a remote watcher and
+  logs/checkpoints on NAS. Check remote PIDs over SSH, not in the local process
+  table. Record host, GPU UUID, environment, code commit, command, remote PID and
+  output directory in the run plan and handoff; verify the first artifact.
+- NAS edits are visible on both machines. Freeze the experiment's source or use
+  an isolated checkout when editing concurrently; avoid concurrent Git mutations
+  in the same checkout. Codex histories in the two home directories are separate;
+  a new session should read this file and `docs/PROJECT_HANDOFF.md` to continue.
+
+```bash
+ssh zx-wn-a100 'nvidia-smi --query-gpu=index,uuid,name,memory.free,utilization.gpu --format=csv'
+```
+
 ## Session Start
 
 Before acting, check `git status`, recent commits, the process table, and GPU
@@ -107,29 +142,51 @@ direction changes; keep transient state there, not here.
 - Every finished, failed or abandoned experiment phase gets a record
   `docs/experiments/<date>-<id>.md` (new, or update the existing one) before the
   handoff is updated. Frontmatter schema lives in `utils/experiment_index.py`;
-  copy `docs/experiments/2026-10-03-dager-multisample-n10.md` as the template.
+  copy `docs/experiments/2026-10-03-dager-multisample.md` as the template.
 - One record per research question. Ablations, controls and post-hoc audits on
   the same samples are sections of that record, not new records.
 - Set `importance`: `key` only for records that carry a current conclusion,
   `archive` (with `superseded_by` or `archive_note`) for superseded or caveated
-  ones. When a key conclusion changes, update the track `summary` in
-  `docs/experiments/tracks.yaml` and the core findings in `docs/index.md`.
+  ones. When a key conclusion changes, update the track `summary` (and its one-line
+  `headline` for the home page card) in `docs/experiments/tracks.yaml`, and the core
+  findings in `docs/index.md`, which sit in one content tab per track.
 - Reading order within a track is the track's `pages` list in `tracks.yaml`;
-  add every new record there. Never encode order in titles.
+  add every new record there. Never encode order in titles. The sidebar marks no
+  importance: a track's `start_here` pages (keep it to one or two) come first.
+  A new phase of an existing question extends that record instead of adding a
+  page whose title differs only by cohort or date.
 - Writing style for experiment pages, the handoff, `tracks.yaml` and `docs/index.md`:
   - Descriptions in natural Chinese (not literal translation); keep terms, metric
     names, condition values, code names and table headers in English.
-  - Sections: 要点, 关键数字, 研究问题, 实验设置 (an `Item | Setting` table), 结果
-    (`###` per topic: bullets, then tables), 结论, 局限, 下一步, then a collapsed
-    `??? note "运行记录"` for GPU, failed attempts and test counts.
-  - One idea per bullet and per sentence; `要点` bullets read `**结论**：说明`. The
-    index and home page show the bold leads, so each must stand alone. Track
-    `summary` is a list of such sentences. Use unordered lists.
+  - Sections: 要点, 关键数字, 研究问题, 实验设置 (an `Item | Setting` table), 结果,
+    结论, 局限, 下一步, then a collapsed `??? note "运行记录"` for GPU, failed
+    attempts and test counts.
+  - 研究问题 and 结果 mirror each other (enforced): at most five questions, each
+    `- **Topic**：question?`; 结果 has one `### Topic` per question, in the same
+    order, opening with `**回答**：` in one or two sentences, then bullets, tables
+    and figures. Supporting analyses (pilots, controls, audits) are `####` under
+    the question they support; the page contents list stops at `###`.
+  - Titles name the subject in a few words and fit one sidebar line (width ≤ 28,
+    CJK counts 2; `utils/experiment_index.py` enforces it). No `n=…`, parameter
+    lists or colon subtitles: the condition card shows those. Keep the method name
+    (IG, TAG, DAGER) so a link reads on its own.
+  - One idea per bullet and per sentence; `要点` bullets read `**结论**：说明`, at
+    most five (enforced), current conclusion first. The index and home page show
+    the bold leads, so each must stand alone. Track `summary` is a list of such
+    sentences. Use unordered lists.
+  - A page that grows over several phases still has one 要点, 结论, 局限 and 下一步
+    for its current answer. A new phase adds or extends a question; its setup and
+    date go under 实验设置 (`### Phase（date）`), never as a new top-level result.
+    结果 reports findings: failed attempts, fixes, PIDs and checks go in 运行记录,
+    and 下一步 lists future work only.
   - Tables: conditions as rows, one metric per column. Split orthogonal dimensions
     into columns (`Method` | `Image`, `Strategy` | `Round`); in prose write
     `Residual (GT)`. Never join two concepts with `+` or `/` in a name or cell;
     give combined metrics their own name (`Joint EM`) and define new terms in
     `docs/glossary.md` and `docs/includes/abbreviations.md`.
+  - Repeated result blocks along one dimension (e.g. one per dataset) go in content
+    tabs (`=== "SLAKE"`, body indented four spaces); keep headings outside tabs so
+    table-of-contents links still land.
 - Figures: copy only aggregate plots (curves, scatter of scores, bar charts) into
   `docs/experiments/figures/<id>/`, downscaled to ~2400px wide, and link the image
   to itself so a click opens it full size. Never add sample images, reconstructions
@@ -145,3 +202,7 @@ direction changes; keep transient state there, not here.
   on a stale index or invalid record). `--check-artifacts` verifies paths locally.
 - Docs site: `conda run -n gia mkdocs serve` (MkDocs installed in `gia` from
   `requirements-docs.txt`). Local viewing only; never deploy it publicly.
+  On a loopback address the preview adds an edit button (`utils/docs_editor.py`):
+  it validates, writes the Markdown source and regenerates the experiment index,
+  refusing stale writes. Never serve it on a non-loopback address; edits made in
+  the browser are uncommitted work like any other.

@@ -1,6 +1,6 @@
 ---
 id: tag-text-only-public-image
-title: 公开图像和长度下的 TAG 纯文本重建
+title: TAG 纯文本重建
 date: 2026-09-29
 track: text-tag
 importance: supporting
@@ -30,8 +30,8 @@ related: [dager-single-sample-diagnostics]
 
 ## 研究问题
 
-- 已知真实图像和私有文本的长度时，TAG 能否恢复问题或答案？
-- 不同微调策略和训练轮次下，结果是否不同？
+- **恢复结果**：已知真实图像和私有文本的长度时，TAG 能否恢复问题或答案？不同微调策略和训练轮次下，结果是否不同？
+- **损失与恢复**：TAG 目标函数下降时，文本是否随之恢复？
 
 ## 实验设置
 
@@ -48,6 +48,8 @@ related: [dager-single-sample-diagnostics]
 ## 结果
 
 ### 恢复结果
+
+**回答**：基本不能。问题在全部 18 次运行中都没有恢复；答案只有 F-CL 第 0 轮出现微弱信号，第 10 轮消失。
 
 - 问题的 EM、ROUGE-1/L 和 word recall 在全部 18 次运行中都是 0。
 - 答案指标只有 F-CL 第 0 轮不为 0：
@@ -66,6 +68,8 @@ related: [dager-single-sample-diagnostics]
 | F-CL | 10 | 0 | 0 | 0 | 0 | 0 |
 
 ### 损失与恢复
+
+**回答**：没有。目标函数持续下降，但重建文本与原文没有任何重叠。
 
 - 以 F-L 第 10 轮的 run 0 为例，原始 TAG 目标从 1482.93（第 50 次迭代）降到 1174.37（第 2000 次迭代）。
 - 可观测的最佳离散得分出现在第 1250 次迭代（1.065，结束时为 1.413）。

@@ -40,4 +40,4 @@ Residual 单独检查每个 token 与梯度空间的接近程度。稀疏字典�
 
 提高 LoRA rank 改变了模型和观测梯度的信息量。扩大 K 或 beam 改变了候选及搜索预算。这些变化值得实验，但只要投影、评分与解码规则没变，就仍是同一 Residual 方案下的条件对比。
 
-rank 对比见 [[dager-lora-rank]]。当前判断仍以 [Residual v1](residual-v1.md) 为基准。
+rank 对比见 [[dager-multisample]]。当前判断仍以 [Residual v1](residual-v1.md) 为基准。

@@ -1,6 +1,6 @@
 ---
 id: token-image-ordering
-title: 用图像远近排序检验候选 token
+title: 候选 token 的图像排序
 date: 2026-10-06
 track: discriminability
 importance: supporting
@@ -56,9 +56,9 @@ related: [text-unknown-discriminability, dager-filter-phase]
 
 ## 研究问题
 
-- 正确 token 是否比错误 token 更能恢复近图损失低、远图损失高的排序？
-- 其余文本未知时，这种差异是否仍然存在？
-- 该信号反映的是 token 出现过，还是它恰好填对了某个位置？
+- **全梯度排序**：正确 token 是否比错误 token 更能恢复近图损失低、远图损失高的排序？其余文本未知时，这种差异是否仍然存在？
+- **成员还是位置**：该信号反映的是 token 出现过，还是它恰好填对了某个位置？
+- **LoRA-A 答案排序**：只用 LoRA-A 的梯度，答案 token 的排序能否更可靠？
 
 ## 实验设置
 
@@ -78,15 +78,17 @@ related: [text-unknown-discriminability, dager-filter-phase]
 | Token comparison | 正确位置候选对三个缺席候选；Token Top-1 credit 的随机基线为 0.25，Token pairwise win 为 0.5 |
 | Commit boundary | 保存全部图像损失后，再统一计算 token 区分指标；实验构造阶段使用真值并明确标为诊断 |
 
-## 结果
-
-### 运行状态
+### 样本与运行状态
 
 - 六个样本全部完成；每个样本的回放 relative L2 都为 0。
 - 真图及完整真文本用于回放校验；真图不进入主要图像排序指标。
 - 四种不同问答的样本数为 2、2、1、1。以下均是六张图像的均值，不是六条独立问答的均值。
 
-### 主要结果：全梯度的图像排序
+## 结果
+
+### 全梯度排序
+
+**回答**：只在其余文本正确时成立：此时正确答案 token 在六个样本上全部胜出；其余文本未知后，问题 token 没有稳定优势，答案效果依赖猜测背景。
 
 - Token Top-1 credit 比较一个正确位置候选与三个缺席候选；并列第一时平分得分，随机基线 25%。
 - Token pairwise win 是正确候选超过缺席候选的比例，并列计半分，随机基线 50%。
@@ -106,14 +108,7 @@ related: [text-unknown-discriminability, dager-filter-phase]
 
 [![主指标与按图像 bootstrap 的 95% 区间](figures/token-image-ordering/primary.png)](figures/token-image-ordering/primary.png)
 
-### 为什么不能把图像排序直接当作 token 成员判据
-
-- 在 oracle_rest 下，问题位置换成完全缺席的 embedding 近邻后，平均 rho 仍为 0.893，接近正确候选的 0.921。错误 token 也可以保留排序。
-- 同一背景下，答案位置填入缺席候选的平均 rho 为 -0.655；填入真实问答其他位置的 token 也只有 -0.552。信号取决于位置和上下文，不能仅解释为 token 是否出现过。
-- unknown_template 下，正确问题候选的 rho 为 0.075，缺席高排名候选为 0.496。错误 token 并不总是只能造成微小变化，也可能得到更符合远近关系的排序。
-- present_elsewhere 按其他真实 token 中的最小 ID 选取，可能是标点；它是位置对照，不是语义匹配的困难负例。
-
-### 答案长度的影响
+#### 答案长度的影响
 
 - unknown_words 的答案结果部分来自两个单 token 答案；填对这个位置即提供整个正确答案。
 - 去掉这两个样本后，全梯度排序的 Top-1 得分为 33.3%，pairwise win 为 58.3%。
@@ -126,7 +121,7 @@ related: [text-unknown-discriminability, dager-filter-phase]
 | unknown_words | Single token | 2 | 100.0% | 100.0% |
 | unknown_words | Multiple tokens | 4 | 33.3% | 58.3% |
 
-### 与直接比较平均梯度损失的对照
+#### 与直接比较平均梯度损失的对照
 
 - 使用相同八张扰动图，选择平均 cosine loss 最低的候选；这是评分结束后的对照，不改变预先声明的主指标。
 - 全梯度的答案排序没有超过平均损失对照；half_rest 中只比较损失即可选中全部正确答案候选，但图像排序只得到 33.3%。
@@ -143,7 +138,18 @@ related: [text-unknown-discriminability, dager-filter-phase]
 | Answer | unknown_template | 33.3% | 66.7% |
 | Answer | unknown_words | 55.6% | 66.7% |
 
-### 次要指标：LoRA-A 的答案排序
+### 成员还是位置
+
+**回答**：更像位置与上下文的交互：错误 token 填在正确背景中也能保留排序，同一类 token 换个位置结果就变。
+
+- 在 oracle_rest 下，问题位置换成完全缺席的 embedding 近邻后，平均 rho 仍为 0.893，接近正确候选的 0.921。错误 token 也可以保留排序。
+- 同一背景下，答案位置填入缺席候选的平均 rho 为 -0.655；填入真实问答其他位置的 token 也只有 -0.552。信号取决于位置和上下文，不能仅解释为 token 是否出现过。
+- unknown_template 下，正确问题候选的 rho 为 0.075，缺席高排名候选为 0.496。错误 token 并不总是只能造成微小变化，也可能得到更符合远近关系的排序。
+- present_elsewhere 按其他真实 token 中的最小 ID 选取，可能是标点；它是位置对照，不是语义匹配的困难负例。
+
+### LoRA-A 答案排序
+
+**回答**：两个未知背景中答案 Top-1 为 83.3% 和 75.0%，优于全梯度；这是看到结果后才选的次要指标，需要独立验证。
 
 - 梯度分组预先列入诊断，但在看到结果后才把 LoRA-A 选作后续关注点，不能当作预先验证通过的主结果。
 - 只使用 LoRA-A cosine loss 时，两个未知背景中的答案 Top-1 得分分别为 83.3% 和 75.0%。对应按图像 bootstrap 的 95% 区间为 [50.0%, 100.0%] 和 [41.7%, 100.0%]。

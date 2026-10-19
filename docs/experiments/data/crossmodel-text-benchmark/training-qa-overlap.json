@@ -1,0 +1,69 @@
+{
+  "contains_private_examples": false,
+  "rows": [
+    {
+      "dataset": "slake",
+      "length_bin": "1-16",
+      "n": 10,
+      "qa_seen_in_actual_training_schedule": 7,
+      "qa_seen_in_training_pool": 10
+    },
+    {
+      "dataset": "slake",
+      "length_bin": "17-32",
+      "n": 10,
+      "qa_seen_in_actual_training_schedule": 4,
+      "qa_seen_in_training_pool": 6
+    },
+    {
+      "dataset": "slake",
+      "length_bin": "33-64",
+      "n": 10,
+      "qa_seen_in_actual_training_schedule": 3,
+      "qa_seen_in_training_pool": 7
+    },
+    {
+      "dataset": "vqa_rad",
+      "length_bin": "1-16",
+      "n": 10,
+      "qa_seen_in_actual_training_schedule": 0,
+      "qa_seen_in_training_pool": 1
+    },
+    {
+      "dataset": "vqa_rad",
+      "length_bin": "17-32",
+      "n": 10,
+      "qa_seen_in_actual_training_schedule": 0,
+      "qa_seen_in_training_pool": 0
+    },
+    {
+      "dataset": "vqa_rad",
+      "length_bin": "33-64",
+      "n": 1,
+      "qa_seen_in_actual_training_schedule": 0,
+      "qa_seen_in_training_pool": 0
+    },
+    {
+      "dataset": "vqav2",
+      "length_bin": "1-16",
+      "n": 10,
+      "qa_seen_in_actual_training_schedule": 1,
+      "qa_seen_in_training_pool": 6
+    },
+    {
+      "dataset": "vqav2",
+      "length_bin": "17-32",
+      "n": 10,
+      "qa_seen_in_actual_training_schedule": 0,
+      "qa_seen_in_training_pool": 1
+    },
+    {
+      "dataset": "vqav2",
+      "length_bin": "33-64",
+      "n": 1,
+      "qa_seen_in_actual_training_schedule": 0,
+      "qa_seen_in_training_pool": 0
+    }
+  ],
+  "scope": "data audit only; no reconstruction output used"
+}

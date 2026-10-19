@@ -46,4 +46,4 @@ distance(x, S) = ‖x − (x Sᵀ) S‖₂ / ‖x‖₂
 
 第二阶段仍要把图像与候选前缀一起输入模型，所以 **Raw 的序列结果仍可能随图像改变**。不能把第一阶段不依赖图像，推广为整个方法不依赖图像。
 
-对应代码：`SpanFilter.build()` 中 `mode == "raw"` 的分支，以及 `SpanFilter.score()`。结果见 [[dager-multisample-n10]] 和 [[dager-lora-rank]]。
+对应代码：`SpanFilter.build()` 中 `mode == "raw"` 的分支，以及 `SpanFilter.score()`。结果见 [[dager-multisample]]。
