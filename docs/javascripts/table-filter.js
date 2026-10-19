@@ -1,26 +1,24 @@
 // Quick filters for the experiment index: <div class="table-filter" data-groups='{column: [values]}'>.
+// utils/mkdocs_hooks.py renders each experiment as <div class="exp-entry" data-importance=...
+// data-level=... data-outcome=... data-flags="a,b">; a group named "Level" reads data-level.
 // Buttons in one group are alternatives (OR); groups and the text box combine with AND.
 document$.subscribe(() => {
   const host = document.querySelector(".md-typeset .table-filter");
   if (!host || host.childElementCount) return;
   const groups = JSON.parse(host.dataset.groups || "{}");
-  const active = Object.fromEntries(Object.keys(groups).map((column) => [column, new Set()]));
-  const tables = [...document.querySelectorAll(".md-typeset table")].map((table) => {
-    const headers = [...table.querySelectorAll("thead th")].map((th) => th.textContent.trim());
-    return { table, headers, rows: [...table.querySelectorAll("tbody tr")] };
-  });
-  const total = tables.reduce((sum, t) => sum + t.rows.length, 0);
+  const active = Object.fromEntries(Object.keys(groups).map((group) => [group, new Set()]));
+  const entries = [...document.querySelectorAll(".md-typeset .exp-entry")];
 
-  for (const [column, values] of Object.entries(groups)) {
+  for (const [group, values] of Object.entries(groups)) {
     const row = document.createElement("div");
     row.className = "table-filter__group";
-    row.innerHTML = `<span class="table-filter__label">${column}</span>`;
+    row.innerHTML = `<span class="table-filter__label">${group}</span>`;
     for (const value of values) {
       const button = document.createElement("button");
       button.type = "button";
       button.textContent = value;
       button.addEventListener("click", () => {
-        const set = active[column];
+        const set = active[group];
         set.has(value) ? set.delete(value) : set.add(value);
         button.classList.toggle("is-active", set.has(value));
         apply();
@@ -40,30 +38,23 @@ document$.subscribe(() => {
   bottom.append(input, status);
   host.appendChild(bottom);
 
-  function cellMatches(cell, column, values) {
-    const text = cell.textContent.trim().toLowerCase();
-    return [...values].some((value) =>
-      column === "Flags" ? text.split(/[,、]\s*/).includes(value) : text === value);
+  function matches(entry, group, values) {
+    const field = entry.dataset[group.toLowerCase()] || "";
+    const present = field.split(",").filter(Boolean);
+    return [...values].some((value) => present.includes(value));
   }
 
   function apply() {
     const terms = input.value.toLowerCase().split(/\s+/).filter(Boolean);
     let shown = 0;
-    for (const { table, headers, rows } of tables) {
-      let visible = 0;
-      for (const row of rows) {
-        const cells = row.querySelectorAll("td");
-        const ok = Object.entries(active).every(([column, values]) => {
-          const index = headers.indexOf(column);
-          return !values.size || (index >= 0 && cellMatches(cells[index], column, values));
-        }) && terms.every((term) => row.textContent.toLowerCase().includes(term));
-        row.style.display = ok ? "" : "none";
-        visible += ok;
-      }
-      (table.closest(".md-typeset__scrollwrap") || table).style.display = visible ? "" : "none";
-      shown += visible;
+    for (const entry of entries) {
+      const ok = Object.entries(active).every(([group, values]) =>
+        !values.size || matches(entry, group, values))
+        && terms.every((term) => entry.textContent.toLowerCase().includes(term));
+      entry.hidden = !ok;
+      shown += ok;
     }
-    status.textContent = `显示 ${shown} / ${total} 个实验`;
+    status.textContent = `显示 ${shown} / ${entries.length} 个实验`;
   }
   apply();
 });

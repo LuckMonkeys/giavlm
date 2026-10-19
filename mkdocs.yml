@@ -32,12 +32,18 @@ nav:
       - Baselines: baselines.md
       - Architecture (中文): project_architecture.md
       - Learning roadmap: learning_roadmap.md
+      - Plans: plans/  # expanded by utils/mkdocs_hooks.py
 
 theme:
   name: material
   custom_dir: overrides
   language: zh
+  # System fonts instead of Google Fonts: the site is local-only and CJK text needs a
+  # CJK font stack anyway (see stylesheets/extra.css).
+  font: false
   features:
+    - navigation.instant
+    - navigation.instant.progress
     - navigation.tabs
     - navigation.sections
     - navigation.indexes
@@ -47,28 +53,36 @@ theme:
     - search.highlight
     - content.code.copy
     - content.tooltips
+    - content.tabs.link
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: indigo
+      primary: white
+      accent: indigo
       toggle:
         icon: material/weather-night
         name: Dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: indigo
+      primary: black
+      accent: indigo
       toggle:
         icon: material/weather-sunny
         name: Light mode
 
 plugins:
-  - search
+  # jieba segments Chinese (Material uses it when installed). Without the stemmer a fully
+  # typed word such as "residual" still matches; the stemmed index would hold "residu".
+  - search:
+      lang: [zh, en]
+      pipeline: [trimmer]
 
 extra_css:
   - stylesheets/extra.css
 extra_javascript:
   - javascripts/table-filter.js
   - javascripts/page-width.js
+  - javascripts/editor.js  # in-browser editing, active only under a loopback `mkdocs serve`
 
 markdown_extensions:
   - abbr
@@ -78,7 +92,15 @@ markdown_extensions:
   - tables
   - toc:
       permalink: true
+      # The right-hand contents lists research questions (###); #### details keep anchors.
+      toc_depth: 3
   - pymdownx.details
+  # Material icons in Markdown (`:material-text-search:`), used by the home page cards.
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.snippets:
       auto_append:
         - docs/includes/abbreviations.md

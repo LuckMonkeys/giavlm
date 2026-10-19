@@ -1,7 +1,9 @@
 # Docs site (mkdocs serve). Installed in the Conda env `gia`:
 #   conda run -n gia python -m pip install -r requirements-docs.txt
-# Only MkDocs is pinned; PyYAML/omegaconf bounds accept the versions already in `gia`.
+# MkDocs and jieba (Chinese search segmentation) are pinned; PyYAML/omegaconf bounds
+# accept the versions already in `gia`.
 mkdocs==1.6.1
 mkdocs-material==9.7.7
+jieba==0.42.1
 omegaconf>=2.3,<2.4
 PyYAML>=6.0,<7

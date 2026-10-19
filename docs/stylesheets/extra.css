@@ -1,4 +1,50 @@
-.md-typeset table:not([class]) { font-size: .68rem; }
+/* System fonts (theme.font is false): Latin first, then CJK, so mixed text stays even. */
+:root {
+  --md-text-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Source Han Sans SC",
+    "Microsoft YaHei", "WenQuanYi Micro Hei";
+  --md-code-font: "JetBrains Mono", "SFMono-Regular", "Cascadia Mono", Consolas,
+    "Roboto Mono", "Liberation Mono";
+}
+/* Material's light heading weight makes CJK headings faint. */
+.md-typeset h1 { font-weight: 600; color: var(--md-default-fg-color); }
+.md-typeset h2, .md-typeset h3 { font-weight: 600; }
+/* Abbreviation tooltips stay, but the dotted underline is noise in headings and links. */
+.md-typeset :is(h1, h2, h3, h4, h5, h6, a) abbr { border-bottom: none; cursor: inherit; }
+
+.md-typeset table:not([class]) { font-size: .7rem; }
+.md-typeset table:not([class]) :is(th, td) { padding: .55em .9em; }
+
+/* Condition card at the top of each experiment page (utils/mkdocs_hooks.py): label/value
+   pairs in fixed columns, so labels and values line up at any page width. */
+.md-typeset .exp-meta {
+  display: grid; align-items: baseline;
+  grid-template-columns: max-content minmax(0, 1fr) max-content minmax(0, 1fr);
+  gap: .45rem 1rem; margin: 1em 0 1.6em; padding: .7rem .9rem;
+  border: 1px solid var(--md-default-fg-color--lightest); border-radius: .3rem;
+  background: var(--md-code-bg-color); font-size: .72rem; line-height: 1.5;
+}
+.md-typeset .exp-meta__label {
+  font-size: .6rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--md-default-fg-color--light);
+}
+.md-typeset .exp-meta__value--wide { grid-column: span 3; }
+.md-typeset .exp-meta__value code { padding: 0; background: none; overflow-wrap: anywhere; }
+@media screen and (max-width: 30em) {
+  .md-typeset .exp-meta { grid-template-columns: max-content minmax(0, 1fr); }
+  .md-typeset .exp-meta__value--wide { grid-column: auto; }
+}
+.md-typeset .exp-outcome {
+  display: inline-block; padding: 0 .5rem; border: 1px solid currentColor;
+  border-radius: 1rem; font-weight: 700;
+}
+.md-typeset .exp-outcome--positive { color: #2e7d32; }
+.md-typeset .exp-outcome--negative { color: #c62828; }
+.md-typeset .exp-outcome--mixed { color: #b26a00; }
+.md-typeset .exp-outcome--inconclusive { color: var(--md-default-fg-color--light); }
+[data-md-color-scheme="slate"] .md-typeset .exp-outcome--positive { color: #81c784; }
+[data-md-color-scheme="slate"] .md-typeset .exp-outcome--negative { color: #ef9a9a; }
+[data-md-color-scheme="slate"] .md-typeset .exp-outcome--mixed { color: #ffb74d; }
 .md-typeset .table-filter input {
   width: 100%;
   max-width: 28rem;
@@ -26,6 +72,9 @@
   border-color: var(--md-accent-fg-color); background: var(--md-accent-fg-color);
   color: var(--md-accent-bg-color);
 }
+@media screen and (max-width: 30em) {
+  .md-typeset .table-filter__label { flex-basis: 100%; }
+}
 .md-typeset .table-filter__status { font-size: .7rem; color: var(--md-default-fg-color--light); }
 .md-typeset .badge {
   display: inline-block; margin: 0 .3rem .3rem 0; padding: .1rem .55rem;
@@ -46,3 +95,137 @@
 .page-width button:hover { opacity: 1; background: var(--md-default-fg-color--lightest); }
 @media screen and (max-width: 76.1875em) { .page-width { display: none; } }
 .md-typeset a > img { border: 1px solid var(--md-default-fg-color--lightest); cursor: zoom-in; }
+/* The sticky section header in the left sidebar is one line tall and only fades into the
+   items scrolling under it; give it room and a divider. Material's glow (box-shadow)
+   stays, so items emerging below the divider are still covered. */
+@media screen and (min-width: 76.25em) {
+  .md-nav--lifted > .md-nav__list > .md-nav__item--active > .md-nav__link {
+    padding-bottom: .5rem; border-bottom: 1px solid var(--md-default-fg-color--lightest);
+  }
+}
+
+/* ---------- Overall look: light header, one accent colour, roomier CJK text ---------- */
+[data-md-color-scheme="default"] { --md-typeset-a-color: #3b5bdb; }
+[data-md-color-scheme="slate"] { --md-typeset-a-color: #91a7ff; }
+.md-header, .md-tabs { box-shadow: none; }
+.md-header { border-bottom: 1px solid var(--md-default-fg-color--lightest); }
+.md-tabs { border-bottom: 1px solid var(--md-default-fg-color--lightest); }
+.md-header__topic:first-child { font-weight: 700; }
+.md-tabs__item--active .md-tabs__link { color: var(--md-typeset-a-color); opacity: 1; font-weight: 600; }
+.md-typeset { line-height: 1.75; }
+
+/* ---------- Home page (docs/index.md; stats and track cards come from the hook) ---------- */
+.md-typeset .home-lead { font-size: .95rem; color: var(--md-default-fg-color--light); }
+.md-typeset .home-stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: .6rem; margin: 1.2rem 0 1.6rem;
+}
+.md-typeset .home-stat {
+  padding: .7rem .9rem; border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: .4rem; background: var(--md-code-bg-color);
+}
+.md-typeset .home-stat__value {
+  display: block; font-size: 1.25rem; font-weight: 700; line-height: 1.3;
+  color: var(--md-default-fg-color);
+}
+.md-typeset .home-stat__label { font-size: .65rem; color: var(--md-default-fg-color--light); }
+@media screen and (max-width: 30em) {
+  .md-typeset .home-stat__value { font-size: 1rem; white-space: nowrap; }
+}
+.md-typeset .track-cards .lg { color: var(--md-typeset-a-color); }
+.md-typeset .track-cards > ul > li { border-radius: .5rem; }
+.md-typeset .track-cards > ul > li > p:last-child { font-size: .7rem; color: var(--md-default-fg-color--light); }
+/* Core findings: the claim reads first, its evidence lines stay small and muted. */
+.md-typeset .findings .tabbed-block > ul > li { margin-bottom: 1em; }
+.md-typeset .findings .tabbed-block > ul > li > ul {
+  margin-top: .25em; font-size: .7rem; line-height: 1.6;
+  color: var(--md-default-fg-color--light); list-style: none;
+}
+.md-typeset .findings .tabbed-block > ul > li > ul > li { margin-bottom: .15em; }
+
+/* ---------- Experiment index cards (utils/mkdocs_hooks.py:_entry) ---------- */
+.md-typeset .exp-entry {
+  margin: .6rem 0; padding: .7rem .9rem; border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: .5rem; transition: border-color .15s;
+}
+.md-typeset .exp-entry:hover { border-color: var(--md-typeset-a-color); }
+.md-typeset .exp-entry[hidden] { display: none; }
+.md-typeset .exp-entry > p:first-child {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; margin: 0;
+}
+.md-typeset .exp-entry__title { margin-right: .3rem; font-size: .85rem; font-weight: 700; }
+.md-typeset .exp-entry__meta {
+  margin: .3rem 0 .4rem; font-size: .68rem; color: var(--md-default-fg-color--light);
+}
+.md-typeset .exp-entry ul { margin: 0; font-size: .72rem; line-height: 1.6; }
+.md-typeset .exp-entry li { margin-bottom: .1em; }
+.md-typeset .exp-entry--archive { opacity: .7; }
+.md-typeset .exp-entry .exp-outcome { padding: 0 .45rem; font-size: .62rem; line-height: 1.6; }
+.md-typeset .chip {
+  display: inline-block; padding: 0 .45rem; border: 1px solid currentColor; border-radius: 1rem;
+  font-size: .62rem; font-weight: 600; line-height: 1.6; white-space: nowrap;
+}
+.md-typeset .chip--key {
+  color: var(--md-typeset-a-color);
+  background: color-mix(in srgb, var(--md-typeset-a-color) 10%, transparent);
+}
+.md-typeset .chip--supporting { color: var(--md-default-fg-color--light); }
+.md-typeset .chip--archive { color: var(--md-default-fg-color--lighter); }
+.md-typeset .chip--flag { margin: .1rem .2rem .1rem 0; color: #b26a00; }
+[data-md-color-scheme="slate"] .md-typeset .chip--flag { color: #ffb74d; }
+.md-typeset .chip--level { border-style: dashed; color: var(--md-default-fg-color--light); }
+.md-typeset .exp-outcome--invalid { color: var(--md-default-fg-color--lighter); }
+
+/* ---------- In-browser editor (docs/javascripts/editor.js, local preview only) ---------- */
+.md-typeset .giavlm-edit-button, .giavlm-edit-button {
+  padding: 0; border: 0; background: none; cursor: pointer;
+  color: var(--md-default-fg-color--lighter);
+}
+.giavlm-edit-button:hover { color: var(--md-typeset-a-color); }
+.giavlm-editor {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 10; display: flex; flex-direction: column;
+  width: min(50vw, 56rem); border-left: 1px solid var(--md-default-fg-color--lightest);
+  background: var(--md-default-bg-color); box-shadow: -.4rem 0 1.2rem rgba(0, 0, 0, .08);
+}
+.giavlm-editor[hidden] { display: none; }
+.giavlm-editor__bar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .6rem; padding: .55rem .8rem;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest); font-size: .7rem;
+}
+.giavlm-editor__path {
+  flex: 1; overflow: hidden; font-family: var(--md-code-font-family); text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* Status takes its own line under the path and buttons, so long errors stay readable. */
+.giavlm-editor__status { order: 9; flex-basis: 100%; color: var(--md-default-fg-color--light); }
+.giavlm-editor__status:empty { display: none; }
+.giavlm-editor__status[data-kind="error"] { color: #c62828; }
+.giavlm-editor__status[data-kind="ok"] { color: #2e7d32; }
+.giavlm-editor__status[data-kind="pending"] { color: #b26a00; }
+[data-md-color-scheme="slate"] .giavlm-editor__status[data-kind="error"] { color: #ef9a9a; }
+[data-md-color-scheme="slate"] .giavlm-editor__status[data-kind="ok"] { color: #81c784; }
+[data-md-color-scheme="slate"] .giavlm-editor__status[data-kind="pending"] { color: #ffb74d; }
+.giavlm-editor__bar button {
+  padding: .2rem .7rem; border: 1px solid var(--md-default-fg-color--lighter); border-radius: .2rem;
+  background: transparent; color: inherit; font: inherit; cursor: pointer;
+}
+.giavlm-editor__bar .giavlm-editor__save {
+  border-color: var(--md-typeset-a-color); background: var(--md-typeset-a-color); color: #fff;
+}
+.giavlm-editor__text {
+  flex: 1; padding: .8rem 1rem; border: 0; outline: none; resize: none; tab-size: 4;
+  background: var(--md-default-bg-color); color: var(--md-default-fg-color);
+  font-family: var(--md-code-font-family); font-size: .72rem; line-height: 1.65;
+}
+.giavlm-editor__hint {
+  padding: .35rem .8rem; border-top: 1px solid var(--md-default-fg-color--lightest);
+  font-size: .62rem; color: var(--md-default-fg-color--light);
+}
+/* While editing, the page keeps the left half as a live preview. */
+@media screen and (min-width: 60em) {
+  body.giavlm-editing { padding-right: min(50vw, 56rem); }
+  body.giavlm-editing .md-sidebar { display: none; }
+}
+@media screen and (max-width: 59.984375em) {
+  .giavlm-editor { width: 100%; }
+}
