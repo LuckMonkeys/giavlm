@@ -1,6 +1,6 @@
 # 项目交接
 
-- 更新时间：2026-10-18（Asia/Shanghai）；分支 `dager-rank-and-experiment-records`，基于 `main` 的 `73ebac2`，最新 commit `cedd460`。工作区干净，分支尚未推送，也未合并回 `main`。
+- 更新时间：2026-10-18（Asia/Shanghai）；分支 `dager-rank-and-experiment-records`（自 `73ebac2` 起）已快进合并回 `main` 并推送到 `origin/main`；分支保留，与 `main` 同步。
 - 用户已明确要求提交现有内容。2026-10-11 至 10-18 的代码按研究主题拆分提交，相关实验页已登记代码 commit，方法文档与聚合图同步整理；原始产物继续保存在本地 `outputs/`。
 - `lm_prior_weight=0` 仍是默认值。提交不表示将先验、属性评分或生成候选切换为新的默认攻击；原版 `dager` 仍未实现。
 - 本轮五个新 commit 均在干净检出中逐一验证：全量 CPU 回归最终为 355 通过、4 跳过，Ruff 通过；文档相关测试 36 项通过。14 份实验记录及本地产物检查通过，MkDocs 严格构建通过。
