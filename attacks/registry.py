@@ -3,7 +3,7 @@ from core.types import Support
 # Adaptations that run. Names carry the `_adapted` suffix so an original paper
 # name is never read as a claim that the original method was reproduced.
 IMPLEMENTED = {
-    "dager_adapted": "LoRA token subspaces and bounded discrete LLaVA text search; public images",
+    "dager_adapted": "LoRA token subspaces and bounded LLaVA/Qwen3.5 text search; declared or surrogate images",
     "dlg_adapted": "Squared L2 matching + L-BFGS; VLM soft targets and unknown lengths",
     "ig_adapted": "Global cosine matching + TV + signed image gradients with Adam",
     "april_adapted": "Squared L2 + positional-gradient cosine; structural eligibility required",

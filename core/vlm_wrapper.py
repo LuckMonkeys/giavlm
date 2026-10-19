@@ -282,8 +282,10 @@ def build_model(spec: ModelSpec, training: TrainingSpec):
     from core.adapters.llava import LlavaAdapter
     from core.adapters.blip2 import Blip2Adapter
     from core.adapters.qwen_vl import QwenVLAdapter
+    from core.adapters.qwen35 import Qwen35Adapter
     classes = {"tiny": TinyAdapter, "llava": LlavaAdapter,
-               "blip2": Blip2Adapter, "qwen2_5_vl": QwenVLAdapter}
+               "blip2": Blip2Adapter, "qwen2_5_vl": QwenVLAdapter,
+               "qwen3_5": Qwen35Adapter}
     if spec.family not in MODEL_FAMILIES:
         raise ValueError(f"Unknown model family: {spec.family}")
     if spec.family != "tiny" and not spec.revision:

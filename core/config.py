@@ -8,7 +8,7 @@ from omegaconf import OmegaConf
 
 # Configuration vocabulary. Tuples keep the supported surface ordered and easy
 # to review; validation and runtime consumers must reuse these definitions.
-MODEL_FAMILIES = ("tiny", "llava", "blip2", "qwen2_5_vl")
+MODEL_FAMILIES = ("tiny", "llava", "blip2", "qwen2_5_vl", "qwen3_5")
 MODEL_DTYPES = ("float32", "bfloat16", "float64")
 MODEL_DEVICE_MAPS = ("", "auto", "balanced")
 FINE_TUNING_STRATEGIES = ("f_c", "f_l", "f_cl", "f_2stage")
@@ -270,7 +270,7 @@ def validate_attack_config(attack: AttackSpec) -> None:
             raise ValueError("DAGER seconds must be finite")
         _require_choice("DAGER mode", options.mode, ("raw", "public_residual"))
         _require_choice("DAGER image source", options.image_source, ("declared", "random"))
-        _require_choice("DAGER projections", options.projections, ("q", "k", "v", "qkv"))
+        _require_choice("DAGER projections", options.projections, ("q", "k", "v", "qkv", "linear_inputs"))
         _require_choice("DAGER analysis dtype", options.analysis_dtype, ("float32", "float64"))
         _require_choice("DAGER token selection", options.token_selection, ("threshold", "topk"))
         for name in ("rank_rtol", "rank_atol", "zero_tolerance", "token_threshold", "lm_prior_weight"):

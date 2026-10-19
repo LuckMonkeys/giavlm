@@ -1,0 +1,13 @@
+defaults:
+  - default
+name: qwen3_5_4b
+family: qwen3_5
+checkpoint: /home/zx/public/model-hub/huggingface/Qwen/Qwen3.5-4B
+revision: 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a
+device: cuda:0
+dtype: bfloat16
+image_size: 256
+patch_size: 16
+question_length: 64
+target_length: 64
+local_files_only: true

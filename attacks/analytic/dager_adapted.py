@@ -1,4 +1,4 @@
-"""Public-image LLaVA adaptation of DAGER; no claim of original-paper fidelity."""
+"""LoRA subspace text search for LLaVA/Qwen3.5; a VLM adaptation of DAGER."""
 from dataclasses import asdict, fields, replace
 import hashlib
 from pathlib import Path
@@ -23,12 +23,22 @@ def gradient_groups(adapter, observation, projections):
     groups = []
     for layer in (0, 1):
         names = []
-        for projection in projections:
-            prefix = f"backend.language_model.model.layers.{layer}.self_attn.{projection}_proj.lora_A."
+        if observation.model.family == "qwen3_5":
+            if projections != "linear_inputs":
+                raise ValueError("Qwen3.5 requires projections=linear_inputs")
+            modules = [f"backend.model.language_model.layers.{layer}.linear_attn.in_proj_{key}"
+                       for key in ("qkv", "z", "b", "a")]
+        else:
+            if projections == "linear_inputs":
+                raise ValueError("linear_inputs projections require Qwen3.5")
+            modules = [f"backend.language_model.model.layers.{layer}.self_attn.{key}_proj"
+                       for key in projections]
+        for module in modules:
+            prefix = f"{module}.lora_A."
             found = [name for name in observation.tensors
                      if name.startswith(prefix) and name.endswith(".weight")]
             if len(found) != 1:
-                raise ValueError(f"Required uploaded LoRA-A gradient missing or ambiguous: layer {layer} {projection}")
+                raise ValueError(f"Required uploaded LoRA-A gradient missing or ambiguous: {module}")
             name = found[0]
             if name not in parameters or observation.tensors[name].shape != parameters[name].shape:
                 raise ValueError(f"Uploaded gradient shape differs from model: {name}")
@@ -49,8 +59,8 @@ def forbidden_token_ids(adapter):
 def dager_support(adapter, observation, options=None):
     training = observation.training
     options = options or DAGEROptions()
-    if observation.model.family != "llava":
-        return Support("not_applicable", "DAGER adaptation currently requires LLaVA/LLaMA")
+    if observation.model.family not in {"llava", "qwen3_5"}:
+        return Support("not_applicable", "DAGER adaptation requires LLaVA/LLaMA or Qwen3.5")
     if observation.model.device_map:
         return Support("not_applicable", "DAGER partial forward currently requires a single device")
     if training.task != "vqa":
@@ -67,9 +77,14 @@ def dager_support(adapter, observation, options=None):
         return Support("not_applicable", "DAGER currently requires single-sample FedSGD gradients")
     if training.fine_tuning_strategy not in {"f_l", "f_cl"}:
         return Support("not_applicable", "DAGER requires F-L or F-CL LoRA uploads")
-    decoder = adapter.backend.language_model.model
-    if decoder.config.model_type != "llama" or len(decoder.layers) < 2:
-        return Support("not_applicable", "DAGER requires at least two LLaMA decoder blocks")
+    if observation.model.family == "llava":
+        decoder = adapter.backend.language_model.model
+        if decoder.config.model_type != "llama" or len(decoder.layers) < 2:
+            return Support("not_applicable", "DAGER requires at least two LLaMA decoder blocks")
+    else:
+        decoder = adapter.backend.model.language_model
+        if decoder.config.layer_types[:2] != ["linear_attention"] * 2:
+            return Support("not_applicable", "DAGER Qwen3.5 requires two initial linear-attention blocks")
     try:
         groups = gradient_groups(adapter, observation, options.projections)
     except ValueError as error:
@@ -209,7 +224,11 @@ class DAGERSearch:
         if self.search_images is None:
             raise ValueError("DAGER image context is unavailable")
         view_observation = replace(self.observation, public_images=self.search_images)
-        self.view = LlavaTextView(self.adapter, view_observation)
+        if self.observation.model.family == "qwen3_5":
+            from core.adapters.qwen35 import Qwen35TextView
+            self.view = Qwen35TextView(self.adapter, view_observation)
+        else:
+            self.view = LlavaTextView(self.adapter, view_observation)
         groups = gradient_groups(self.adapter, self.observation, self.options.projections)
         self.spans = []
         for names, public in zip(groups, (self.view.public_layer0, self.view.public_layer1), strict=True):
@@ -223,7 +242,7 @@ class DAGERSearch:
             "exact_recovery_claimed": False,
             "evaluation_unit": "one private prefix extension, text-prior parent, or full gradient replay",
             "text_prior": {"weight": self.options.lm_prior_weight,
-                           "context": "text-only USER/newline/question/ASSISTANT/answer; no EOS/pad/image",
+                           "context": "text-only public user/question/assistant/answer layout; no EOS/pad/image",
                            "scoring": "content-only cumulative full-vocabulary NLL; no hard LM pruning"},
             "private_slot_count": len(self.view.slots),
             "reconstructed_fields": list(dict.fromkeys(
