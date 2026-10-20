@@ -79,10 +79,12 @@ plugins:
 
 extra_css:
   - stylesheets/extra.css
+  - stylesheets/mint.css  # optional Mintlify-like skin; drop with javascripts/mint.js to revert
 extra_javascript:
   - javascripts/table-filter.js
   - javascripts/page-width.js
   - javascripts/editor.js  # in-browser editing, active only under a loopback `mkdocs serve`
+  - javascripts/mint.js  # page group label for the mint.css skin
 
 markdown_extensions:
   - abbr

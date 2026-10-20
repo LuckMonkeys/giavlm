@@ -1,0 +1,237 @@
+/* Mintlify-like skin on top of Material and extra.css.
+   Self-contained and optional: remove `stylesheets/mint.css` and `javascripts/mint.js`
+   from mkdocs.yml to return to the previous look. Only colours, spacing and shapes
+   change here; no content or hook output depends on this file. */
+
+/* ---------- Tokens ---------- */
+:root, [data-md-color-scheme="default"] {
+  --mint-primary: #0d9373;
+  --mint-primary-soft: color-mix(in srgb, var(--mint-primary) 9%, transparent);
+  --mint-heading: #0f172a;
+  --mint-text: #374151;
+  --mint-muted: #6b7280;
+  --mint-border: #e5e7eb;
+  --mint-subtle: #f9fafb;
+  --mint-hover: #f3f4f6;
+  --md-typeset-a-color: var(--mint-primary);
+  --md-accent-fg-color: var(--mint-primary);
+  --md-accent-fg-color--transparent: var(--mint-primary-soft);
+  --md-text-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC",
+    "Source Han Sans SC", "Microsoft YaHei", "WenQuanYi Micro Hei";
+}
+[data-md-color-scheme="slate"] {
+  --mint-primary: #3ccf91;
+  --mint-primary-soft: color-mix(in srgb, var(--mint-primary) 12%, transparent);
+  --mint-heading: #f4f4f5;
+  --mint-text: #c9cdd4;
+  --mint-muted: #8b919c;
+  --mint-border: rgba(255, 255, 255, .09);
+  --mint-subtle: rgba(255, 255, 255, .03);
+  --mint-hover: rgba(255, 255, 255, .06);
+  --md-hue: 220;
+  --md-default-bg-color: #0d0f12;
+  --md-code-bg-color: #15181d;
+  --md-typeset-a-color: var(--mint-primary);
+  --md-accent-fg-color: var(--mint-primary);
+  --md-accent-fg-color--transparent: var(--mint-primary-soft);
+}
+body { background: var(--md-default-bg-color); }
+
+/* ---------- Header and top tabs: translucent bar, underline on the active tab ---------- */
+.md-header, .md-tabs {
+  background-color: color-mix(in srgb, var(--md-default-bg-color) 97%, transparent);
+  color: var(--mint-heading);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  backdrop-filter: saturate(180%) blur(12px);
+}
+.md-header, .md-tabs { border-bottom: 1px solid var(--mint-border); }
+.md-header__title { font-size: .8rem; }
+.md-tabs__item { height: 2.4rem; }
+.md-tabs__link { margin-top: .75rem; font-size: .68rem; color: var(--mint-muted); opacity: 1; }
+.md-tabs__link:hover { color: var(--mint-heading); }
+.md-tabs__item--active { box-shadow: inset 0 -2px 0 var(--mint-primary); }
+.md-tabs__item--active .md-tabs__link { color: var(--mint-heading); font-weight: 600; }
+.md-search__form {
+  border: 1px solid var(--mint-border); border-radius: .6rem;
+  background-color: var(--mint-subtle); box-shadow: none;
+}
+.md-search__form:hover { background-color: var(--mint-hover); }
+[data-md-toggle="search"]:checked ~ .md-header .md-search__form { border-radius: .6rem .6rem 0 0; }
+.md-search__output { border-radius: 0 0 .6rem .6rem; }
+.page-width button { border-color: var(--mint-border); border-radius: .5rem; }
+
+/* ---------- Left navigation: group labels, rounded active pill ---------- */
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--primary .md-nav { font-size: .68rem; }
+  .md-sidebar--primary .md-nav__item--section > .md-nav__link {
+    margin-top: 1.4em; color: var(--mint-heading); font-weight: 600;
+  }
+  .md-sidebar--primary .md-nav__item--section .md-nav__item--section > .md-nav__link { margin-top: 1.2em; }
+  .md-sidebar--primary .md-nav__item:not(.md-nav__item--section) > .md-nav__link {
+    margin: .1rem 0 0 -.6rem; padding: .32rem .6rem; border-radius: .55rem;
+    color: var(--mint-text); transition: background-color .12s, color .12s;
+  }
+  .md-sidebar--primary .md-nav__item:not(.md-nav__item--section) > .md-nav__link:hover {
+    background-color: var(--mint-hover); color: var(--mint-heading);
+  }
+  .md-sidebar--primary .md-nav__item:not(.md-nav__item--section) > .md-nav__link--active,
+  .md-sidebar--primary .md-nav__item:not(.md-nav__item--section) > .md-nav__link--active:hover {
+    background-color: var(--mint-primary-soft) !important;
+    color: var(--mint-primary) !important; font-weight: 600;
+  }
+  /* The sticky "Experiments" header keeps its divider from extra.css, in the new colour. */
+  .md-nav--lifted > .md-nav__list > .md-nav__item--active > .md-nav__link {
+    border-bottom-color: var(--mint-border); color: var(--mint-heading);
+  }
+}
+
+/* ---------- Right "目录": a hairline with the current section marked ---------- */
+@media screen and (min-width: 60em) {
+  .md-sidebar--secondary .md-nav__title {
+    color: var(--mint-heading); font-weight: 600; background: none; box-shadow: none;
+  }
+  .md-sidebar--secondary .md-nav--secondary > .md-nav__list {
+    border-left: 1px solid var(--mint-border);
+  }
+  .md-sidebar--secondary .md-nav__link {
+    margin-top: 0; margin-left: -1px; padding: .28rem 0 .28rem .7rem;
+    border-left: 2px solid transparent; color: var(--mint-muted);
+  }
+  .md-sidebar--secondary .md-nav__link:hover { color: var(--mint-heading); }
+  .md-sidebar--secondary .md-nav__link--active {
+    border-left-color: var(--mint-primary); color: var(--mint-primary); font-weight: 600;
+  }
+}
+
+/* ---------- Page text ---------- */
+.md-typeset { color: var(--mint-text); }
+.md-typeset :is(h1, h2, h3, h4, h5, h6) { color: var(--mint-heading); }
+.md-typeset h1 { margin-bottom: .9em; font-size: 1.85em; font-weight: 700; letter-spacing: -.015em; }
+.md-typeset h2 { margin-top: 2.2em; font-size: 1.4em; font-weight: 650; letter-spacing: -.01em; }
+.md-typeset h3 { margin-top: 1.8em; font-size: 1.12em; font-weight: 600; }
+.md-typeset h4 { font-weight: 600; }
+.md-typeset strong { color: var(--mint-heading); font-weight: 600; }
+.md-typeset .headerlink { color: var(--mint-muted); }
+/* Section label above the page title, filled in by javascripts/mint.js. */
+.md-typeset .mint-eyebrow {
+  margin: 0 0 .35rem; font-size: .7rem; font-weight: 600; line-height: 1.4;
+  color: var(--mint-primary);
+}
+.md-typeset .mint-eyebrow + h1 { margin-top: 0; }
+
+/* Links in running text: body colour with a primary underline, as on Mintlify. */
+.md-typeset :is(p, li, td, dd) > a:not(.exp-entry__title):not(.md-button) {
+  color: var(--mint-heading); font-weight: 500; text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--mint-primary) 55%, transparent);
+  text-decoration-thickness: 1px; text-underline-offset: .22em;
+}
+.md-typeset :is(p, li, td, dd) > a:not(.exp-entry__title):not(.md-button):hover {
+  color: var(--mint-primary); text-decoration-color: var(--mint-primary);
+}
+
+/* ---------- Code ---------- */
+.md-typeset code { border-radius: .35rem; }
+.md-typeset :not(pre) > code {
+  padding: .1em .35em; border: 1px solid var(--mint-border); background: var(--mint-subtle);
+}
+.md-typeset pre > code { border: 1px solid var(--mint-border); border-radius: .75rem; }
+.md-typeset .highlight { border-radius: .75rem; }
+
+/* ---------- Tables ---------- */
+.md-typeset table:not([class]) {
+  overflow: hidden; border: 1px solid var(--mint-border); border-radius: .75rem;
+  box-shadow: none;
+}
+.md-typeset table:not([class]) th {
+  background: var(--mint-subtle); color: var(--mint-heading); font-weight: 600;
+  border-bottom: 1px solid var(--mint-border);
+}
+.md-typeset table:not([class]) td { border-top: 1px solid var(--mint-border); }
+.md-typeset table:not([class]) tbody tr:first-child td { border-top: 0; }
+.md-typeset table:not([class]) tr:hover { background: var(--mint-subtle); box-shadow: none; }
+
+/* ---------- Callouts: one soft tint per admonition type ---------- */
+.md-typeset :is(.admonition, details) {
+  --mint-callout: #6b7280;
+  border-radius: .85rem; box-shadow: none;
+  background: color-mix(in srgb, var(--mint-callout) 6%, var(--md-default-bg-color));
+  font-size: .74rem;
+}
+.md-typeset :is(.admonition, details):is(.note) { --mint-callout: #3b82f6; }
+.md-typeset :is(.admonition, details):is(.abstract, .summary, .tldr) { --mint-callout: var(--mint-primary); }
+.md-typeset :is(.admonition, details):is(.important, .tip, .hint) { --mint-callout: #0ea5a4; }
+.md-typeset :is(.admonition, details):is(.warning, .caution, .attention) { --mint-callout: #f59e0b; }
+.md-typeset :is(.admonition, details):is(.danger, .error, .failure, .bug) { --mint-callout: #ef4444; }
+.md-typeset :is(.admonition, details) > :is(.admonition-title, summary) {
+  border: 0; background: none; color: var(--mint-heading); font-weight: 600;
+}
+.md-typeset :is(.admonition, details) > :is(.admonition-title, summary)::before {
+  background-color: var(--mint-callout);
+}
+/* [class] matches Material's per-type border rules in specificity, so this file wins. */
+.md-typeset :is(.admonition, details)[class] {
+  border: 1px solid color-mix(in srgb, var(--mint-callout) 28%, transparent);
+}
+/* Collapsed "运行记录": a quiet row until opened. */
+.md-typeset details:not([open]) { background: var(--mint-subtle); }
+
+/* Private-data and uncommitted notices at the top of a record read as callouts. */
+.md-typeset .badge {
+  border-color: color-mix(in srgb, currentColor 35%, transparent);
+  background: color-mix(in srgb, currentColor 7%, transparent);
+}
+.md-typeset .badge--private-data {
+  display: block; margin: 0 0 .6rem; padding: .55rem .8rem; border-radius: .75rem;
+  font-size: .7rem; font-weight: 500; line-height: 1.65;
+}
+
+/* ---------- Cards and panels ---------- */
+.md-typeset .grid.cards > ul > li, .md-typeset .grid > .card {
+  border: 1px solid var(--mint-border); border-radius: .9rem; padding: 1rem 1.1rem;
+  transition: border-color .15s, background-color .15s;
+}
+.md-typeset .grid.cards > ul > li:hover, .md-typeset .grid > .card:hover {
+  border-color: color-mix(in srgb, var(--mint-primary) 55%, transparent);
+  box-shadow: none;
+}
+.md-typeset .track-cards > ul > li > hr { display: none; }
+.md-typeset .track-cards > ul > li > p:first-child { display: flex; align-items: center; gap: .55rem; }
+.md-typeset .track-cards .twemoji.lg {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2rem; height: 2rem; border-radius: .55rem;
+  background: var(--mint-primary-soft); color: var(--mint-primary);
+}
+.md-typeset .track-cards .twemoji.lg svg { width: 1.05rem; height: 1.05rem; }
+.md-typeset .track-cards > ul > li > p:last-child a { text-decoration: none; color: var(--mint-primary); }
+
+.md-typeset .home-lead { color: var(--mint-muted); }
+.md-typeset .home-stat { border-color: var(--mint-border); border-radius: .9rem; background: var(--mint-subtle); }
+.md-typeset .home-stat__value { color: var(--mint-heading); letter-spacing: -.01em; }
+
+.md-typeset .exp-meta { border-color: var(--mint-border); border-radius: .9rem; background: var(--mint-subtle); }
+.md-typeset .exp-meta__label { color: var(--mint-muted); }
+.md-typeset .exp-meta__value code { border: 0; background: none; }
+
+.md-typeset .exp-entry { border-color: var(--mint-border); border-radius: .9rem; padding: .85rem 1rem; }
+.md-typeset .exp-entry:hover { border-color: color-mix(in srgb, var(--mint-primary) 55%, transparent); }
+.md-typeset .exp-entry__title { color: var(--mint-heading); }
+.md-typeset .exp-entry__title:hover { color: var(--mint-primary); }
+
+.md-typeset .tabbed-set { border-radius: .75rem; }
+.md-typeset .tabbed-labels > label { font-weight: 600; }
+
+/* Filters on the experiment index. */
+.md-typeset .table-filter button { border-color: var(--mint-border); }
+.md-typeset .table-filter button:hover { background: var(--mint-hover); }
+.md-typeset .table-filter button.is-active {
+  border-color: var(--mint-primary); background: var(--mint-primary-soft); color: var(--mint-primary);
+}
+.md-typeset .table-filter input { border-color: var(--mint-border); border-radius: .6rem; background: var(--mint-subtle); }
+
+/* ---------- Footer ---------- */
+.md-footer, .md-footer-meta {
+  background: var(--md-default-bg-color); color: var(--mint-muted);
+  border-top: 1px solid var(--mint-border);
+}
+.md-footer__link, .md-footer__title { color: var(--mint-text); }
