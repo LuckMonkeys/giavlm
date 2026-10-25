@@ -11,7 +11,7 @@ from attacks.base import BaseAttacker
 from attacks.analytic.dager_search import expansion_batch, retain_best
 from attacks.analytic.dager_subspace import SpanFilter, select_tokens
 from attacks.objectives import matching_loss
-from core.adapters.llava import LlavaTextView
+from attacks.analytic.dager_pooled import PooledTextView, text_view
 from core.artifacts import file_hash, read_json, read_tensors, source_fingerprint, write_json, write_tensors
 from core.config import DAGEROptions, digest, validate_attack_config
 from core.fl import simulate_update
@@ -73,8 +73,12 @@ def dager_support(adapter, observation, options=None):
             "DAGER requires a declared public image or private knowledge with a random surrogate")
     if not training.token_lengths_known:
         return Support("not_applicable", "DAGER currently requires declared public token lengths")
-    if training.algorithm != "fedsgd" or observation.sample_count != 1:
+    if not options.pooled_updates and (training.algorithm != "fedsgd" or observation.sample_count != 1):
         return Support("not_applicable", "DAGER currently requires single-sample FedSGD gradients")
+    if options.pooled_updates and (
+            training.algorithm not in {"fedsgd", "fedavg"} or training.local_optimizer != "sgd"
+            or training.fine_tuning_strategy != "f_l"):
+        return Support("not_applicable", "Pooled DAGER currently requires F-L and plain local SGD")
     if training.fine_tuning_strategy not in {"f_l", "f_cl"}:
         return Support("not_applicable", "DAGER requires F-L or F-CL LoRA uploads")
     if observation.model.family == "llava":
@@ -122,14 +126,22 @@ class DAGERAdaptedAttacker(BaseAttacker):
         validate_attack_config(self.spec)
         observation = replace(batch_info, tensors=gradients)
         knowledge.validate_observation(observation)
-        if upload_metadata is not None and upload_metadata.get("defense", {}).get("name", "none") != "none":
-            return Reconstruction("not_applicable", "DAGER currently requires undefended raw gradients")
+        defense = (upload_metadata or {}).get("defense", {"name": "none"})
+        if defense.get("name", "none") != "none":
+            if self.spec.dager.defense_mode != "unaware" or defense["name"] not in {
+                    "clipping", "gaussian_noise", "gaussian_dp", "topk_sparsify"}:
+                return Reconstruction("not_applicable", "DAGER requires explicit defense-unaware evaluation")
+            if self.spec.dager.rerank_candidates:
+                return Reconstruction("not_applicable", "Defended-upload reranking is not implemented")
         if initial_images is not None or initial_tokens is not None:
             raise ValueError("DAGER does not accept candidate initialization")
         support = dager_support(self.adapter, observation, self.spec.dager)
         if support.status != "supported":
             return Reconstruction(support.status, support.reason)
-        return DAGERSearch(self.adapter, observation, self.spec, directory).run(resume)
+        result = DAGERSearch(self.adapter, observation, self.spec, directory).run(resume)
+        result.provenance["upload_defense"] = defense
+        result.provenance["defense_mode"] = self.spec.dager.defense_mode
+        return result
 
 
 class DAGERSearch:
@@ -224,11 +236,8 @@ class DAGERSearch:
         if self.search_images is None:
             raise ValueError("DAGER image context is unavailable")
         view_observation = replace(self.observation, public_images=self.search_images)
-        if self.observation.model.family == "qwen3_5":
-            from core.adapters.qwen35 import Qwen35TextView
-            self.view = Qwen35TextView(self.adapter, view_observation)
-        else:
-            self.view = LlavaTextView(self.adapter, view_observation)
+        self.view = (PooledTextView(self.adapter, view_observation)
+                     if self.observation.sample_count > 1 else text_view(self.adapter, view_observation))
         groups = gradient_groups(self.adapter, self.observation, self.options.projections)
         self.spans = []
         for names, public in zip(groups, (self.view.public_layer0, self.view.public_layer1), strict=True):
@@ -245,6 +254,11 @@ class DAGERSearch:
                            "context": "text-only public user/question/assistant/answer layout; no EOS/pad/image",
                            "scoring": "content-only cumulative full-vocabulary NLL; no hard LM pruning"},
             "private_slot_count": len(self.view.slots),
+            "sample_count": self.observation.sample_count,
+            "pooled_search": self.observation.sample_count > 1,
+            "update_interpretation": ("initial-model subspace approximation to local SGD delta"
+                                      if self.observation.training.algorithm == "fedavg" else
+                                      "observed batch gradient"),
             "reconstructed_fields": list(dict.fromkeys(
                 field.removesuffix("s") for field, _, _ in self.view.slots)),
             "image_context": context,

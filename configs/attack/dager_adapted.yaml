@@ -20,3 +20,5 @@ dager:
   prefix_batch_size: 16
   rerank_candidates: 0
   lm_prior_weight: 0.0
+  pooled_updates: false
+  defense_mode: reject

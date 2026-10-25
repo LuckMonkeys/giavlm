@@ -154,7 +154,10 @@ def _simulate_local_update(adapter, batch: Batch, spec: TrainingSpec, update_typ
             return updates
 
         if spec.local_optimizer == "sgd":
-            params = {name: param - spec.lr * updates[name] for name, param in params.items()}
+            # Match torch.optim.SGD's add_(grad, alpha=-lr) without mutation.
+            # A separate lr * grad tensor adds an extra rounding step in bf16.
+            params = {name: torch.add(param, updates[name], alpha=-spec.lr)
+                      for name, param in params.items()}
         elif spec.local_optimizer == "adamw":
             params, moments, variances = _adamw_step(
                 params, updates, moments, variances, decay_names, spec, step + 1)

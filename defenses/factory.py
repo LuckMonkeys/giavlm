@@ -1,6 +1,7 @@
 from defenses.none import NoDefense
 from defenses.clipping import ClippingDefense
 from defenses.gaussian_dp import GaussianDPDefense
+from defenses.gaussian_noise import GaussianNoiseDefense
 from defenses.topk_sparsify import TopKSparsifyDefense
 from defenses.sign_sgd import SignSGDDefense
 
@@ -14,6 +15,8 @@ def create_defense(config):
         return ClippingDefense(**options)
     elif name == "gaussian_dp":
         return GaussianDPDefense(**options)
+    elif name == "gaussian_noise":
+        return GaussianNoiseDefense(**options)
     elif name == "topk_sparsify":
         return TopKSparsifyDefense(**options)
     elif name == "sign_sgd":

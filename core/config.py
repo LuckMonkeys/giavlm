@@ -144,6 +144,9 @@ class DAGEROptions:
     prefix_batch_size: int = 16
     rerank_candidates: int = 0
     lm_prior_weight: float = 0.0
+    # Explicit experimental extensions; historical single-sample behavior stays default.
+    pooled_updates: bool = False
+    defense_mode: str = "reject"
 
 
 @dataclass
@@ -273,6 +276,9 @@ def validate_attack_config(attack: AttackSpec) -> None:
         _require_choice("DAGER projections", options.projections, ("q", "k", "v", "qkv", "linear_inputs"))
         _require_choice("DAGER analysis dtype", options.analysis_dtype, ("float32", "float64"))
         _require_choice("DAGER token selection", options.token_selection, ("threshold", "topk"))
+        _require_choice("DAGER defense mode", options.defense_mode, ("reject", "unaware"))
+        if type(options.pooled_updates) is not bool:
+            raise ValueError("DAGER pooled_updates must be boolean")
         for name in ("rank_rtol", "rank_atol", "zero_tolerance", "token_threshold", "lm_prior_weight"):
             value = getattr(options, name)
             if not math.isfinite(value) or value < 0:

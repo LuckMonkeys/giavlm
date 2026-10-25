@@ -95,7 +95,7 @@ def capture_pair(adapter, row, known_training, root, model):
         raise ValueError('Paired uploads differ')
 
 
-def attack_public(adapter, config, public, output, fingerprint):
+def attack_public(adapter, config, public, output, fingerprint, upload_metadata=None, *, resume=False):
     """Accept public observation only; call the registered, unchanged attacker."""
     obs = load_observation(public, adapter.spec.device)
     if obs.model_fingerprint != fingerprint:
@@ -105,7 +105,7 @@ def attack_public(adapter, config, public, output, fingerprint):
     versions = {name: parameter._version for name, parameter in adapter.named_parameters()}
     result = create_attacker(adapter, config.attack).attack(
         obs.tensors, obs, AdversaryKnowledge(obs.training.knowledge, True),
-        directory=output, resume=False, upload_metadata={})
+        directory=output, resume=resume, upload_metadata=upload_metadata or {})
     if result.images is not None:
         raise ValueError('Text-only DAGER must not return a private image')
     info = {k: v for k, v in asdict(result).items() if k != 'images'}
@@ -118,6 +118,9 @@ def attack_public(adapter, config, public, output, fingerprint):
                     'source_sha256': source_fingerprint(), 'init_source': 'random',
                     'init_text_source': 'random', 'attack_image_dtype': config.attack.image_dtype},
                 environment=environment())
+    if upload_metadata is not None:
+        info['condition']['defense'] = upload_metadata.get('defense', {'name': 'none'})
+        info['condition']['defense_mode'] = config.attack.dager.defense_mode
     write_json(output/'result.json', info)
     if any(parameter._version != versions[name] for name, parameter in adapter.named_parameters()):
         raise ValueError('Read-only text attack mutated victim model')
