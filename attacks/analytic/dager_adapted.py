@@ -75,10 +75,15 @@ def dager_support(adapter, observation, options=None):
         return Support("not_applicable", "DAGER currently requires declared public token lengths")
     if not options.pooled_updates and (training.algorithm != "fedsgd" or observation.sample_count != 1):
         return Support("not_applicable", "DAGER currently requires single-sample FedSGD gradients")
+    adamw_proposals = (options.adamw_delta_proposals and training.algorithm == "fedavg"
+                       and training.local_optimizer == "adamw" and options.rerank_candidates > 0)
     if options.pooled_updates and (
-            training.algorithm not in {"fedsgd", "fedavg"} or training.local_optimizer != "sgd"
+            training.algorithm not in {"fedsgd", "fedavg"}
+            or not (training.local_optimizer == "sgd" or adamw_proposals)
             or training.fine_tuning_strategy != "f_l"):
-        return Support("not_applicable", "Pooled DAGER currently requires F-L and plain local SGD")
+        return Support("not_applicable", "Pooled DAGER requires F-L and SGD, or explicit AdamW proposals with replay")
+    if options.adamw_delta_proposals and not adamw_proposals:
+        return Support("not_applicable", "AdamW delta proposals require a FedAvg AdamW upload and replay reranking")
     if training.fine_tuning_strategy not in {"f_l", "f_cl"}:
         return Support("not_applicable", "DAGER requires F-L or F-CL LoRA uploads")
     if observation.model.family == "llava":
@@ -256,9 +261,13 @@ class DAGERSearch:
             "private_slot_count": len(self.view.slots),
             "sample_count": self.observation.sample_count,
             "pooled_search": self.observation.sample_count > 1,
-            "update_interpretation": ("initial-model subspace approximation to local SGD delta"
-                                      if self.observation.training.algorithm == "fedavg" else
-                                      "observed batch gradient"),
+            "update_interpretation": (
+                "heuristic AdamW delta proposals; not a gradient subspace; optimizer-aware replay selection"
+                if self.options.adamw_delta_proposals else
+                "initial-model subspace approximation to local SGD delta"
+                if self.observation.training.algorithm == "fedavg" else "observed batch gradient"),
+            "gradient_subspace_premise": not self.options.adamw_delta_proposals,
+            "optimizer_replay": self.observation.training.local_optimizer,
             "reconstructed_fields": list(dict.fromkeys(
                 field.removesuffix("s") for field, _, _ in self.view.slots)),
             "image_context": context,
@@ -402,6 +411,8 @@ class DAGERSearch:
                 self.rerank()
             ranked = self.state["reranked"] or self.state["beam"]
             winner = retain_best([], ranked, 1)[0]
+            self.state["provenance"]["rerank_changed_proposal_winner"] = (
+                winner["tokens"] != self.state["beam"][0]["tokens"])
             self.state["provenance"]["final_score"] = winner["score"]
             self.state["provenance"]["final_score_type"] = (
                 "relative_l2_update" if self.state["reranked"] else

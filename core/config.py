@@ -147,6 +147,7 @@ class DAGEROptions:
     # Explicit experimental extensions; historical single-sample behavior stays default.
     pooled_updates: bool = False
     defense_mode: str = "reject"
+    adamw_delta_proposals: bool = False
 
 
 @dataclass
@@ -279,6 +280,10 @@ def validate_attack_config(attack: AttackSpec) -> None:
         _require_choice("DAGER defense mode", options.defense_mode, ("reject", "unaware"))
         if type(options.pooled_updates) is not bool:
             raise ValueError("DAGER pooled_updates must be boolean")
+        if type(options.adamw_delta_proposals) is not bool:
+            raise ValueError("DAGER adamw_delta_proposals must be boolean")
+        if options.adamw_delta_proposals and (not options.pooled_updates or options.rerank_candidates < 1):
+            raise ValueError("AdamW delta proposals require pooled updates and optimizer replay reranking")
         for name in ("rank_rtol", "rank_atol", "zero_tolerance", "token_threshold", "lm_prior_weight"):
             value = getattr(options, name)
             if not math.isfinite(value) or value < 0:

@@ -120,15 +120,18 @@ def _adamw_step(params, gradients, moments, variances, decay_names, spec, step):
     bias_correction2_sqrt = (1 - beta2 ** step) ** 0.5
     for name, param in params.items():
         grad = gradients[name]
-        moment = beta1 * moments[name] + (1 - beta1) * grad
-        variance = beta2 * variances[name] + (1 - beta2) * grad.square()
+        # Match the unfused, single-tensor torch.optim.AdamW arithmetic. These
+        # fused elementwise operations avoid extra bf16 rounding intermediates.
+        moment = torch.lerp(moments[name], grad, 1 - beta1)
+        variance = torch.addcmul(variances[name] * beta2, grad, grad, value=1 - beta2)
         decayed = param * (1 - spec.lr * spec.weight_decay) if name in decay_names else param
         # At an exactly zero moment, sqrt has an infinite derivative although the
         # AdamW update is zero. Clamp only that underflow region so attack replay
         # retains finite higher-order derivatives without changing nonzero steps.
         stable_variance = variance.clamp_min(torch.finfo(variance.dtype).tiny)
         denominator = stable_variance.sqrt() / bias_correction2_sqrt + spec.adam_epsilon
-        next_params[name] = decayed - (spec.lr / bias_correction1) * moment / denominator
+        next_params[name] = torch.addcdiv(decayed, moment, denominator,
+                                         value=-spec.lr / bias_correction1)
         next_moments[name], next_variances[name] = moment, variance
     return next_params, next_moments, next_variances
 

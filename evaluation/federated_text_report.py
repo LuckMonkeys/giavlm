@@ -18,6 +18,14 @@ LABELS = {
     "mixed-gradient": "Mixed FedSGD\nB=2",
     "mixed-one-step": "Mixed SGD\nB=2, S=1",
     "mixed-two-steps": "Mixed SGD\nB=1, S=2",
+    "adamw-gradient-control": "Gradient control\nFP32 master, B=2",
+    "adamw-fp32-s1": "AdamW, FP32 master\nB=2, S=1",
+    "adamw-fp32-s2": "AdamW, FP32 master\nB=1, S=2",
+    "adamw-bf16-s1": "AdamW, bf16 weights\nB=2, S=1",
+    "adamw-bf16-s2": "AdamW, bf16 weights\nB=1, S=2",
+    "fixed4-b1-s4": "Mixed SGD\nN=4, B=1, S=4",
+    "fixed4-b2-s2": "Mixed SGD\nN=4, B=2, S=2",
+    "fixed4-b4-s1": "Mixed SGD\nN=4, B=4, S=1",
 }
 
 

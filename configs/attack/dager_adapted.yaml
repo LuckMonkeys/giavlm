@@ -22,3 +22,4 @@ dager:
   lm_prior_weight: 0.0
   pooled_updates: false
   defense_mode: reject
+  adamw_delta_proposals: false
