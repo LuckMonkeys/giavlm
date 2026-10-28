@@ -20,6 +20,9 @@
 *[near-win]: 误差更小的候选，匹配损失也更低的概率；0.5 为随机
 *[surrogate]: 图像私有时，攻击者自己生成的随机像素图，用来代替真实图像
 *[full coverage]: 候选集包含了样本的全部私有 token
+*[FullCoverage]: 候选集包含了样本的全部私有 token
+*[Candidate recall]: 逐样本真实 token 在实际候选集中的召回再取平均，不是严格的 Recall@K
+*[DAGER-Erasure-LM]: public_residual 筛选加纯文本 LM prior 的展示名，不是原版 DAGER
 *[GT]: Ground truth：攻击者知道真实图像
 *[Joint EM]: 问题和答案都完全正确的样本比例
 *[NLL]: 负对数似然；纯文本先验按完整词表条件概率计算内容 token 的 −log p

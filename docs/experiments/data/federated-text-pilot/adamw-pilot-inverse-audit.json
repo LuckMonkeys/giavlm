@@ -1,0 +1,38 @@
+{
+  "status": "completed",
+  "scope": "two paired uploads, six selected layer-0/1 LoRA-A blocks; public uploads only",
+  "formula": "r=-delta/lr; g=eps*r/(1-abs(r)) for first step with zero moments and weight_decay=0",
+  "rows": [
+    {
+      "parameter_dtype": "fp32",
+      "n_coordinates": 1572864,
+      "invalid_or_saturated_fraction": 0.00011126200358072917,
+      "finite_inverse_relative_l2_vs_gradient_control_on_valid_coordinates": 0.8002293400717633,
+      "finite_inverse_cosine_on_valid_coordinates": 0.61935226764944,
+      "inverse_amplification_quantiles_valid": {
+        "p50": 1837.5795346417399,
+        "p90": 12733.525734073337,
+        "p99": 90810.37077131259
+      }
+    },
+    {
+      "parameter_dtype": "bf16",
+      "n_coordinates": 1572864,
+      "invalid_or_saturated_fraction": 0.6274490356445312,
+      "finite_inverse_relative_l2_vs_gradient_control_on_valid_coordinates": 0.9999662541219431,
+      "finite_inverse_cosine_on_valid_coordinates": 0.055871007910701716,
+      "inverse_amplification_quantiles_valid": {
+        "p50": 11.83815028901734,
+        "p90": 122.26865671641791,
+        "p99": 122.26865671641791
+      }
+    }
+  ],
+  "limitations": [
+    "bf16 gradient control is FP32-master mixed; bf16-master comparison is descriptive because its forward rounding may differ",
+    "only finite unsaturated coordinates are inverted; not a complete gradient reconstruction or text attack",
+    "FP32 AdamW finite moment arithmetic and parameter subtraction can make ideal inverse ill-conditioned"
+  ],
+  "uses_private_reference": false,
+  "uncommitted": true
+}

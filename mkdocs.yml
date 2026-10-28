@@ -15,6 +15,7 @@ nav:
   - Home: index.md
   - Handoff: PROJECT_HANDOFF.md
   - Experiments: experiments/README.md  # expanded by utils/mkdocs_hooks.py
+  - Plans: plans/  # expanded by utils/mkdocs_hooks.py, newest first
   - Methodology:
       - methodology/README.md
       - 优化类方法: methodology/optimization.md
@@ -32,7 +33,6 @@ nav:
       - Baselines: baselines.md
       - Architecture (中文): project_architecture.md
       - Learning roadmap: learning_roadmap.md
-      - Plans: plans/  # expanded by utils/mkdocs_hooks.py
 
 theme:
   name: material
@@ -80,11 +80,15 @@ plugins:
 extra_css:
   - stylesheets/extra.css
   - stylesheets/mint.css  # optional Mintlify-like skin; drop with javascripts/mint.js to revert
+  # Math: pymdownx.arithmatex marks $...$, $$...$$ and ```math; KaTeX renders it in the browser.
+  - https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css
 extra_javascript:
   - javascripts/table-filter.js
   - javascripts/page-width.js
   - javascripts/editor.js  # in-browser editing, active only under a loopback `mkdocs serve`
   - javascripts/mint.js  # page group label for the mint.css skin
+  - https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js
+  - javascripts/katex.js
 
 markdown_extensions:
   - abbr
@@ -96,6 +100,8 @@ markdown_extensions:
       permalink: true
       # The right-hand contents lists research questions (###); #### details keep anchors.
       toc_depth: 3
+  - pymdownx.arithmatex:
+      generic: true
   - pymdownx.details
   # Material icons in Markdown (`:material-text-search:`), used by the home page cards.
   - pymdownx.emoji:
@@ -111,3 +117,7 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+        - name: math
+          class: arithmatex
+          format: !!python/object/apply:pymdownx.arithmatex.arithmatex_fenced_format
+            kwds: {mode: generic, tag: div}

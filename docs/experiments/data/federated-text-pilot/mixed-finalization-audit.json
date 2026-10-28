@@ -1,0 +1,79 @@
+{
+  "status": "passed",
+  "finished_at": "2026-10-25T23:19:19.724319+08:00",
+  "wall_seconds": 9573.105929136276,
+  "source_sha256": "529566c53e748be0941f0720c73b15a112e232f09f62be6becfbcebf748e28e3",
+  "model_fingerprint": "0305d9f6c01d93948d4daa681b4b4d9eaec3791cc7346a0c03c7a3ed7c3599aa",
+  "captures": 45,
+  "attacks": 90,
+  "statuses": {
+    "completed": 90
+  },
+  "qa_rows": 180,
+  "all_paired_uploads_match": true,
+  "all_45_attack_paths_on_nas": true,
+  "all_15_second_steps_at_changed_parameters": true,
+  "all_source_precision_model_conditions_verified": true,
+  "report_hashes_verified": 9,
+  "all_aggregate_metrics_recomputed": true,
+  "one_step_selected_A_relative_l2_max": 9.851453605502318e-05,
+  "peak_attack_allocated_gib": 18.967811107635498,
+  "mean_attack_seconds": 190.292217011222,
+  "paired_joint_em_transitions": [
+    {
+      "image": "gt",
+      "from": "mixed-gradient",
+      "to": "mixed-one-step",
+      "both_correct": 10,
+      "lost": 0,
+      "gained": 0,
+      "n": 30
+    },
+    {
+      "image": "gt",
+      "from": "mixed-one-step",
+      "to": "mixed-two-steps",
+      "both_correct": 9,
+      "lost": 1,
+      "gained": 0,
+      "n": 30
+    },
+    {
+      "image": "random",
+      "from": "mixed-gradient",
+      "to": "mixed-one-step",
+      "both_correct": 6,
+      "lost": 0,
+      "gained": 0,
+      "n": 30
+    },
+    {
+      "image": "random",
+      "from": "mixed-one-step",
+      "to": "mixed-two-steps",
+      "both_correct": 5,
+      "lost": 1,
+      "gained": 0,
+      "n": 30
+    }
+  ],
+  "first_upload_speed_comparison": [
+    {
+      "image": "gt",
+      "full_fp32_seconds": 2010.538966699969,
+      "mixed_seconds": 313.0587079222314,
+      "speed_ratio": 6.422242588439411,
+      "scope": "first paired upload; not controlled kernel benchmark"
+    },
+    {
+      "image": "random",
+      "full_fp32_seconds": 1978.1051760637201,
+      "mixed_seconds": 316.5861497716978,
+      "speed_ratio": 6.248236625292061,
+      "scope": "first paired upload; not controlled kernel benchmark"
+    }
+  ],
+  "uses_private_reference": false,
+  "uncommitted": true,
+  "limitation": "B2/S1 and B1/S2 change batch-dependent loss weighting as well as local steps; method uses initial-model subspace approximation"
+}

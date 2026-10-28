@@ -104,6 +104,33 @@ Public image features and subspace bases are computed from the declared model
 state. Known template tokens after a private question are not treated as known
 contextual features at layer 1.
 
+The default remains single-sample, undefended FedSGD. The explicit experimental
+option `attack.dager.pooled_updates=true` also accepts F-L batch gradients and
+plain-SGD FedAvg deltas. One beam fills every declared sample slot using a shared
+upload subspace; causal and language-prior context resets at sample boundaries.
+Public-input removal uses the union of all declared sample inputs. No individual
+gradient, private sample identifier, or oracle assignment is supplied. Local-step
+slots follow `batch_size * local_steps * gradient_accumulation_steps`; repeated
+local epochs over a smaller private dataset are not inferred from that count.
+Initial-model features approximate later-step features, so multi-step recovery
+has no exactness guarantee. AdamW remains rejected by default. The separate
+experimental option `attack.dager.adamw_delta_proposals=true` requires pooled
+updates and nonzero full-update reranking. It treats the AdamW delta row spaces
+only as proposal heuristics, without the raw-gradient subspace premise, and
+selects complete candidates by replaying the declared AdamW optimizer against
+the original observed delta. It does not recover private optimizer moments;
+the current client protocol declares zero initial moments per upload. Unknown
+surrogate images can still bias replay selection. This is an exploratory
+optimizer-aware diagnostic, not an exact AdamW gradient inversion.
+
+`attack.dager.defense_mode=unaware` explicitly enables clipping, Gaussian upload
+noise, clipping with Gaussian noise, and per-tensor top-k sparsification. The
+attacker receives only the transformed upload, with defense parameters recorded
+in the result condition. It does not invert or fit the defense. Full-update
+reranking is disabled for defended uploads. The `gaussian_noise` defense uses
+per-tensor standard deviation `noise_ratio * max(abs(update))`, without clipping
+or a DP guarantee; it differs from `gaussian_dp`.
+
 Search is bounded by `attack.seconds` and `attack.max_evaluations`. One evaluation
 is one private-prefix extension or one full gradient replay, charged before the
 operation, independently of batching. These units differ from optimizer steps;

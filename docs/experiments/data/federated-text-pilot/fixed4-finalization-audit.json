@@ -1,0 +1,72 @@
+{
+  "aggregate_and_length_metrics_recomputed": true,
+  "all_attack_paths_archived_on_nas": true,
+  "all_final_checkpoints_hash_verified": true,
+  "all_paired_upload_metadata_match": true,
+  "attack_count": 42,
+  "attack_peak_allocated_gib": 19.075501918792725,
+  "cohort_n": 28,
+  "finished_local": "2026-10-26T12:27:36.224006+08:00",
+  "gpu_note": "project jobs released both GPUs; GPU 5 later occupied by another process",
+  "private_reference_read": false,
+  "remote_process_check": "controller, capture, both attacks, evaluation, report and both watchers exited",
+  "report_files_hash_verified": 9,
+  "source_sha256": "7a7437639c07b900443d8c7232bffca1a9f8de5db885404fb8bad8fba4d0e567",
+  "stages": [
+    {
+      "condition": "fixed4-b1-s4",
+      "covered_but_wrong_sequence": 10,
+      "image": "gt",
+      "joint_correct": 4,
+      "missing_true_tokens": 14,
+      "n": 28
+    },
+    {
+      "condition": "fixed4-b1-s4",
+      "covered_but_wrong_sequence": 11,
+      "image": "random",
+      "joint_correct": 1,
+      "missing_true_tokens": 16,
+      "n": 28
+    },
+    {
+      "condition": "fixed4-b2-s2",
+      "covered_but_wrong_sequence": 11,
+      "image": "gt",
+      "joint_correct": 5,
+      "missing_true_tokens": 12,
+      "n": 28
+    },
+    {
+      "condition": "fixed4-b2-s2",
+      "covered_but_wrong_sequence": 16,
+      "image": "random",
+      "joint_correct": 1,
+      "missing_true_tokens": 11,
+      "n": 28
+    },
+    {
+      "condition": "fixed4-b4-s1",
+      "covered_but_wrong_sequence": 13,
+      "image": "gt",
+      "joint_correct": 4,
+      "missing_true_tokens": 11,
+      "n": 28
+    },
+    {
+      "condition": "fixed4-b4-s1",
+      "covered_but_wrong_sequence": 14,
+      "image": "random",
+      "joint_correct": 3,
+      "missing_true_tokens": 11,
+      "n": 28
+    }
+  ],
+  "status": "passed",
+  "statuses": {
+    "completed": 42
+  },
+  "time": 1792990095.6493928,
+  "upload_count": 21,
+  "wall_minutes": 147.81830928325653
+}

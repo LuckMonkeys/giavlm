@@ -229,3 +229,9 @@
 @media screen and (max-width: 59.984375em) {
   .giavlm-editor { width: 100%; }
 }
+
+/* Wide display math scrolls instead of overflowing the page. */
+.md-typeset .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+}

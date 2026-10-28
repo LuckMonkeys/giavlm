@@ -1,0 +1,197 @@
+{
+  "status": "passed",
+  "scope": "all 15 paired uploads, six selected LoRA-A blocks in layers 0 and 1; no private reference opened",
+  "parameter_dtype": "bfloat16",
+  "gradient_dtype": "bfloat16",
+  "delta_dtype": "bfloat16",
+  "paired_protocols_identical_except_algorithm": true,
+  "public_images_and_lengths_match": true,
+  "all_bf16_formula_coordinates_match": true,
+  "rows": [
+    {
+      "pair_index": 0,
+      "coordinate_count": 786432,
+      "bf16_formula_coordinate_match": 1.0,
+      "torch_add_alpha_coordinate_match": 0.9980150858561198,
+      "fp32_step_then_bf16_coordinate_match": 0.9988327026367188,
+      "gradient_nonzero_fraction": 1.0,
+      "actual_delta_nonzero_fraction": 0.13811620076497397,
+      "selected_A_relative_l2_vs_ideal_delta": 0.02408517823641876
+    },
+    {
+      "pair_index": 1,
+      "coordinate_count": 786432,
+      "bf16_formula_coordinate_match": 1.0,
+      "torch_add_alpha_coordinate_match": 0.9979375203450521,
+      "fp32_step_then_bf16_coordinate_match": 0.998785654703776,
+      "gradient_nonzero_fraction": 1.0,
+      "actual_delta_nonzero_fraction": 0.13677469889322916,
+      "selected_A_relative_l2_vs_ideal_delta": 0.0248436040497558
+    },
+    {
+      "pair_index": 2,
+      "coordinate_count": 786432,
+      "bf16_formula_coordinate_match": 1.0,
+      "torch_add_alpha_coordinate_match": 0.9972877502441406,
+      "fp32_step_then_bf16_coordinate_match": 0.9983418782552084,
+      "gradient_nonzero_fraction": 1.0,
+      "actual_delta_nonzero_fraction": 0.18602879842122397,
+      "selected_A_relative_l2_vs_ideal_delta": 0.019565085007184495
+    },
+    {
+      "pair_index": 3,
+      "coordinate_count": 786432,
+      "bf16_formula_coordinate_match": 1.0,
+      "torch_add_alpha_coordinate_match": 0.998694101969401,
+      "fp32_step_then_bf16_coordinate_match": 0.9992535909016927,
+      "gradient_nonzero_fraction": 1.0,
+      "actual_delta_nonzero_fraction": 0.09347788492838542,
+      "selected_A_relative_l2_vs_ideal_delta": 0.03657155180143973
+    },
+    {
+      "pair_index": 4,
+      "coordinate_count": 786432,
+      "bf16_formula_coordinate_match": 1.0,
+      "torch_add_alpha_coordinate_match": 0.9991544087727865,
+      "fp32_step_then_bf16_coordinate_match": 0.9996223449707031,
+      "gradient_nonzero_fraction": 1.0,
+      "actual_delta_nonzero_fraction": 0.07487996419270833,
+      "selected_A_relative_l2_vs_ideal_delta": 0.166784656835463
+    },
+    {
+      "pair_index": 5,
+      "coordinate_count": 786432,
+      "bf16_formula_coordinate_match": 1.0,
+      "torch_add_alpha_coordinate_match": 0.999762217203776,
+      "fp32_step_then_bf16_coordinate_match": 0.9998881022135416,
+      "gradient_nonzero_fraction": 1.0,
+      "actual_delta_nonzero_fraction": 0.023705800374348957,
+      "selected_A_relative_l2_vs_ideal_delta": 0.1866577361355648
+    },
+    {
+      "pair_index": 6,
+      "coordinate_count": 786432,
+      "bf16_formula_coordinate_match": 1.0,
+      "torch_add_alpha_coordinate_match": 0.9989738464355469,
+      "fp32_step_then_bf16_coordinate_match": 0.9993731180826823,
+      "gradient_nonzero_fraction": 1.0,
+      "actual_delta_nonzero_fraction": 0.06684366861979167,
+      "selected_A_relative_l2_vs_ideal_delta": 0.036011272315365085
+    },
+    {
+      "pair_index": 7,
+      "coordinate_count": 786432,
+      "bf16_formula_coordinate_match": 1.0,
+      "torch_add_alpha_coordinate_match": 0.99810791015625,
+      "fp32_step_then_bf16_coordinate_match": 0.9989395141601562,
+      "gradient_nonzero_fraction": 1.0,
+      "actual_delta_nonzero_fraction": 0.151519775390625,
+      "selected_A_relative_l2_vs_ideal_delta": 0.05456684210262203
+    },
+    {
+      "pair_index": 8,
+      "coordinate_count": 786432,
+      "bf16_formula_coordinate_match": 1.0,
+      "torch_add_alpha_coordinate_match": 0.9998435974121094,
+      "fp32_step_then_bf16_coordinate_match": 0.999914805094401,
+      "gradient_nonzero_fraction": 1.0,
+      "actual_delta_nonzero_fraction": 0.01499176025390625,
+      "selected_A_relative_l2_vs_ideal_delta": 0.15773079337098936
+    },
+    {
+      "pair_index": 9,
+      "coordinate_count": 786432,
+      "bf16_formula_coordinate_match": 1.0,
+      "torch_add_alpha_coordinate_match": 0.9996439615885416,
+      "fp32_step_then_bf16_coordinate_match": 0.9998219807942709,
+      "gradient_nonzero_fraction": 1.0,
+      "actual_delta_nonzero_fraction": 0.034528096516927086,
+      "selected_A_relative_l2_vs_ideal_delta": 0.2205455108122524
+    },
+    {
+      "pair_index": 10,
+      "coordinate_count": 786432,
+      "bf16_formula_coordinate_match": 1.0,
+      "torch_add_alpha_coordinate_match": 0.99993896484375,
+      "fp32_step_then_bf16_coordinate_match": 0.9999732971191406,
+      "gradient_nonzero_fraction": 1.0,
+      "actual_delta_nonzero_fraction": 0.005217234293619792,
+      "selected_A_relative_l2_vs_ideal_delta": 0.39989994226290687
+    },
+    {
+      "pair_index": 11,
+      "coordinate_count": 786432,
+      "bf16_formula_coordinate_match": 1.0,
+      "torch_add_alpha_coordinate_match": 0.9999237060546875,
+      "fp32_step_then_bf16_coordinate_match": 0.999975840250651,
+      "gradient_nonzero_fraction": 1.0,
+      "actual_delta_nonzero_fraction": 0.007837931315104166,
+      "selected_A_relative_l2_vs_ideal_delta": 0.27226633870049494
+    },
+    {
+      "pair_index": 12,
+      "coordinate_count": 786432,
+      "bf16_formula_coordinate_match": 1.0,
+      "torch_add_alpha_coordinate_match": 0.9995549519856771,
+      "fp32_step_then_bf16_coordinate_match": 0.9997482299804688,
+      "gradient_nonzero_fraction": 1.0,
+      "actual_delta_nonzero_fraction": 0.037282307942708336,
+      "selected_A_relative_l2_vs_ideal_delta": 0.10732395916545018
+    },
+    {
+      "pair_index": 13,
+      "coordinate_count": 786432,
+      "bf16_formula_coordinate_match": 1.0,
+      "torch_add_alpha_coordinate_match": 0.999914805094401,
+      "fp32_step_then_bf16_coordinate_match": 0.9999669392903646,
+      "gradient_nonzero_fraction": 1.0,
+      "actual_delta_nonzero_fraction": 0.008069356282552084,
+      "selected_A_relative_l2_vs_ideal_delta": 0.2403718471726502
+    },
+    {
+      "pair_index": 14,
+      "coordinate_count": 786432,
+      "bf16_formula_coordinate_match": 1.0,
+      "torch_add_alpha_coordinate_match": 0.9996490478515625,
+      "fp32_step_then_bf16_coordinate_match": 0.9998067220052084,
+      "gradient_nonzero_fraction": 1.0,
+      "actual_delta_nonzero_fraction": 0.027537027994791668,
+      "selected_A_relative_l2_vs_ideal_delta": 0.0677512222397895
+    }
+  ],
+  "aggregate": {
+    "bf16_formula_coordinate_match": {
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0
+    },
+    "torch_add_alpha_coordinate_match": {
+      "min": 0.9972877502441406,
+      "mean": 0.9990934583875868,
+      "max": 0.99993896484375
+    },
+    "fp32_step_then_bf16_coordinate_match": {
+      "min": 0.9983418782552084,
+      "mean": 0.9994829813639323,
+      "max": 0.999975840250651
+    },
+    "gradient_nonzero_fraction": {
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0
+    },
+    "actual_delta_nonzero_fraction": {
+      "min": 0.005217234293619792,
+      "mean": 0.06712070041232639,
+      "max": 0.18602879842122397
+    },
+    "selected_A_relative_l2_vs_ideal_delta": {
+      "min": 0.019565085007184495,
+      "mean": 0.13433170268055647,
+      "max": 0.39989994226290687
+    }
+  },
+  "time": 1792915659.839274,
+  "uses_private_reference": false,
+  "uncommitted": true
+}

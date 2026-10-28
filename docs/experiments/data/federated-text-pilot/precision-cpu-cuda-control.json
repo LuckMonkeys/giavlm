@@ -1,0 +1,17 @@
+{
+  "time": 1792925792.0206916,
+  "rows": [
+    {
+      "variant": "sgd-bf16",
+      "selected_A_cpu_cuda_coordinate_match": 0.9994726392957899,
+      "count": 11796480
+    },
+    {
+      "variant": "sgd-fp32",
+      "selected_A_cpu_cuda_coordinate_match": 1.0,
+      "count": 11796480
+    }
+  ],
+  "scope": "all 15 paired uploads, six selected LoRA-A blocks; prepared CPU torch SGD vs actual CUDA torch SGD, same fixed gradient",
+  "peak_allocated_bytes": 2621440
+}

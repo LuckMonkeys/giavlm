@@ -1,0 +1,71 @@
+{
+  "uncommitted": true,
+  "source_sha256": "eeb1c28574d7a0ce6f8b3199c621e6d2dbe78838363786068a6d1cc5770480e3",
+  "files": [
+    {
+      "path": "docs/experiments/data/federated-text-pilot/slake30-aggregate.json",
+      "source": "outputs/diagnostics/federated_text_slake30_20261023/report/aggregate.json",
+      "sha256": "269b49734aa13effd4e46666cd590490bf62abd64d6d0249ef6f7119f96dd6ac"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/slake30-summary.csv",
+      "source": "outputs/diagnostics/federated_text_slake30_20261023/report/summary.csv",
+      "sha256": "13eb0e5a19a72d563cfe5324c79511a598a23b9c9bd0fdce0b35d9e75b1eeb23"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/slake30-by-length.csv",
+      "source": "outputs/diagnostics/federated_text_slake30_20261023/report/by-length.csv",
+      "sha256": "87dded48513ddcce3b642ca58e1760b822a9c8bc2a0c330b09a383ad874cb250"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/slake30-summary.md",
+      "source": "outputs/diagnostics/federated_text_slake30_20261023/report/summary.md",
+      "sha256": "3660d9267f36dcd1976e6eb3e5ef362609386af4f70011215caa9a99ca0192f1"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/slake30-by-length.md",
+      "source": "outputs/diagnostics/federated_text_slake30_20261023/report/by-length.md",
+      "sha256": "ed0d30064c002e25b2624990107ea0121a67f6c21666aca588adbfefd5f19660"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/slake30-interpretation-audit.json",
+      "source": "outputs/diagnostics/federated_text_slake30_20261023/report/interpretation-audit.json",
+      "sha256": "6f59e08ddb43b73f8dd366d22e4d1656a1170f925c7d65f027eb198c50abfc49"
+    },
+    {
+      "path": "docs/experiments/figures/federated-text-pilot/slake30-recovery.png",
+      "source": "outputs/diagnostics/federated_text_slake30_20261023/report/recovery.png",
+      "sha256": "45baa0ba8c1d8cef9eb7535649601ea4ad52d5c2acf091dcb5a3f2fe2ea345c3"
+    },
+    {
+      "path": "docs/experiments/figures/federated-text-pilot/slake30-recovery.svg",
+      "source": "outputs/diagnostics/federated_text_slake30_20261023/report/recovery.svg",
+      "sha256": "9ab6541572d7192844bd385bef72684aca76a31766034075834a4c7d0507a118"
+    },
+    {
+      "path": "docs/experiments/figures/federated-text-pilot/slake30-joint-em-by-length.png",
+      "source": "outputs/diagnostics/federated_text_slake30_20261023/report/joint-em-by-length.png",
+      "sha256": "ab76a7f239d52b8804ebf8c71687a0b7ee533e4b10c5bf1097f1ecaf6633982f"
+    },
+    {
+      "path": "docs/experiments/figures/federated-text-pilot/slake30-joint-em-by-length.svg",
+      "source": "outputs/diagnostics/federated_text_slake30_20261023/report/joint-em-by-length.svg",
+      "sha256": "b8e1345fc269299f313d2182047699d37516333f3bbb34a6b083d7b791b121c7"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/slake30-completion-audit.json",
+      "source": "outputs/diagnostics/federated_text_slake30_20261023/setup/completion-audit.json",
+      "sha256": "084a1a5a8fb704609ac86415515681a150f417ff7952976c072f94ea4878c92e"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/slake30-delta-audit.json",
+      "source": "outputs/diagnostics/federated_text_slake30_20261023/setup/delta-audit/result.json",
+      "sha256": "c9e073a1ecdb29327fee5c55e1cf843ba1491903f6fbb72037612b1ad831cbe5"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/slake30-torch-sgd-control.json",
+      "source": "outputs/diagnostics/federated_text_slake30_20261023/setup/delta-audit/torch-sgd-control.json",
+      "sha256": "4994e4d965aa2fd8d6375aef0dc61c8034455aea0df133fd39fd32eb5b2a4cc9"
+    }
+  ]
+}

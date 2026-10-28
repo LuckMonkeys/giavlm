@@ -1,0 +1,67 @@
+{
+  "uncommitted": true,
+  "uses_private_reference": false,
+  "source_sha256": "529566c53e748be0941f0720c73b15a112e232f09f62be6becfbcebf748e28e3",
+  "files": [
+    {
+      "path": "docs/experiments/data/federated-text-pilot/mixed-aggregate.json",
+      "source": "outputs/diagnostics/mixed_multistep_slake30_20261025/report/aggregate.json",
+      "sha256": "33e6f6ae66673ea56ca853a8bf672451c8aa93cdd2a03ddc1bbc5eb0d3d8590d"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/mixed-summary.csv",
+      "source": "outputs/diagnostics/mixed_multistep_slake30_20261025/report/summary.csv",
+      "sha256": "9e1ddfeca999a0d4c8312a715a0544d5855d4f009159425b01804d9ec45b4150"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/mixed-by-length.csv",
+      "source": "outputs/diagnostics/mixed_multistep_slake30_20261025/report/by-length.csv",
+      "sha256": "672e69d0095a59a66db53ea82aea4618d2d67004dd1633acb918546cb35aed65"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/mixed-summary.md",
+      "source": "outputs/diagnostics/mixed_multistep_slake30_20261025/report/summary.md",
+      "sha256": "0cf2adbc305ab1e8c232518e6a6cd442f960b7515993db4650a082ae25ad6fdd"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/mixed-by-length.md",
+      "source": "outputs/diagnostics/mixed_multistep_slake30_20261025/report/by-length.md",
+      "sha256": "d12662f7fdcff86706168d00ae38737c1181636dd690875535dbcd297e2e5e02"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/mixed-completion-audit.json",
+      "source": "outputs/diagnostics/mixed_multistep_slake30_20261025/completion-audit.json",
+      "sha256": "0480c7cfffc9b89787098afcbd0c99e6cfb2fffb2186468150ab70ef9a2e37e8"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/mixed-capture-audit.json",
+      "source": "outputs/diagnostics/mixed_multistep_slake30_20261025/setup/capture-completion-audit.json",
+      "sha256": "07e3a6f837165a5f5a66b12176410739af6e3876f11919af74475ce862b980a3"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/mixed-finalization-audit.json",
+      "source": "outputs/diagnostics/mixed_multistep_slake30_20261025/setup/finalization-audit.json",
+      "sha256": "6eb42a146debe0aac17016836a160f6e4d9852e683cd6748ca4683a7580e7ec5"
+    },
+    {
+      "path": "docs/experiments/figures/federated-text-pilot/mixed-recovery.png",
+      "source": "outputs/diagnostics/mixed_multistep_slake30_20261025/report/recovery.png",
+      "sha256": "2f4cbc27aec3225243795848c7b1bbb98f0eb1bc3bda0c20467b14e70afa58cb"
+    },
+    {
+      "path": "docs/experiments/figures/federated-text-pilot/mixed-recovery.svg",
+      "source": "outputs/diagnostics/mixed_multistep_slake30_20261025/report/recovery.svg",
+      "sha256": "1252c551feffc60f3d172ebafcf394448ff0075bdd3f1df6c0206e682b621155"
+    },
+    {
+      "path": "docs/experiments/figures/federated-text-pilot/mixed-joint-em-by-length.png",
+      "source": "outputs/diagnostics/mixed_multistep_slake30_20261025/report/joint-em-by-length.png",
+      "sha256": "6d4a1dcb3d318345c939b4d2efce4e6630da39caa657d904d9705103ea92baa2"
+    },
+    {
+      "path": "docs/experiments/figures/federated-text-pilot/mixed-joint-em-by-length.svg",
+      "source": "outputs/diagnostics/mixed_multistep_slake30_20261025/report/joint-em-by-length.svg",
+      "sha256": "c8cff89171316aa0f42dc26af439e424297035ac53d04ef837ffedcc60224c39"
+    }
+  ]
+}

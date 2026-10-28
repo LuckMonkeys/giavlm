@@ -31,6 +31,7 @@
 | TAG | 文本侧的梯度匹配攻击，优化连续的文本表示再离散化。 |
 | DAGER / `dager_adapted` | DAGER 利用梯度的低秩结构，先判断哪些 token 出现过（第一阶段），再搜索排列成句子（第二阶段）。`dager_adapted` 是本项目针对 LoRA 的改编版，解码器不是论文原版。 |
 | public residual / raw | `dager_adapted` 的两种空间打分：Residual 从梯度和候选特征中同时去掉已知输入方向；Raw 直接使用梯度行空间。两个阶段分别使用对应层的特征和梯度。见 [Residual v1](methodology/dager/residual-v1.md)。 |
+| DAGER-Erasure-LM | `dager_adapted` 的 `public_residual` 筛选（展示表中称 Erasure）加纯文本 LM prior 的组合；用于展示名，不是原版 DAGER。 |
 | informative / ambiguous 候选 | 去掉已知输入方向后仍有可评分分量的候选 / 投影后几乎为零、成员关系无法判断的候选。已知方向可包含图像与模板，不只是公开文本；ambiguous 另行保留，不算检测阳性。 |
 | 梯度行空间 | 梯度矩阵各行的所有线性组合组成的空间；它可能只覆盖实际输入空间的一部分。 |
 | 正交行基 | 用相互正交的单位行向量表示一个空间；Residual 分别用 U 表示已知方向、S 表示残余梯度方向。 |
@@ -49,7 +50,8 @@
 |---|---|
 | Top-K / K | 按第一阶段打分取排名前 K 的 token 作为候选。 |
 | Recall@K | 私有文本的去重 token 中，有多少比例落在前 K 个候选里。 |
-| full coverage | 候选集包含了某个样本的**全部**私有 token。这是第二阶段有可能完全恢复句子的前提。 |
+| full coverage / FullCoverage | 候选集包含了某个样本的**全部**私有 token。这是第二阶段有可能完全恢复句子的前提。 |
+| Candidate recall | 逐样本真实内容 token 集合在实际候选集中的召回，再对样本取平均；实际候选集可能超过 K 个（含 ambiguous ID），因此不是严格的 Recall@K。 |
 | full coverage (actual / K=100) | 分别按实际搜索用的候选集、按排名前 100 的候选集计算 full coverage。两者在 residual 条件下不同，因为实际候选集额外包含 9 个 ambiguous ID。 |
 | AP | Average Precision，衡量真实 token 是否排得靠前；越高越好。 |
 | Balanced accuracy | 每个目标类别的 Recall 的等权平均；模态三分类中，缺少任一目标类别时不报告完整三分类值。 |

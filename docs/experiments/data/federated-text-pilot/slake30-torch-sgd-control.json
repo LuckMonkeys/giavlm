@@ -1,0 +1,11 @@
+{
+  "scope": "first pair, six selected LoRA-A blocks, CPU, torch.optim.SGD foreach=False",
+  "torch_sgd_exactly_matches_add_alpha": true,
+  "bf16_example": {
+    "theta": 1.0,
+    "gradient": 0.1,
+    "learning_rate": 0.01,
+    "ideal_delta": -0.001,
+    "actual_delta": 0.0
+  }
+}

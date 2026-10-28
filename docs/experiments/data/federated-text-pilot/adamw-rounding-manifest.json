@@ -1,0 +1,16 @@
+{
+  "uncommitted": true,
+  "uses_private_reference": false,
+  "files": [
+    {
+      "path": "docs/experiments/data/federated-text-pilot/adamw-rounding.json",
+      "source": "outputs/diagnostics/adamw_rounding_slake30_20261025/summary.json",
+      "sha256": "cc12ac89d69892b4c865b6da046146b8af41fdbe7768039e0be7627c1e87e847"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/adamw-rounding.csv",
+      "source": "outputs/diagnostics/adamw_rounding_slake30_20261025/summary.csv",
+      "sha256": "5a0d01fa01a0cb8c387ad594bae9e605c017f69225b2f67d2d2ea42edd3b4a77"
+    }
+  ]
+}

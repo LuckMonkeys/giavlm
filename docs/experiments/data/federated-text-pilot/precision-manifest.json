@@ -1,0 +1,51 @@
+{
+  "uncommitted": true,
+  "source_sha256": "a2c3e9d3f0d4e5907a78510832f320ae4312e2e7ae7667ca1a40b3200d0cfdd5",
+  "files": [
+    {
+      "path": "docs/experiments/data/federated-text-pilot/precision-comparison.json",
+      "source": "outputs/diagnostics/sgd_precision_slake30_20261025/report/final-comparison.json",
+      "sha256": "0dbf9e0ba2d54c19d0711d127fa2e48db461600b7ba08c288bc3a3b76e0de35e"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/precision-comparison.csv",
+      "source": "outputs/diagnostics/sgd_precision_slake30_20261025/report/comparison.csv",
+      "sha256": "7642b1e083549efdb9c3db5d985b60bd47a947ba91d436f8121f78ee558135e9"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/precision-aggregate.json",
+      "source": "outputs/diagnostics/sgd_precision_slake30_20261025/report/aggregate.json",
+      "sha256": "e57c99d328cce4cc2d565ecc65000dd1271cd6dc7264431e3f84ce9c89857055"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/precision-by-length.csv",
+      "source": "outputs/diagnostics/sgd_precision_slake30_20261025/report/by-length.csv",
+      "sha256": "966d1f70ab75740d001a56fd2590c831293f416cf249340e7eb74606de111ae8"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/precision-completion-audit.json",
+      "source": "outputs/diagnostics/sgd_precision_slake30_20261025/completion-audit.json",
+      "sha256": "b7693b9fd6ad9acb5d4222adf05b913173ed636eb08c9e849e487d0432b82566"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/precision-cpu-cuda-control.json",
+      "source": "outputs/diagnostics/sgd_precision_slake30_20261025/setup/cpu-cuda-control.json",
+      "sha256": "a01523b694d252342df05e5d5860359be6b56bd45f9cec54e525c286169393a7"
+    },
+    {
+      "path": "docs/experiments/figures/federated-text-pilot/fixed-gradient-comparison.png",
+      "source": "outputs/diagnostics/sgd_precision_slake30_20261025/report/fixed-gradient-comparison.png",
+      "sha256": "d5582936e825d7ef166956a58da42c85926295f92549fb5f948a6b4695c5d013"
+    },
+    {
+      "path": "docs/experiments/figures/federated-text-pilot/fixed-gradient-comparison.svg",
+      "source": "outputs/diagnostics/sgd_precision_slake30_20261025/report/fixed-gradient-comparison.svg",
+      "sha256": "05cc7c85ad0cba62ad5dfe6eeee9964ce0deab02a982530b5f69af318518e07f"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/precision-update-resolution.json",
+      "source": "outputs/diagnostics/sgd_precision_slake30_20261025/setup/update-resolution.json",
+      "sha256": "feb2574ebaf8d8af2e761f110a71c881f80e4a66e476f40060b2c4a5c1dc0400"
+    }
+  ]
+}

@@ -1,0 +1,197 @@
+{
+  "status": "completed",
+  "device": "cpu",
+  "torch": "2.6.0+cu124",
+  "python": "3.10.13",
+  "seconds": 45.565563302952796,
+  "scope": "15 original public batch=2 gradients; six layer-0/1 q/k/v LoRA-A blocks; 30 SLAKE QA",
+  "n_coordinates": 11796480,
+  "n_uploads": 15,
+  "n_blocks_per_upload": 6,
+  "parameter_names": [
+    "backend.language_model.model.layers.0.self_attn.k_proj.lora_A.default.weight",
+    "backend.language_model.model.layers.0.self_attn.q_proj.lora_A.default.weight",
+    "backend.language_model.model.layers.0.self_attn.v_proj.lora_A.default.weight",
+    "backend.language_model.model.layers.1.self_attn.k_proj.lora_A.default.weight",
+    "backend.language_model.model.layers.1.self_attn.q_proj.lora_A.default.weight",
+    "backend.language_model.model.layers.1.self_attn.v_proj.lora_A.default.weight"
+  ],
+  "gradient_dtype": "bfloat16, converted exactly per arithmetic path",
+  "model_metadata_sha256": "c49506ca3ad01c0ec7e59c97a5afa71369f48b1dfb5c79d361ae1f710cb242c0",
+  "model_tensors_sha256": "4095543e8a1b8a32762661dce162ff5a5dd549eb8833a160d549e3b8c4ee591d",
+  "script_sha256": "4b1aea77cf7214e89bad2cdf068801ecb01805e329e97ab4f259127fe60e5d2a",
+  "reference_code_commit": "31ef506",
+  "fedvlmbench_configuration": {
+    "initial_lr": 0.0001,
+    "optimizer": "adamw_torch",
+    "weight_decay": 0.0
+  },
+  "adamw_settings": {
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08,
+    "weight_decay": 0.0,
+    "initial_moments": "zero",
+    "steps": 1,
+    "foreach": false,
+    "fused": false
+  },
+  "first_step_formula_relative_l2_vs_native_fp64": 4.1684211083168696e-15,
+  "original_sgd_bf16_zero_fraction_reproduced": true,
+  "median_abs_weight": 0.0078125,
+  "ideal_sgd_median_abs_delta": 5.745887756347657e-07,
+  "ideal_adamw_median_abs_delta": 9.998259927734111e-05,
+  "median_ideal_adamw_to_sgd_coordinate_ratio": 174.00722658894145,
+  "inputs": [
+    {
+      "public_gradient_sha256": "0a10fcdc754fa6bb958f298806cd9fbafa23184f9635ae98e76ffcc41deb2987",
+      "upload_index": 0
+    },
+    {
+      "public_gradient_sha256": "93f739071be8c35ee931b58e09d123d500cfdf1394121d9efabd71d73257e056",
+      "upload_index": 1
+    },
+    {
+      "public_gradient_sha256": "a55fa7495671ac23ca41c75b0a19c85649d3d2d67a403d78369276f824a1c986",
+      "upload_index": 2
+    },
+    {
+      "public_gradient_sha256": "b308562b9589fdc1423e84fc14a48597dd9f1553bce9705657ea5936018be660",
+      "upload_index": 3
+    },
+    {
+      "public_gradient_sha256": "27f6c2f1d6b0b371ec68192acbe26bbbb18179a715f3ddf355178a99c0855e30",
+      "upload_index": 4
+    },
+    {
+      "public_gradient_sha256": "2c6b300ead521ba6bd4092662789cda865ad25443da0b8e1e0fb86cc43c20c24",
+      "upload_index": 5
+    },
+    {
+      "public_gradient_sha256": "18a6382200ad25f5ddda791a3bb0db4c60919b0fdfdccd9e20dda649abb1e93a",
+      "upload_index": 6
+    },
+    {
+      "public_gradient_sha256": "303c280fd91cc52b2bc610d319dd095ec22fe7b06d0c05b15b1e80108f1f6f29",
+      "upload_index": 7
+    },
+    {
+      "public_gradient_sha256": "71777a7f061a39fab8291102833be75abb731a362f8334f97fd2c42796109da3",
+      "upload_index": 8
+    },
+    {
+      "public_gradient_sha256": "94edb5647c2c3296feb8d1bd6882e57075fc3b6237f167ddbd2d83c6f1271138",
+      "upload_index": 9
+    },
+    {
+      "public_gradient_sha256": "ce0e8c9b87fb0918d0d1c82a4ee9f3c1f77f08dd4c69c54b3bc6ae7091c684d8",
+      "upload_index": 10
+    },
+    {
+      "public_gradient_sha256": "7e730263174cb24a3c363d7ccdd95c1732fd79f2233dfb5658d09b91c2bd22d8",
+      "upload_index": 11
+    },
+    {
+      "public_gradient_sha256": "53b0b1a8129e36c468a081ba233b08e43b2cecbfef4be4ee937b38f2956e2b82",
+      "upload_index": 12
+    },
+    {
+      "public_gradient_sha256": "d8ad9dd586a488120a28e0b3d0619c0b41ba902ff30d87e43e7fed94ee58e58e",
+      "upload_index": 13
+    },
+    {
+      "public_gradient_sha256": "70f0a8c35b16badebb0aac87f7cdb89244846ebee8d7f61052ba704bb8d5dfe4",
+      "upload_index": 14
+    }
+  ],
+  "rows": [
+    {
+      "optimizer": "SGD",
+      "lr": 0.01,
+      "path": "native optimizer",
+      "parameter_dtype": "bfloat16",
+      "moment_dtype": "none",
+      "zero_fraction": 0.9327425638834635,
+      "median_abs_delta": 0.0,
+      "median_abs_relative_delta": 0.0,
+      "relative_l2_vs_ideal": 0.028335033085636684,
+      "cosine_to_gradient": 0.9995994996832229,
+      "finite": true
+    },
+    {
+      "optimizer": "SGD",
+      "lr": 0.01,
+      "path": "native optimizer",
+      "parameter_dtype": "float32",
+      "moment_dtype": "none",
+      "zero_fraction": 0.0016276889377170138,
+      "median_abs_delta": 5.746260285377502e-07,
+      "median_abs_relative_delta": 9.370691636029412e-05,
+      "relative_l2_vs_ideal": 1.4605387193806617e-06,
+      "cosine_to_gradient": 1.000000000001623,
+      "finite": true
+    },
+    {
+      "optimizer": "SGD",
+      "lr": 0.01,
+      "path": "FP64 ideal then bf16 parameter rounding",
+      "parameter_dtype": "bfloat16",
+      "moment_dtype": "ideal first-step formula",
+      "zero_fraction": 0.9328792995876736,
+      "median_abs_delta": 0.0,
+      "median_abs_relative_delta": 0.0,
+      "relative_l2_vs_ideal": 0.0282704821902094,
+      "cosine_to_gradient": 0.9996003481019627,
+      "finite": true
+    },
+    {
+      "optimizer": "AdamW",
+      "lr": 0.0001,
+      "path": "native optimizer",
+      "parameter_dtype": "bfloat16",
+      "moment_dtype": "bfloat16",
+      "zero_fraction": 0.00016462537977430557,
+      "median_abs_delta": 0.0001068115234375,
+      "median_abs_relative_delta": 0.013605442176870748,
+      "relative_l2_vs_ideal": 0.16489014584301057,
+      "cosine_to_gradient": 0.04751675797043222,
+      "finite": true
+    },
+    {
+      "optimizer": "AdamW",
+      "lr": 0.0001,
+      "path": "native optimizer",
+      "parameter_dtype": "float32",
+      "moment_dtype": "float32",
+      "zero_fraction": 0.0,
+      "median_abs_delta": 9.9982600659132e-05,
+      "median_abs_relative_delta": 0.012798726558685303,
+      "relative_l2_vs_ideal": 2.244040834167449e-06,
+      "cosine_to_gradient": 0.04778737600741056,
+      "finite": true
+    },
+    {
+      "optimizer": "AdamW",
+      "lr": 0.0001,
+      "path": "FP64 ideal then bf16 parameter rounding",
+      "parameter_dtype": "bfloat16",
+      "moment_dtype": "ideal first-step formula",
+      "zero_fraction": 0.00016352335611979167,
+      "median_abs_delta": 0.0001068115234375,
+      "median_abs_relative_delta": 0.013605442176870748,
+      "relative_l2_vs_ideal": 0.16488460458582307,
+      "cosine_to_gradient": 0.04751601967529609,
+      "finite": true
+    }
+  ],
+  "uses_private_reference": false,
+  "uncommitted": true,
+  "limitations": [
+    "CPU optimizer arithmetic, not CUDA execution or model retraining",
+    "First step with zero moments only; not mature optimizer states or multistep training",
+    "No text reconstruction or candidate scoring; no claim of attack improvement",
+    "Six selected LoRA-A blocks only; not the entire model or LoRA-B"
+  ]
+}

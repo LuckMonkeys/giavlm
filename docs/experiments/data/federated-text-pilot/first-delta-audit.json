@@ -1,0 +1,8 @@
+{
+  "global_relative_l2_delta_vs_negative_lr_gradient": 0.30132093544765287,
+  "note": "bf16 client update subtraction; public uploads only, no reference text",
+  "observed_delta_coordinate_match_to_bf16_formula": 1.0,
+  "pair": 0,
+  "selected_lora_a_nonzero_fraction": 0.01583385467529297,
+  "selected_lora_a_relative_l2": 0.22488072303584086
+}

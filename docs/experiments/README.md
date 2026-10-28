@@ -71,6 +71,9 @@ tracks.yaml; edit those, not this page. -->
 ## 文本重建（DAGER）
 
 - 两模型、三数据集、72 个 QA 共 288 次攻击已完成（rank 32、先验权重 0.01）。
+- 固定每份上传四条 QA、bf16 主干与 FP32 LoRA 更新时，B1S4、B2S2、B4S1 的 Joint EM 为 GT 4/28、5/28、4/28，Random 1/28、1/28、3/28；四步仍泄露文本，七组数据不足以认定稳定的步数趋势。
+- bf16 计算、FP32 参数更新的真实 SGD 对照中，单步与梯度均恢复 GT 10/30、Random 6/30，两步仍为 9/30、5/30；两步同时改变 batch 与 loss 加权，不能单独估计纯步数影响。
+- 同一梯度的 SGD 单步更新对照中，标准 bf16 差值的 Joint EM 为 0/30；FP32 更新回到 GT 10/30、Random 6/30，表明参数舍入是本轮下降的主要原因，不能据此推断多步 FedAvg 的效果。AdamW 单步算术虽基本避免归零，但后续四样本差值提案在 FP32/bf16、单步/双步下均未恢复完整问答，当前不扩大矩阵。
 - Random 条件下，Qwen3.5 在 SLAKE、VQA-RAD、VQAv2 的 Joint EM 为 25/30、11/21、8/21，LLaVA 为 11/30、3/21、2/21；两者结构不同，不能单独归因于架构。
 - 私有文本的 token 集合会泄露：rank 32 的 Residual 在随机图像下 Recall@100 约 0.994。
 - 提高 LoRA rank 改善恢复：已知图像时完整问答从 rank 8 的 0/10 升到 rank 32 的 5/10。
@@ -83,6 +86,7 @@ tracks.yaml; edit those, not this page. -->
 | Importance | Dates | Experiment | Condition | n | Level | Outcome | Flags | Findings |
 |---|---|---|---|---:|---|---|---|---|
 | **key** | 2026-10-17 – 2026-10-18 | [跨模型与数据集 benchmark](2026-10-17-crossmodel-text-benchmark.md) | F-L · round 10 · image_known / private · lengths known | 72 | benchmark | mixed |  | • Qwen3.5 比 LLaVA 更容易恢复<br>• 恢复率随数据集变化<br>• 候选找齐仍可能恢复失败<br>• Qwen 在 VQAv2 还有候选漏检<br>• 长文本的结论有限 |
+| **key** | 2026-10-23 – 2026-10-26 | [DAGER 联邦更新与防御](2026-10-23-federated-text-pilot.md) | F-L · round 10 · image_known / private · lengths known | 30 | diagnostic | mixed |  | • 固定四条问答时，四步仍泄露文本<br>• AdamW 差值提案在四样本中失败<br>• SGD 单步失败主要来自 bf16 参数舍入<br>• 当前强度的噪声与稀疏化使恢复归零<br>• 长问答仍未完整恢复 |
 | **key** | 2026-10-11 – 2026-10-12 | [语言先验辅助 DAGER](2026-10-11-dager-lm-prior.md) | F-L · round 10 · private · lengths known | 20 | validation | positive | 使用私有数据 | • rank 32 新问答完整恢复 8/10<br>• 开发集同样明显<br>• 先验主要减少了真前缀被剪掉<br>• rank 8 收益有限<br>• 默认行为不变 |
 | **key** | 2026-10-03 – 2026-10-10 | [DAGER 多样本重建与 rank](2026-10-03-dager-multisample.md) | F-L · round 10 · image_known / private · lengths known | 10 | development | mixed | private-tokens | • Residual 筛选几乎找全私有 token<br>• rank 8 下没有恢复任何完整问答<br>• 提高 rank 明显改善已知图像时的恢复<br>• 提升不只来自候选覆盖<br>• 随机图像下仍未恢复完整问答 |
 | **key** | 2026-10-05 | [DAGER token 筛选改进](2026-10-05-dager-filter-phase.md) | F-L · round 10 · image_known / private · lengths known | 50 | validation | negative | 使用私有数据, private-tokens | • 没有一种方法能稳定替代现有筛选器<br>• 稀疏字典排序只在已知图像时有效<br>• 公开图像统计加权没有通过验证<br>• 逐 token 校准只有局部提升<br>• 决定保留现有筛选器 |

@@ -1,0 +1,15 @@
+{
+  "status": "completed",
+  "source_sha256": "529566c53e748be0941f0720c73b15a112e232f09f62be6becfbcebf748e28e3",
+  "model_fingerprint": "0305d9f6c01d93948d4daa681b4b4d9eaec3791cc7346a0c03c7a3ed7c3599aa",
+  "attack_count": 90,
+  "statuses": {
+    "completed": 90
+  },
+  "all_paired_uploads_match": true,
+  "all_source_hashes_match": true,
+  "all_second_steps_used_updated_fp32_parameters": true,
+  "bf16_autocast_fp32_lora_sgd_upload": true,
+  "initial_model_immutable": true,
+  "time": 1792941559.7228916
+}

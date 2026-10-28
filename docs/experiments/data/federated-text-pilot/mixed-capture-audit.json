@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "captured_uploads": 45,
+  "two_step_uploads": 15,
+  "all_second_steps_use_changed_parameters": true,
+  "second_step_selected_A_distance_min": 0.0021744623497682476,
+  "second_step_selected_A_distance_max": 0.5699980515985196,
+  "one_step_selected_A_relative_l2_max": 9.851453605502318e-05,
+  "peak_capture_allocated_gib": 29.24148988723755,
+  "initial_model_immutable": true,
+  "bf16_autocast_fp32_lora_sgd_upload": true,
+  "capture_returncode": 0
+}

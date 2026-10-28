@@ -49,9 +49,12 @@ text-tag:
 text-dager:
   title: 文本重建（DAGER）
   icon: material-text-recognition
-  headline: 私有文本的 token 集合会泄露；rank 32 加语言先验后新问答完整恢复 8/10，但效果随模型和数据集变化。
+  headline: 固定四条问答时，四步 SGD 仍可恢复文本。
   summary:
     - 两模型、三数据集、72 个 QA 共 288 次攻击已完成（rank 32、先验权重 0.01）。
+    - 固定每份上传四条 QA、bf16 主干与 FP32 LoRA 更新时，B1S4、B2S2、B4S1 的 Joint EM 为 GT 4/28、5/28、4/28，Random 1/28、1/28、3/28；四步仍泄露文本，七组数据不足以认定稳定的步数趋势。
+    - bf16 计算、FP32 参数更新的真实 SGD 对照中，单步与梯度均恢复 GT 10/30、Random 6/30，两步仍为 9/30、5/30；两步同时改变 batch 与 loss 加权，不能单独估计纯步数影响。
+    - 同一梯度的 SGD 单步更新对照中，标准 bf16 差值的 Joint EM 为 0/30；FP32 更新回到 GT 10/30、Random 6/30，表明参数舍入是本轮下降的主要原因，不能据此推断多步 FedAvg 的效果。AdamW 单步算术虽基本避免归零，但后续四样本差值提案在 FP32/bf16、单步/双步下均未恢复完整问答，当前不扩大矩阵。
     - Random 条件下，Qwen3.5 在 SLAKE、VQA-RAD、VQAv2 的 Joint EM 为 25/30、11/21、8/21，LLaVA 为 11/30、3/21、2/21；两者结构不同，不能单独归因于架构。
     - 私有文本的 token 集合会泄露：rank 32 的 Residual 在随机图像下 Recall@100 约 0.994。
     - 提高 LoRA rank 改善恢复：已知图像时完整问答从 rank 8 的 0/10 升到 rank 32 的 5/10。
@@ -59,4 +62,4 @@ text-dager:
     - 候选找齐仍不保证恢复：LLaVA 在 VQA-RAD 候选全部覆盖，完整恢复只有 GT 8/21、Random 3/21。
     - 三种第一阶段筛选改进都没有通过独立验证，保留现有筛选器。
   start_here: [crossmodel-text-benchmark]
-  pages: [crossmodel-text-benchmark, dager-lm-prior, dager-multisample, dager-filter-phase, dager-single-sample-diagnostics]
+  pages: [crossmodel-text-benchmark, federated-text-pilot, dager-lm-prior, dager-multisample, dager-filter-phase, dager-single-sample-diagnostics]

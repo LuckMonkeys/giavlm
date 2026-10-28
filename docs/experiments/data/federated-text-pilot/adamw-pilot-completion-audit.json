@@ -1,0 +1,13 @@
+{
+  "status": "completed",
+  "attack_count": 20,
+  "statuses": {
+    "completed": 20
+  },
+  "source_sha256": "3c7cbf286c6f4e8b334069254e3da10df802a57d18c11e9c02959fa9d3d264b5",
+  "native_optimizer_replays": 320,
+  "zero_moments_per_upload": true,
+  "adamw_proposals_are_heuristic": true,
+  "all_reconstructions_precede_reference_scoring": true,
+  "time": 1792945476.3429155
+}

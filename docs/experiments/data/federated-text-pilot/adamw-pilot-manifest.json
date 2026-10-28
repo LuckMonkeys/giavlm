@@ -1,0 +1,57 @@
+{
+  "uncommitted": true,
+  "contains_private_tokens": false,
+  "files": [
+    {
+      "path": "docs/experiments/data/federated-text-pilot/adamw-pilot-aggregate.json",
+      "source": "outputs/diagnostics/adamw_text_pilot_20261025/report/aggregate.json",
+      "sha256": "f8b73c331d5cf44e6610e591522eeffc4c91b8eb3ac39b3c7556d5b214988052"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/adamw-pilot-summary.csv",
+      "source": "outputs/diagnostics/adamw_text_pilot_20261025/report/summary.csv",
+      "sha256": "dfd16a0cb3124d9b3238906bca0c8e6a491aa57212c8877df25f55b612855586"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/adamw-pilot-by-length.csv",
+      "source": "outputs/diagnostics/adamw_text_pilot_20261025/report/by-length.csv",
+      "sha256": "28a7a390d7b8b77b074c49935f44e6139f20dd4a2bf215a60cfa635f7bb731ec"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/adamw-pilot-completion-audit.json",
+      "source": "outputs/diagnostics/adamw_text_pilot_20261025/completion-audit.json",
+      "sha256": "48a589c83d940ba8b1c9be5ae3b37f0431bb87619db72bbe5853b10788d463fd"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/adamw-pilot-finalization-audit.json",
+      "source": "outputs/diagnostics/adamw_text_pilot_20261025/setup/finalization-audit.json",
+      "sha256": "dc400ae0b141212055bedbdefef5fa9a6ce9639748c6ca4acf3f7f4905c44e1d"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/adamw-pilot-inverse-audit.json",
+      "source": "outputs/diagnostics/adamw_text_pilot_20261025/setup/first-step-inverse-audit.json",
+      "sha256": "608680084832bc1224f19a9c896012419de51fd17d7ae7dccf6ab3917a37a9c9"
+    },
+    {
+      "path": "docs/experiments/figures/federated-text-pilot/adamw-pilot-recovery.png",
+      "source": "outputs/diagnostics/adamw_text_pilot_20261025/report/recovery.png",
+      "sha256": "bb80de10620725986d7789e1672290bd825e35e10aa97a6f77ce58a504acfcce"
+    },
+    {
+      "path": "docs/experiments/figures/federated-text-pilot/adamw-pilot-recovery.svg",
+      "source": "outputs/diagnostics/adamw_text_pilot_20261025/report/recovery.svg",
+      "sha256": "fba0eb5182e0c8e4890f2458c2e90e17d511109ab439dc8854aa0dbf0a1e30bc"
+    },
+    {
+      "path": "docs/experiments/figures/federated-text-pilot/adamw-pilot-by-length.png",
+      "source": "outputs/diagnostics/adamw_text_pilot_20261025/report/joint-em-by-length.png",
+      "sha256": "6bc2bab226da1f0d0cf4d025757784e94c8f63ca13ea5ea192d24a96f4fbdfd6"
+    },
+    {
+      "path": "docs/experiments/figures/federated-text-pilot/adamw-pilot-by-length.svg",
+      "source": "outputs/diagnostics/adamw_text_pilot_20261025/report/joint-em-by-length.svg",
+      "sha256": "aed13c81f763d5eb2c68d7aed2eba899ea73759ded8b273316a365fb1ab4b845"
+    }
+  ],
+  "posthoc_note": "\u5019\u9009\u4e0a\u754c\u53ea\u4f5c\u91cd\u6784\u63d0\u4ea4\u540e\u7684\u53c2\u8003\u8bc4\u5206\uff0c\u672a\u6539\u52a8\u653b\u51fb\u8f93\u51fa\uff1b\u539f\u59cb\u771f\u503c\u4e0e\u5019\u9009\u6587\u672c\u4e0d\u7eb3\u5165\u6587\u6863"
+}

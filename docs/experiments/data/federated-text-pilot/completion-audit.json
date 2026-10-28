@@ -1,0 +1,11 @@
+{
+  "attack_count": 44,
+  "all_completed": true,
+  "all_source_hashes_match": true,
+  "all_paired_upload_hashes_match": true,
+  "clipping_prediction_equal_to_baseline_count": 8,
+  "clipping_prediction_pairs": 8,
+  "scored_qa_occurrences": 56,
+  "cohort_n": 4,
+  "source_sha256": "f45065f4c6fab4c7cfa1c82571c52fb839678be56783f4cabbca1c70b7172f64"
+}

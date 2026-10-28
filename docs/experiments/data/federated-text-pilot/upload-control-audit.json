@@ -1,0 +1,36 @@
+{
+  "rows": [
+    {
+      "a_lengths": [
+        1,
+        2
+      ],
+      "batch_vs_equal_mean_relative_l2": 0.18587775675492046,
+      "batch_vs_target_token_weighted_mean_relative_l2": 0.06710050688703062,
+      "delta_vs_gradient_relative_l2": 0.30132093544765287,
+      "group": 0,
+      "q_lengths": [
+        11,
+        18
+      ],
+      "selected_lora_a_delta_vs_gradient_relative_l2": 0.22488072303584086
+    },
+    {
+      "a_lengths": [
+        4,
+        5
+      ],
+      "batch_vs_equal_mean_relative_l2": 0.12480095939477007,
+      "batch_vs_target_token_weighted_mean_relative_l2": 0.08174848943947394,
+      "delta_vs_gradient_relative_l2": 0.2097465025157956,
+      "group": 1,
+      "q_lengths": [
+        8,
+        19
+      ],
+      "selected_lora_a_delta_vs_gradient_relative_l2": 0.18198027889419796
+    }
+  ],
+  "source": "public observed uploads and public content lengths; no reconstruction references",
+  "uses_private_reference": false
+}

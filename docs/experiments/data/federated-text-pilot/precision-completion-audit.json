@@ -1,0 +1,10 @@
+{
+  "all_paired_uploads_match": true,
+  "all_source_hashes_match": true,
+  "attack_count": 90,
+  "status": "completed",
+  "statuses": {
+    "completed": 90
+  },
+  "time": 1792924916.2406023
+}
