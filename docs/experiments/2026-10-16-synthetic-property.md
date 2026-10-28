@@ -120,9 +120,12 @@ artifacts:
 - path: outputs/diagnostics/synthetic_head_n20_gpu5_20261017/complete.json
   note: 主实验耗时、峰值显存和完成标记
 related:
+- image-property-ideas
 - image-property-inference
 - gradient-discriminability
 ---
+
+后续加权、类内抑制、概念探针与视觉 tokens 接口检查统一见 [[image-property-ideas]]。本页保留原合成候选基线。
 
 ## 要点
 

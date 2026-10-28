@@ -35,8 +35,9 @@ property:
     - 公开原型库推断模态：三十张新图像上重构文本准确率 0.600，高于 Model-only 的 0.400；相对校准文本对照的优势仍不确定。
     - 医学合成候选能判断部位：CT 队列 10/10，混合模态队列 18/20；样本与此前 pilot 重叠，仍需独立验证。
     - 换成通用摄影候选后平均只有 0.550，现有成功证据限于具有医学外观的候选库。
+    - 公开合成图的原始词向量概念探针未过门槛；真实视觉 tokens 可读出头部属性，接口一致性不等于梯度恢复成功。
   start_here: [image-property-inference]
-  pages: [image-property-inference, synthetic-property]
+  pages: [image-property-inference, synthetic-property, image-property-ideas]
 text-tag:
   title: 文本重建（TAG）
   icon: material-text-search

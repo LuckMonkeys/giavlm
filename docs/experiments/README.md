@@ -49,6 +49,7 @@ tracks.yaml; edit those, not this page. -->
 - 公开原型库推断模态：三十张新图像上重构文本准确率 0.600，高于 Model-only 的 0.400；相对校准文本对照的优势仍不确定。
 - 医学合成候选能判断部位：CT 队列 10/10，混合模态队列 18/20；样本与此前 pilot 重叠，仍需独立验证。
 - 换成通用摄影候选后平均只有 0.550，现有成功证据限于具有医学外观的候选库。
+- 公开合成图的原始词向量概念探针未过门槛；真实视觉 tokens 可读出头部属性，接口一致性不等于梯度恢复成功。
 
 **先读：** [公开原型库推断模态](2026-10-16-image-property-inference.md)
 
@@ -56,6 +57,7 @@ tracks.yaml; edit those, not this page. -->
 |---|---|---|---|---:|---|---|---|---|
 | **key** | 2026-10-16 | [公开原型库推断模态](2026-10-16-image-property-inference.md) | F-L · round 10 · private / text_known · lengths known | 50 | diagnostic | inconclusive | 使用私有数据 | • 新队列上梯度评分优于 Model-only<br>• 评分依赖目标梯度<br>• 文本恢复误差带来小幅损失<br>• 同部位子集尚不稳定<br>• 两轮准确率不能合并 |
 | supporting | 2026-10-16 – 2026-10-18 | [合成候选推断部位](2026-10-16-synthetic-property.md) | F-L · round 10 · private / text_known · lengths known | 20 | diagnostic | mixed | 使用私有数据, private-tokens | • 医学合成候选能判断部位<br>• 换成通用摄影候选后效果消失<br>• 相对 Model-only 的优势尚不确定<br>• 同一问答的两张图可由梯度区分<br>• 生成提示不能当作模态真值 |
+| supporting | 2026-10-28 | [图像属性方法验证](2026-10-28-image-property-ideas.md) | F-L · round 10 · private / text_known / image_known · lengths known | 20 | diagnostic | mixed | 使用私有数据 | • 评分改进未解决跨域迁移<br>• 概念探针未通过前提检查<br>• 真实视觉 tokens 可读出属性<br>• 完整恢复路线尚未验证<br>• 两阶段证据需区分 |
 
 ## 文本重建（TAG）
 
