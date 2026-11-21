@@ -1,0 +1,13 @@
+Cohort,Property,Layer,Module,Primary,Correct,Images,Accuracy,Balanced accuracy,Positive recall,Negative recall,Positive AUROC
+A,abdomen,24,k,False,14,20,0.7,0.5,0.0,1.0,0.7142857142857143
+A,abdomen,24,q,False,14,20,0.7,0.5,0.0,1.0,0.6547619047619048
+A,abdomen,24,v,True,14,20,0.7,0.5,0.0,1.0,0.7142857142857143
+A,abdomen,32,k,False,14,20,0.7,0.5,0.0,1.0,0.5357142857142857
+A,abdomen,32,q,False,12,20,0.6,0.5238095238095238,0.3333333333333333,0.7142857142857143,0.47619047619047616
+A,abdomen,32,v,False,14,20,0.7,0.5,0.0,1.0,0.5476190476190477
+A,head,24,k,False,10,20,0.5,0.5,0.0,1.0,0.64
+A,head,24,q,False,10,20,0.5,0.5,0.0,1.0,0.6
+A,head,24,v,True,10,20,0.5,0.5,0.0,1.0,0.67
+A,head,32,k,False,10,20,0.5,0.5,0.0,1.0,0.61
+A,head,32,q,False,15,20,0.75,0.75,0.8,0.7,0.72
+A,head,32,v,False,10,20,0.5,0.5,0.0,1.0,0.69

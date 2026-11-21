@@ -1,0 +1,12 @@
+{
+  "status": "completed",
+  "time": 1793533765.4457672,
+  "n": 4,
+  "empty_decoded_questions": 4,
+  "answers_without_alphanumeric": 2,
+  "prediction_only_posthoc_audit": true,
+  "private_reference_read": false,
+  "contains_private_tokens": false,
+  "source_sha256": "ddd65ca355f2265cc7da9d18ac55e7ce6ea94631c91434982484d0bd6b947181",
+  "note": "Fixed original text-prior prompt, known-length decoding and special-token exclusions; no prompt or token policy changed after outcomes."
+}

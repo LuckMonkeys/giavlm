@@ -1,0 +1,26 @@
+{
+  "prompts": [
+    "What is shown in the image?",
+    "What type of image is this?",
+    "Which body part is shown?",
+    "Is an abnormality visible?",
+    "Describe the image."
+  ],
+  "max_steps": 16,
+  "steps_per_prompt": [
+    16,
+    11,
+    15,
+    2,
+    16
+  ],
+  "unique_generated_ids_per_prompt": [
+    14,
+    10,
+    14,
+    2,
+    14
+  ],
+  "uses_private_reference": false,
+  "contains_private_tokens": false
+}

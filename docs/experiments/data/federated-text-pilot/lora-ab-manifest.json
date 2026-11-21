@@ -1,0 +1,88 @@
+{
+  "status": "completed",
+  "source_sha256": "5ef098123fc6f87a321443471f96a684bf99aacb56b0b064d5a3fd546de7ad16",
+  "base_commit": "2fd25b6a20b3ab142343c012b9f8be701352e935",
+  "uncommitted": true,
+  "contains_private_tokens": false,
+  "uses_private_reference": false,
+  "paired_clean_diagnostic_uses_extra_reference": true,
+  "private_reference_note": "paired-clean-aggregate \u5355\u72ec\u6807\u8bb0\u989d\u5916\u5e72\u51c0\u4e0a\u4f20\u53c2\u8003\uff1b\u4e0d\u8fdb\u5165\u8bc4\u5206",
+  "files": [
+    {
+      "source": "outputs/diagnostics/lora_ab_filter_20261104_v2/report/summary.csv",
+      "path": "docs/experiments/data/federated-text-pilot/lora-ab-summary.csv",
+      "sha256": "6cd79497e4c385f3e5e7bd838159b552d8dc9c43e0ab4c1c2c359f30de5cb810"
+    },
+    {
+      "source": "outputs/diagnostics/lora_ab_filter_20261104_v2/report/by-length.csv",
+      "path": "docs/experiments/data/federated-text-pilot/lora-ab-by-length.csv",
+      "sha256": "b40e1cd3a1ff223580c1ae4a014dd143f8164daaced6f50197da62bcb4c639fa"
+    },
+    {
+      "source": "outputs/diagnostics/lora_ab_filter_20261104_v2/report/module-diagnostics.csv",
+      "path": "docs/experiments/data/federated-text-pilot/lora-ab-module-diagnostics.csv",
+      "sha256": "6961bf068d02dfc78f4b4ec6aa769d0806be631dded24a29045f8c50957640f5"
+    },
+    {
+      "source": "outputs/diagnostics/lora_ab_filter_20261104_v2/report/summary.md",
+      "path": "docs/experiments/data/federated-text-pilot/lora-ab-summary.md",
+      "sha256": "e0bac0e33f80a032f48339f404d2f4404900096d6cd9cb176ac859ea2251d12c"
+    },
+    {
+      "source": "outputs/diagnostics/lora_ab_filter_20261104_v2/report/aggregate.json",
+      "path": "docs/experiments/data/federated-text-pilot/lora-ab-aggregate.json",
+      "sha256": "0c554a836aa9342798192049ffb1d2c9710e0d500a72aee740d94e35c899d62d"
+    },
+    {
+      "source": "outputs/diagnostics/lora_ab_filter_20261104_v2/report/paired-clean-aggregate.json",
+      "path": "docs/experiments/data/federated-text-pilot/lora-ab-paired-clean-aggregate.json",
+      "sha256": "f7b487d7a924971919d03792c4f10f5890992f879ba21bff121d6c24fe6949b8"
+    },
+    {
+      "source": "outputs/diagnostics/lora_ab_filter_20261104_v2/finalization-audit.json",
+      "path": "docs/experiments/data/federated-text-pilot/lora-ab-finalization-audit.json",
+      "sha256": "e2e58a6f67f515adf8b4c6cf82e71f26cecf65656a8671080ba79e2e3bb48596"
+    },
+    {
+      "source": "outputs/diagnostics/lora_ab_filter_20261104_v2/all-scores-complete.json",
+      "path": "docs/experiments/data/federated-text-pilot/lora-ab-all-scores-complete.json",
+      "sha256": "7542a5ae9084b0b97bdf27d46d1239a7a0a97a2086da5ca0328a38023cd305c8"
+    },
+    {
+      "source": "outputs/diagnostics/lora_ab_filter_20261104_v2/report/filter.png",
+      "path": "docs/experiments/figures/federated-text-pilot/lora-ab-filter.png",
+      "sha256": "d67879c780c00bc89e674ec922c1cd1a4e85bebfd779901f59abbc2048e8926d"
+    },
+    {
+      "source": "outputs/diagnostics/lora_ab_filter_20261104_v2/report/filter.svg",
+      "path": "docs/experiments/figures/federated-text-pilot/lora-ab-filter.svg",
+      "sha256": "1f6115f070691be61aab0de02ee9fb4cf996c46440e00e344a6616d3173c70a4"
+    }
+  ],
+  "code": [
+    {
+      "path": "evaluation/lora_ab_math.py",
+      "sha256": "325d221439a6b79ed79aa915f7bb1212199ee596d29b8b149894478a99edb2d3"
+    },
+    {
+      "path": "evaluation/lora_ab_filter_study.py",
+      "sha256": "86f95d952090fd29228d5496c310bf940734246f838c45da1c257d52cd1f4432"
+    },
+    {
+      "path": "tests/test_lora_ab_filter_study.py",
+      "sha256": "cb98ef867937221babf41c6aa52d3545d6de5fe70299afaf48e06073b97af59b"
+    },
+    {
+      "path": "outputs/diagnostics/lora_ab_filter_20261104_v2/setup/finalize.py",
+      "sha256": "63e049f274731b09c6741d38ff6ed58f6497251383f57dec554651c71eac3184"
+    },
+    {
+      "path": "outputs/diagnostics/lora_ab_filter_20261104_v2/setup/controller.py",
+      "sha256": "d5c6f01a970e3c85ae4eaab151a156204aac8beaf62c4c057a2dfca52123b518"
+    },
+    {
+      "path": "outputs/diagnostics/lora_ab_filter_20261104_v2/setup/report.py",
+      "sha256": "2b3b5e8ff5c51ca3ad7274eed6db78d1bc072d90cfcbd48ceeadb348cef0f3a3"
+    }
+  ]
+}

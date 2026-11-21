@@ -1,0 +1,109 @@
+{
+  "status": "completed",
+  "phase": "finished",
+  "pid": 2518,
+  "host": "WN-A100",
+  "started": 1793847550.1485715,
+  "workers": {
+    "public": {
+      "pid": 2525,
+      "argv": [
+        "/home/zx/nas/miniconda3/envs/gia/bin/python",
+        "-m",
+        "evaluation.question_filter_study",
+        "public",
+        "--output",
+        "/home/zx/nas/GitRepos/giavlm/outputs/diagnostics/question_filter_defense_20261105"
+      ],
+      "status": "completed",
+      "gpu": 2,
+      "started": 1793847550.323398,
+      "returncode": 0,
+      "finished": 1793848061.9297655
+    },
+    "prior": {
+      "pid": 2591,
+      "argv": [
+        "/home/zx/nas/miniconda3/envs/gia/bin/python",
+        "-m",
+        "evaluation.question_filter_study",
+        "prior",
+        "--output",
+        "/home/zx/nas/GitRepos/giavlm/outputs/diagnostics/question_filter_defense_20261105"
+      ],
+      "status": "completed",
+      "gpu": 2,
+      "started": 1793848062.01876,
+      "returncode": 0,
+      "finished": 1793848298.7770374
+    },
+    "matrix": {
+      "pid": 2629,
+      "argv": [
+        "/home/zx/nas/miniconda3/envs/gia/bin/python",
+        "-m",
+        "evaluation.question_filter_study",
+        "matrix",
+        "--output",
+        "/home/zx/nas/GitRepos/giavlm/outputs/diagnostics/question_filter_defense_20261105"
+      ],
+      "status": "completed",
+      "gpu": 2,
+      "started": 1793848298.8727927,
+      "returncode": 0,
+      "finished": 1793848610.0238392
+    },
+    "context": {
+      "pid": 2738,
+      "argv": [
+        "/home/zx/nas/miniconda3/envs/gia/bin/python",
+        "-m",
+        "evaluation.question_filter_study",
+        "context",
+        "--output",
+        "/home/zx/nas/GitRepos/giavlm/outputs/diagnostics/question_filter_defense_20261105"
+      ],
+      "status": "completed",
+      "gpu": 2,
+      "started": 1793848620.2260535,
+      "returncode": 0,
+      "finished": 1793848770.7758596
+    },
+    "candidates": {
+      "pid": 2768,
+      "argv": [
+        "/home/zx/nas/miniconda3/envs/gia/bin/python",
+        "-m",
+        "evaluation.question_filter_study",
+        "candidates",
+        "--output",
+        "/home/zx/nas/GitRepos/giavlm/outputs/diagnostics/question_filter_defense_20261105"
+      ],
+      "status": "completed",
+      "gpu": null,
+      "started": 1793848770.7809389,
+      "returncode": 0,
+      "finished": 1793848843.0427535
+    },
+    "evaluate": {
+      "pid": 2782,
+      "argv": [
+        "/home/zx/nas/miniconda3/envs/gia/bin/python",
+        "-m",
+        "evaluation.question_filter_evaluate",
+        "--output",
+        "/home/zx/nas/GitRepos/giavlm/outputs/diagnostics/question_filter_defense_20261105"
+      ],
+      "status": "completed",
+      "gpu": null,
+      "started": 1793848843.0479007,
+      "returncode": 0,
+      "finished": 1793848861.194489
+    }
+  },
+  "heartbeat": 1793848861.1972198,
+  "gpu": 2,
+  "gpu_uuid": "GPU-8cb10863-d4c8-528f-3add-2632ae9cb39d",
+  "selected_at": 1793847550.2339256,
+  "finished": 1793848861.1972132
+}

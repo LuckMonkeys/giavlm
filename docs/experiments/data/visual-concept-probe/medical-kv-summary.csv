@@ -1,0 +1,25 @@
+Cohort,Property,Layer,Module,Primary,Correct,Images,Accuracy,Balanced accuracy,Positive recall,Negative recall,Positive AUROC
+historical,abdomen,24,k,False,10,20,0.5,0.5,0.0,1.0,0.48
+historical,abdomen,24,q,False,10,20,0.5,0.5,0.0,1.0,0.44
+historical,abdomen,24,v,True,10,20,0.5,0.5,0.0,1.0,0.5
+historical,abdomen,32,k,False,10,20,0.5,0.5,0.0,1.0,0.42
+historical,abdomen,32,q,False,12,20,0.6,0.6,0.3,0.9,0.57
+historical,abdomen,32,v,False,10,20,0.5,0.5,0.0,1.0,0.47
+historical,head,24,k,False,15,20,0.75,0.5,0.0,1.0,0.5866666666666667
+historical,head,24,q,False,14,20,0.7,0.4666666666666667,0.0,0.9333333333333333,0.56
+historical,head,24,v,True,15,20,0.75,0.5,0.0,1.0,0.49333333333333335
+historical,head,32,k,False,15,20,0.75,0.5,0.0,1.0,0.7733333333333333
+historical,head,32,q,False,15,20,0.75,0.7,0.6,0.8,0.7733333333333333
+historical,head,32,v,False,15,20,0.75,0.5,0.0,1.0,0.5866666666666667
+new,abdomen,24,k,False,18,20,0.9,0.5,0.0,1.0,0.4444444444444444
+new,abdomen,24,q,False,18,20,0.9,0.5,0.0,1.0,0.4444444444444444
+new,abdomen,24,v,True,18,20,0.9,0.5,0.0,1.0,0.5
+new,abdomen,32,k,False,18,20,0.9,0.5,0.0,1.0,0.5
+new,abdomen,32,q,False,15,20,0.75,0.4166666666666667,0.0,0.8333333333333334,0.3888888888888889
+new,abdomen,32,v,False,18,20,0.9,0.5,0.0,1.0,0.4444444444444444
+new,head,24,k,False,12,20,0.6,0.5,0.0,1.0,0.53125
+new,head,24,q,False,12,20,0.6,0.5,0.0,1.0,0.5416666666666666
+new,head,24,v,True,12,20,0.6,0.5,0.0,1.0,0.46875
+new,head,32,k,False,12,20,0.6,0.5,0.0,1.0,0.5520833333333334
+new,head,32,q,False,17,20,0.85,0.8541666666666667,0.875,0.8333333333333334,0.8958333333333334
+new,head,32,v,False,12,20,0.6,0.5,0.0,1.0,0.59375

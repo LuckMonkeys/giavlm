@@ -1,0 +1,31 @@
+{
+  "development_only": true,
+  "independent_validation": false,
+  "selection_rule": "Random mean Noise/Top-k supplement answer recall; prespecified tie breaks",
+  "candidates": [
+    {
+      "development_rank": 1,
+      "layer": 31,
+      "mean_answer_full_coverage": 0.43333333333333335,
+      "mean_answer_recall": 0.8481744496044032,
+      "mode": "raw",
+      "module": "down",
+      "noise_answer_recall": 0.8273261380575623,
+      "position": "l31_down",
+      "topk_answer_recall": 0.8690227611512441,
+      "worst_answer_recall": 0.8273261380575623
+    },
+    {
+      "development_rank": 2,
+      "layer": 32,
+      "mean_answer_full_coverage": 0.4166666666666667,
+      "mean_answer_recall": 0.8461918787983029,
+      "mode": "raw",
+      "module": "o",
+      "noise_answer_recall": 0.8265227611512441,
+      "position": "l32_o",
+      "topk_answer_recall": 0.8658609964453617,
+      "worst_answer_recall": 0.8265227611512441
+    }
+  ]
+}

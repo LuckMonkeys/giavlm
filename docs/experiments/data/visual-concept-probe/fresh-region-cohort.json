@@ -1,0 +1,76 @@
+{
+  "confound": "Head positives are MRI only, abdomen mostly CT, chest X-Ray only; cross-modality accuracy cannot isolate region from modality. Both region and modality subgroup reporting required.",
+  "excluded_prior_image_groups": 63,
+  "final_strata": [
+    {
+      "count": 9,
+      "modality": "CT",
+      "region": "abdomen"
+    },
+    {
+      "count": 1,
+      "modality": "MRI",
+      "region": "abdomen"
+    },
+    {
+      "count": 5,
+      "modality": "MRI",
+      "region": "head"
+    },
+    {
+      "count": 5,
+      "modality": "X-Ray",
+      "region": "chest"
+    }
+  ],
+  "label_source": "Original unique SLAKE location metadata and pre-inference visual review",
+  "metadata_sampling_strata": [
+    {
+      "available": 1,
+      "count": 1,
+      "modality": "CT",
+      "region": "head"
+    },
+    {
+      "available": 14,
+      "count": 4,
+      "modality": "MRI",
+      "region": "head"
+    },
+    {
+      "available": 14,
+      "count": 10,
+      "modality": "CT",
+      "region": "abdomen"
+    },
+    {
+      "available": 1,
+      "count": 1,
+      "modality": "MRI",
+      "region": "chest"
+    },
+    {
+      "available": 13,
+      "count": 4,
+      "modality": "X-Ray",
+      "region": "chest"
+    }
+  ],
+  "n": 20,
+  "natural_qa": "One original random QA per image, no text-content filter",
+  "patient_independence": "Unknown; image grouping only",
+  "prior_image_id_overlap": 0,
+  "region_counts": {
+    "abdomen": 10,
+    "chest": 5,
+    "head": 5
+  },
+  "review_sha256": "fb7dc605c2a41f569e6a6abd071da4ea7f66aedac3b7a330208e2c66a5ee1f32",
+  "target_split": "eval",
+  "targets_sha256": "fb29ed9110b36dabe1eccaa56a160e0ccfde63b5f1d3c804e397ff7e128f3e4a",
+  "text_literal_counts": {
+    "abdomen": 8,
+    "head": 2
+  },
+  "unique_pixels": 20
+}

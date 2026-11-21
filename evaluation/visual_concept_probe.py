@@ -77,6 +77,8 @@ def prepare():
 
 def inject_logits(adapter, visual, questions, targets):
     """Exact native LLaVA hard-slot layout with a supplied visual representation."""
+    # FP32 optimization masters enter the frozen model at its native dtype.
+    visual = visual.to(adapter.dtype)
     pieces = llava_input_pieces(adapter, visual, adapter.embedding()(questions),
                                adapter.embedding()(targets[:, :-1]))
     embeddings = torch.cat(pieces, 1)

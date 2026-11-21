@@ -1,0 +1,11 @@
+{
+  "artifacts": {
+    "docs/experiments/data/visual-concept-probe/medical-kv-aggregate.json": "1fd07cba034ba92379bd9916710e29e4cc351825eb0f39df23c0a80b426e906a",
+    "docs/experiments/data/visual-concept-probe/medical-kv-audit.json": "acf3831c807728f12add2b0090f5bea89b2389ade18a2322172d024468e34ca4",
+    "docs/experiments/data/visual-concept-probe/medical-kv-summary.csv": "4ac79124686298ce70f3f3fc11c435d063969d1e24424e74c4846c5241536255",
+    "docs/experiments/figures/visual-concept-probe/medical-kv-transfer.png": "1a3aa38095f9ccf5ef6e12b830b00a8e5fb70875d16f095767e335c45bb44d57",
+    "outputs/diagnostics/multilayer_property_20261101/medical-kv/analysis-source.py": "e11a8dcbb3ecc40ab8496a365060c79fb9853877607e56b98a9ea545aa1e54cf"
+  },
+  "uncommitted": true,
+  "uses_private_reference": "Post-prediction property labels and grouping only"
+}

@@ -1,0 +1,15 @@
+{
+  "files": {
+    "docs/experiments/data/federated-text-pilot/e1-token-gain-aggregate.json": "77a478f29c430c1dc8c4d5f176e6b4868375706839af2aee8f8bdabe1e414749",
+    "docs/experiments/data/federated-text-pilot/e1-token-gain-independent-audit.json": "3db854964eec816cbc722487cfb3b29946bbec95e0cba2657914bfa5b8ece0ce",
+    "docs/experiments/data/federated-text-pilot/e1-token-gain-summary.csv": "90313def9c339797c18f5b5a5816085b683f038b33fe9a7c41f826d03db529c5",
+    "docs/experiments/data/federated-text-pilot/e1-token-gain-categories.csv": "057dda0e2ac4f77816eaa42d6a6a556cb80676141611d3d100a9b1c760b2b27b"
+  },
+  "executed_code_sha256": "42081298d2fa18bd7a8778341e9ef0a6541aad648cf399c834defb8115fd7476",
+  "current_code_sha256": "ac683d5367ac0cd3f5bde5f5c60e10b45f57515ddf3f0587a219ef4fe8c38441",
+  "original_summary_sha256": "3b6994fb94fd6dea8af2136209e39fc18e19e23e3755924d17345d1d157f95fb",
+  "contains_private_tokens": false,
+  "uncommitted": true,
+  "no_new_predictions": true,
+  "note": "CPU post-hoc audit of saved candidates; detailed token identities stay in outputs; lifecycle state excluded from payload hashes"
+}

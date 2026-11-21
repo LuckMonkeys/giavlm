@@ -1,0 +1,11 @@
+{
+  "distances_recomputed": 1536,
+  "max_distance_error": 0.0,
+  "native_medical_uploads": 160,
+  "predictions_committed_before_evaluation": true,
+  "primary": "Q32",
+  "prototypes_recomputed": 12,
+  "public_uploads": 96,
+  "status": "pass",
+  "target_text_or_lengths_used_by_classifier": false
+}

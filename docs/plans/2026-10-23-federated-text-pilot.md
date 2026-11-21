@@ -1,5 +1,115 @@
 # 联邦更新与上传防御的文本恢复小规模验证
 
+<a id="dynamic-candidates"></a>
+
+## 已完成：LM 动态候选补充（2026-11-01）
+
+用户授权先在 Top-k 防御下测试动态补充，保留四组对照，不提交 Git。沿用最早 pilot 的固定选样规则：原冻结顺序中前两条短问答和前两条中等问答；不根据当前或历史恢复成败选择。
+
+| Item | Setting |
+|---|---|
+| Source | 原 SLAKE 三十样本中的四条固定 QA，短 2、中 2；原 sparsify 上传，逐张量 Top-k 保留 10%，不重捕获或重新加噪 |
+| Model | 原 LLaVA-1.5-7B、rank 32、Round 10、bf16；完全 Residual，分析 float64 |
+| Static controls | gradient100 逐份重跑并核对原 winner；gradient116 只增加 informative 候选，均额外保留共同 ambiguous IDs |
+| Dynamic | gradient100 与当前真实搜索前缀下的公开 text-only LM Top-16 取并集；重合时按梯度排名补齐至与 gradient116 完全相同的分支数 |
+| LM-only | 同一公开模型与声明的问题、答案长度；text-only beam，不接收 Observation、梯度、图像或梯度候选，仅运行一次并共用于 GT/Random 参考 |
+| Hyperparameters | beam=16、LM prior=0.01、prefix batch=32；每次 200000 次评分、3600 秒上限，禁止自动改变参数、预算或 OOM 重试 |
+| Matrix | 三个梯度方案×两类图像×四 QA，加四次 LM-only，共 28 次重构；短、中以外不做推断 |
+| Evaluation | 所有 28 次重构及哈希提交后才读取真值；Joint EM、Question/Answer EM、ROUGE、Word Recall；事后审计真实前缀是否获补充、是否被打分剪除 |
+| Checkpoints | 独立试验引擎只在完整深度保存 beam 和提议边；静态引擎与原方法的结果、分数及计数通过离线一致性测试，生产 checkpoint 格式不变 |
+| Resources | WN-A100 GPU 0 单卡，UUID GPU-25dab3f9-1eda-bcfd-291e-9ca1ca3b673b；现有 gia，启动前重新核验空闲；其他卡不使用 |
+| Output | outputs/diagnostics/dynamic_candidates_topk_20261101/ |
+
+- [x] 公共接口和四条 QA 的既有选样规则核对；独立实现，不改生产攻击默认设置。
+- [x] 静态搜索复现、候选补充与等分支预算、LM-only 图像隔离、延迟评价等检查通过；44 项定向测试、Ruff 通过。
+- [x] 冻结源码，远端 detached 启动及巡检。
+- [x] 第一份 baseline winner 与历史输出逐 token 完全一致；分数、结果哈希已核验。
+- [x] 首份动态重构已提交并核验哈希；每个前缀均为 125 分支，与 gradient116 完全相同。
+- [x] 完成全部重构、统一评价及配对前缀审计，生成聚合表图。
+- [x] 更新原实验记录、索引和交接，核验资源释放，不提交 Git。
+
+预期边界：静态 FullCoverage 不适用于动态方案；LM-only 用来识别语言猜测贡献。动态补充只增加真实 token 被提议的可能性，不能保证正确前缀存活，也不能把合理但错误的句子视为恢复成功。
+
+启动记录：WN-A100 controller 863、worker 868、十分钟 watcher 873、三十秒显存巡检 875；GPU 0 UUID GPU-25dab3f9-1eda-bcfd-291e-9ca1ca3b673b。source-v1 SHA256 `ddd65ca355f2265cc7da9d18ac55e7ce6ea94631c91434982484d0bd6b947181`，基础 commit 2fd25b6，现有 gia；无 Git 提交。
+
+2026-11-01 19:47 完成，墙钟 27.04 分钟、峰值 allocated 18.47 GiB。28 次重构全部提交后统一评价；八次 Gradient-100 的 winner、筛选分数和文本指标与历史结果精确一致，所有动态父前缀均为 125 分支，GT/Random 上传哈希相同。worker 868、CPU 评价 1076、报告 1086、controller 863、watcher 873、显存巡检 875 均已退出，GPU 0 最终零显存零利用率。
+
+结论：Dynamic-LM-16 相对原基线，ROUGE-L 从 GT 0.194 到 0.206、Random 0.148 到 0.173；相同分支预算的 Gradient-116 为 0.194、0.161。所有方案 Question EM、Answer EM、Joint EM 均为 0/4。Random 一例真实前缀下补回两个原 Top-100 之外的真实 token，仍在第 5 步被打分淘汰；GT 一例反而提前丢失正确前缀，不替换原方法，也不继续扩大 M、调权重或样本。
+
+LM-only 的四个问题解码后均为空，四个答案中两个不含字母或数字；仅记录该固定 prior 下的退化，没有看结果后修改 prompt 或过滤空白 token 重跑，不能据此宣布通用 LM 无法恢复文本。八份聚合表图及审计已归档，清单 dynamic-candidates-manifest.json，不含私有原文或 token ID；源码、模型、结果哈希、延迟评价、等分支预算及聚合重算通过，未提交 Git。
+
+收尾：68 项定向及文档索引测试、Ruff、十六份记录及本地产物核验、MkDocs 严格构建通过；当前实验代码和测试与冻结源码相同，三轮共二十二份聚合文件 SHA256 对原来源一致。实际远端进程与 GPU 释放已核验，不重复启动。
+
+<a id="spectral-defense"></a>
+
+## 已完成：防御下的谱加权筛选（2026-11-01）
+
+用户确认先验证谱加权 token filter；只在 WN-A100 空闲 GPU 执行，不提交 Git，不运行序列搜索。保留完全 Residual，不扩大候选集，不改生产攻击默认参数。
+
+| Item | Setting |
+|---|---|
+| Source | 原 SLAKE 三十 QA、Round 10 LLaVA-1.5-7B rank 32；复用原 FedSGD B1、Noise ratio=0.01、Top-k 保留 10% 上传与 GT/Random 图像条件 |
+| Scoring | 每个 Q/K/V 梯度块先归一化，再消除公开输入；对联合矩阵求原数值阈值下的 SVD，候选特征使用同一完全消除 |
+| Weights | w_i=s_i²/(s_i²+lambda)，lambda=beta×median(s_i²)；beta 预先固定为 0、0.01、0.1、1，尺度仅由当前观测上传决定，不读取干净梯度或真值 |
+| Budget | informative K=100；共同 ambiguous IDs，预期每档实际候选均为 109；720 组分数全部保存后统一评价 |
+| Control | beta=0 必须逐上传复现原 Residual 分数及候选；加权分数以直接岭回归目标核验，不把数值稳定等同于恢复改善 |
+| Metrics | Candidate recall、FullCoverage、Informative AP；逐样本配对变化与无防御损伤；不报告新的序列 EM，不按测试真值挑选 beta |
+| Scope | Noise 为主要机制，Top-k 只是兼容性对照，谱加权不处理被删除坐标；原三十样本为配对诊断，收益需独立数据验证 |
+| Resource | 预检仅 WN-A100 GPU 0 真正空闲，UUID GPU-25dab3f9-1eda-bcfd-291e-9ca1ca3b673b；单卡串行，不占用其余卡；现有 gia，不修改环境 |
+| Output | outputs/diagnostics/spectral_filter_20261101/ |
+
+原有公开诊断显示：六组条件的保留数值秩均为 96；Noise 的 s_min/s_max 平均约 0.585，中位奇异值约为最大值的 0.736，谱明显变平。这个现象限制谱去噪的预期，不据此跳过已获授权的四档固定验证，也不根据参考 token 修改扫描范围。
+
+- [x] 核对共享挂载、原始上传、已完成实验及 WN-A100 空闲资源。
+- [x] 独立评分模块、直接岭回归目标一致性与先评分后真值检查；定向 37 项测试及 Ruff 通过。
+- [x] 冻结源码并在 WN-A100 单卡 detached 启动，安装 watcher。
+- [x] 首份分数及哈希核验通过，beta=0 与原候选完全一致，最大分数差 4.4e-14。
+- [x] 完成 720 组分数与统一评价，生成总体表图及逐样本配对审计。
+- [x] 更新原实验记录、交接和本地产物索引，核验资源释放，不提交 Git。
+
+启动：controller 643、GT 648、十分钟 watcher 653、三十秒显存巡检 655；source-v1 SHA256 `8da55ae61b2b0bb03e6fd5d46eb4dacb0deffac4524af980ab3ae06441bbc11a`，基础 commit 2fd25b6；现有 gia，远端 CUDA 与空闲 GPU 0 核验后启动。GT/Random 单卡串行。
+
+2026-11-01 19:02 完成，墙钟 3.75 分钟、峰值 allocated 17.05 GiB；GT 648、Random 756、CPU 评价 804、报告 817 及 controller 643 均成功结束。180 组零加权端点候选精确复现，最大分数差 6.85e-14；各档实际候选数均为 109，720 组分数全部保存后才统一评价。
+
+结论：四档的 Noise 与 Top-k FullCoverage 均为 0/30。beta=1 令 Noise 的召回 GT 从 0.1738 到 0.1753、Random 从 0.1792 到 0.1835，但无防御完整覆盖从两种图像各 26/30 降至 GT 25/30、Random 24/30。Top-k 轻加权只有局部排序变化；未解决候选漏检，不替换原方法，不继续依据当前队列扫描参数，也不运行序列搜索。聚合表图和十八组配对审计见 spectral-manifest.json；原始上传、生产攻击和环境未改，不提交 Git。
+
+收尾：全部实验 PID 已退出，显存巡检自动退出；成功结束后终止本阶段尚处十分钟等待中的 watcher 653 并写入最终状态。GPU 0 最终为零显存、零利用率。Ruff、十六份记录及本地产物核验、37 项定向测试、24 项文档索引测试和 MkDocs 严格构建通过。导出清单命名冲突已修复，旧清单由原始来源及哈希恢复，两轮共十四份聚合文件逐项核验一致；过程见 setup/export-repair.json，实验分数未修改。
+
+<a id="soft-residual-defense"></a>
+
+## 已完成：防御下的部分公开输入消除（2026-11-01）
+
+用户确认验证 Raw、部分消除和完全 Residual，并明确使用 WN-A100 空闲 GPU。只比较 token filter，不运行序列搜索，不改变原攻击默认参数，不提交 Git。
+
+| Item | Setting |
+|---|---|
+| Source | 原 SLAKE 三十样本的 FedSGD B1、Noise ratio=0.01、Top-k 保留 10% 上传；不重训、重捕获或重加噪 |
+| Model | 同一 LLaVA-1.5-7B、rank 32、Round 10；保留原 bf16 模型和上传精度，子空间分析 float64 |
+| Matrix | Alpha=0、0.5、0.9、1；三种防御条件、GT/Random、30 QA，共 720 组筛选分数 |
+| Transform | 梯度与 token 特征均右乘 I-alpha UUᵀ，再重新求梯度行空间和归一化距离 |
+| Budget | informative K=100；所有 alpha 共同保留 hard residual 判定的 ambiguous IDs，避免候选预算变化 |
+| Endpoints | Alpha=0 的 informative 分数与 Raw 一致；alpha=1 必须逐上传复现原 Residual 分数（max delta≤1e-6）及实际候选集合 |
+| Evaluation | 720 组分数全部保存后才读取参考 token；评价 Candidate recall、FullCoverage、Informative AP，不按真值选 alpha |
+| Resources | WN-A100 GPU 0 单卡串行 GT/Random；GPU 5 启动前已被占用，不使用；现有 gia，不修改环境 |
+| Output | outputs/diagnostics/soft_residual_filter_20261101/ |
+
+GPU 0 UUID `GPU-25dab3f9-1eda-bcfd-291e-9ca1ca3b673b`，GPU 5 UUID `GPU-cb472061-1b41-cdbd-991d-51fd2749dd50`。启动前复查 GPU 5 已占用，因此只在 GPU 0 上串行执行 GT 和 Random；不使用或停止 GPU 5 上的其他任务。原始上传及图像上下文不变；随机替代图 seed=0。
+
+- [x] 核对原 Residual、Raw 与候选保留规则，确认此前中断没有启动本阶段。
+- [x] 独立评估模块及五项离线测试通过：两个端点、两侧相同变换、共同候选预算、先提交分数再评分。
+- [x] 定向 DAGER 回归 31 通过，Ruff 通过；源码冻结、公开输入 plan、远端 detached 启动和巡检。
+- [x] 首份真实 score 核验通过，alpha=1 与原分数 max delta=4.4e-14，候选完全一致。
+- [x] 全部 720 组筛选完成、统一评价及总体表图。
+- [x] 收尾审计、实验记录与交接更新；不提交 Git。
+
+启动记录：controller 360、十分钟 watcher 370、三十秒显存巡检 372；源码 SHA256 `2618782dccc6fbb8494b67d87a6be5d6f38945617b273ed18f8eba96b33f891c`。NAS 初次未挂载时未启动任何 GPU worker；用户挂载后核验模型及 CUDA 运行时通过，再启动。本轮实际只用 GPU 0，GT/Random 串行。
+
+2026-11-01 18:17 本阶段完成，墙钟 8.89 分钟；GT 365、Random 498 单卡串行评分，两者均成功退出，随后 CPU 评价 536、报告 549 及 controller 360 成功退出。180 组 alpha=1 与原候选完全一致，最大分数差 6.85e-14，所有权重实际候选均为 109。
+
+结论：完全 Residual 在六组条件的平均召回和 Informative AP 均最高；Noise 与 Top-k 的所有权重 FullCoverage 均为 0/30，部分消除没有改善。源代码及输入不变，所有结果已归档 NAS，七份聚合表图和审计 SHA256 清单见 soft-residual-manifest.json。本阶段没有序列重构或 Git 提交，不追加更细 alpha 调参。
+
+本阶段只检查固定评估队列上的机制，不将最好的 alpha 直接宣布为独立验证改进。若中间权重有收益，后续另在开发数据上固定规则并验证。
+
 <a id="fixed-four-qa"></a>
 
 ## 已完成：固定四条问答的划分对照（2026-10-26）

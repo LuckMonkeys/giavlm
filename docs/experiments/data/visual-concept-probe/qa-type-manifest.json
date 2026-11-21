@@ -1,0 +1,9 @@
+{
+  "artifacts": {
+    "/home/zx/nas/GitRepos/giavlm/outputs/diagnostics/multilayer_property_20261101/multi-qa/type-diagnosis/analysis-source.py": "c1d2eeb2fbec9d1741f3f81f89b5b3c4b810cb7f25b8149ebd58424a362ed811",
+    "docs/experiments/data/visual-concept-probe/qa-type-diagnosis.json": "7a5ccdb5f875f6e441435d7e9f6aecfb095f1a7dc71e83a1731f3064a83ce053"
+  },
+  "gradient_commit_sha256": "42212ee3e14ea8d88c035210bd3ed60b85c32dfaba6774c2397403588bea5e62",
+  "uncommitted": true,
+  "uses_private_reference": false
+}

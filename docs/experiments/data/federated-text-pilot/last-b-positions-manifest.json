@@ -1,0 +1,87 @@
+{
+  "status": "completed",
+  "files": [
+    {
+      "source": "outputs/diagnostics/last_b_positions_20261104/report/summary.csv",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-positions-summary.csv",
+      "sha256": "06130bc7731b8a0322e24ed97a9670f5c9026c264271e3c25ecb735568e3de3a"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_positions_20261104/report/by-length.csv",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-positions-by-length.csv",
+      "sha256": "55f7cfddded5823de77abdef7535b4c34c19baefa00815398a43f59ca216ef7b"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_positions_20261104/report/paired-changes.csv",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-positions-paired-changes.csv",
+      "sha256": "aee21be504d5f492e163945dbfdff376d4f14051d072fe260515da51e013e59a"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_positions_20261104/report/aggregate.json",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-positions-aggregate.json",
+      "sha256": "d2cbe2dadf6f1130980e7cfd4b11e023432940ce99f63052ea94e589a4876142"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_positions_20261104/report/summary.md",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-positions-summary.md",
+      "sha256": "17adb41df0ce891a8c5ea6f8a06224d76c14dffb0900e96cfecfda3a4c36f30f"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_positions_20261104/finalization-audit.json",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-positions-finalization-audit.json",
+      "sha256": "d506078cecab0a36874b68599160fa961adfefbd47b2f4fa2fc002202252b46b"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_positions_20261104/all-scores-complete.json",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-positions-all-scores-complete.json",
+      "sha256": "5e09d41f9fac342ad28fca93a2825f809c6508ec6dde582e49b854075f60f563"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_positions_20261104/report/positions.png",
+      "path": "docs/experiments/figures/federated-text-pilot/last-b-positions.png",
+      "sha256": "d205ca83f6ecfacb80f0acd694ece2f56ee8ff2fd26505c47c599c8a2b5a5e13"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_positions_20261104/report/positions.svg",
+      "path": "docs/experiments/figures/federated-text-pilot/last-b-positions.svg",
+      "sha256": "f6e355c0ead72ad9c592a3dcd73e767644ea18a6acb6a51a290f6b264570140c"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_positions_20261104/report/supplements.png",
+      "path": "docs/experiments/figures/federated-text-pilot/last-b-supplements.png",
+      "sha256": "8f2a0c2f1b89fd171fa04380a1756d356af71a6e809b8d8b164a7f18b40c4736"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_positions_20261104/report/supplements.svg",
+      "path": "docs/experiments/figures/federated-text-pilot/last-b-supplements.svg",
+      "sha256": "49b2b7468f4898fb3f3625f81304f8c7904e5fc48fe60195a00d7aa5ac58c9ae"
+    }
+  ],
+  "code": [
+    {
+      "path": "evaluation/last_b_positions.py",
+      "sha256": "55949d9c636e7b650f34b28ac30582459159efbbe7c1f57f3ac8c3e68043e25e"
+    },
+    {
+      "path": "tests/test_last_b_positions.py",
+      "sha256": "7dae51f3109e0b87e706896e7f665511e8d564b8c771594b02d7a7a1de13364b"
+    },
+    {
+      "path": "outputs/diagnostics/last_b_positions_20261104/setup/controller.py",
+      "sha256": "38cb9cbc60d1effe32648634c1c78c06f4addf4b6376d9aa2733203535cc2c6c"
+    },
+    {
+      "path": "outputs/diagnostics/last_b_positions_20261104/setup/report.py",
+      "sha256": "06c4dae7b35b7fc13b1bdb2f09648855d707669ba7abe63be45a6b45aad30f04"
+    },
+    {
+      "path": "outputs/diagnostics/last_b_positions_20261104/setup/finalize.py",
+      "sha256": "2f7410f5dd83a0a9a081aea8e69d30e134b866d4d29b875667ff24b5a9dc139a"
+    }
+  ],
+  "source_sha256": "775c0093ddcc2878ff72b92e85dcb078eecfbd1fcfe2fcf550343f27674d0f09",
+  "base_commit": "2fd25b6",
+  "uncommitted": true,
+  "uses_private_reference": false,
+  "contains_private_tokens": false
+}

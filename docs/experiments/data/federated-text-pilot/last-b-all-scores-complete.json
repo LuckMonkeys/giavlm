@@ -1,0 +1,10 @@
+{
+  "candidate_conditions": 720,
+  "candidate_groups": 180,
+  "initial_model_immutable": true,
+  "private_reference_read": false,
+  "readout_groups": 90,
+  "source_sha256": "885c69d9edb5160ba2ca5d22dd0757144a611d7f1cd5d26c2921afac11059df5",
+  "status": "completed",
+  "time": 1793775824.7794282
+}

@@ -1,0 +1,374 @@
+{
+  "llava": {
+    "algorithms": {
+      "fixed_q32": {
+        "method": "Q32",
+        "threshold": 0.0
+      },
+      "public_selected_calibrated": {
+        "method": "Q24",
+        "threshold": 0.0
+      },
+      "public_selected_raw": {
+        "method": "Q24",
+        "threshold": 0.0
+      },
+      "q32_calibrated": {
+        "method": "Q32",
+        "threshold": 0.024544597505747834
+      }
+    },
+    "medical_data_used": false,
+    "offsets": {
+      "K24": {
+        "candidates": 26,
+        "quality": {
+          "auroc": 1.0,
+          "mean": 1.0,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 1.0
+          },
+          "worst": 1.0
+        },
+        "score_direction": "Head when original distance margin >= threshold",
+        "selection": "worst style BA, mean style BA, nearest zero, smaller threshold",
+        "threshold": 0.0
+      },
+      "K32": {
+        "candidates": 26,
+        "quality": {
+          "auroc": 1.0,
+          "mean": 1.0,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 1.0
+          },
+          "worst": 1.0
+        },
+        "score_direction": "Head when original distance margin >= threshold",
+        "selection": "worst style BA, mean style BA, nearest zero, smaller threshold",
+        "threshold": 0.0
+      },
+      "Q24": {
+        "candidates": 26,
+        "quality": {
+          "auroc": 1.0,
+          "mean": 1.0,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 1.0
+          },
+          "worst": 1.0
+        },
+        "score_direction": "Head when original distance margin >= threshold",
+        "selection": "worst style BA, mean style BA, nearest zero, smaller threshold",
+        "threshold": 0.0
+      },
+      "Q32": {
+        "candidates": 26,
+        "quality": {
+          "auroc": 1.0,
+          "mean": 1.0,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 1.0
+          },
+          "worst": 1.0
+        },
+        "score_direction": "Head when original distance margin >= threshold",
+        "selection": "worst style BA, mean style BA, nearest zero, smaller threshold",
+        "threshold": 0.024544597505747834
+      },
+      "V24": {
+        "candidates": 26,
+        "quality": {
+          "auroc": 1.0,
+          "mean": 1.0,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 1.0
+          },
+          "worst": 1.0
+        },
+        "score_direction": "Head when original distance margin >= threshold",
+        "selection": "worst style BA, mean style BA, nearest zero, smaller threshold",
+        "threshold": 0.0
+      },
+      "V32": {
+        "candidates": 26,
+        "quality": {
+          "auroc": 1.0,
+          "mean": 1.0,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 1.0
+          },
+          "worst": 1.0
+        },
+        "score_direction": "Head when original distance margin >= threshold",
+        "selection": "worst style BA, mean style BA, nearest zero, smaller threshold",
+        "threshold": 0.0
+      }
+    },
+    "public_audit_used": false,
+    "selection": {
+      "qualities": {
+        "K24": {
+          "auroc": 1.0,
+          "mean": 1.0,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 1.0
+          },
+          "worst": 1.0
+        },
+        "K32": {
+          "auroc": 1.0,
+          "mean": 1.0,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 1.0
+          },
+          "worst": 1.0
+        },
+        "Q24": {
+          "auroc": 1.0,
+          "mean": 1.0,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 1.0
+          },
+          "worst": 1.0
+        },
+        "Q32": {
+          "auroc": 1.0,
+          "mean": 0.9166666666666666,
+          "per_style": {
+            "line": 0.875,
+            "photo": 1.0,
+            "render": 0.875
+          },
+          "worst": 0.875
+        },
+        "V24": {
+          "auroc": 1.0,
+          "mean": 1.0,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 1.0
+          },
+          "worst": 1.0
+        },
+        "V32": {
+          "auroc": 1.0,
+          "mean": 1.0,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 1.0
+          },
+          "worst": 1.0
+        }
+      },
+      "selected": "Q24",
+      "selection": "worst style BA, mean style BA, AUC, shallower, Q/K/V"
+    }
+  },
+  "qwen35": {
+    "algorithms": {
+      "fixed_q32": {
+        "method": "Q32",
+        "threshold": 0.0
+      },
+      "public_selected_calibrated": {
+        "method": "Q24",
+        "threshold": 0.05303237466021768
+      },
+      "public_selected_raw": {
+        "method": "Q24",
+        "threshold": 0.0
+      },
+      "q32_calibrated": {
+        "method": "Q32",
+        "threshold": 0.008499636012040956
+      }
+    },
+    "medical_data_used": false,
+    "offsets": {
+      "K24": {
+        "candidates": 26,
+        "quality": {
+          "auroc": 1.0,
+          "mean": 1.0,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 1.0
+          },
+          "worst": 1.0
+        },
+        "score_direction": "Head when original distance margin >= threshold",
+        "selection": "worst style BA, mean style BA, nearest zero, smaller threshold",
+        "threshold": 0.0645378621396728
+      },
+      "K32": {
+        "candidates": 26,
+        "quality": {
+          "auroc": 1.0,
+          "mean": 1.0,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 1.0
+          },
+          "worst": 1.0
+        },
+        "score_direction": "Head when original distance margin >= threshold",
+        "selection": "worst style BA, mean style BA, nearest zero, smaller threshold",
+        "threshold": 0.07120023740095496
+      },
+      "Q24": {
+        "candidates": 26,
+        "quality": {
+          "auroc": 1.0,
+          "mean": 1.0,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 1.0
+          },
+          "worst": 1.0
+        },
+        "score_direction": "Head when original distance margin >= threshold",
+        "selection": "worst style BA, mean style BA, nearest zero, smaller threshold",
+        "threshold": 0.05303237466021768
+      },
+      "Q32": {
+        "candidates": 26,
+        "quality": {
+          "auroc": 1.0,
+          "mean": 1.0,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 1.0
+          },
+          "worst": 1.0
+        },
+        "score_direction": "Head when original distance margin >= threshold",
+        "selection": "worst style BA, mean style BA, nearest zero, smaller threshold",
+        "threshold": 0.008499636012040956
+      },
+      "V24": {
+        "candidates": 26,
+        "quality": {
+          "auroc": 1.0,
+          "mean": 1.0,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 1.0
+          },
+          "worst": 1.0
+        },
+        "score_direction": "Head when original distance margin >= threshold",
+        "selection": "worst style BA, mean style BA, nearest zero, smaller threshold",
+        "threshold": 0.05637088461186093
+      },
+      "V32": {
+        "candidates": 26,
+        "quality": {
+          "auroc": 1.0,
+          "mean": 1.0,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 1.0
+          },
+          "worst": 1.0
+        },
+        "score_direction": "Head when original distance margin >= threshold",
+        "selection": "worst style BA, mean style BA, nearest zero, smaller threshold",
+        "threshold": 0.06770645230269873
+      }
+    },
+    "public_audit_used": false,
+    "selection": {
+      "qualities": {
+        "K24": {
+          "auroc": 1.0,
+          "mean": 0.9583333333333334,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 0.875
+          },
+          "worst": 0.875
+        },
+        "K32": {
+          "auroc": 1.0,
+          "mean": 0.9583333333333334,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 0.875
+          },
+          "worst": 0.875
+        },
+        "Q24": {
+          "auroc": 1.0,
+          "mean": 0.9583333333333334,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 0.875
+          },
+          "worst": 0.875
+        },
+        "Q32": {
+          "auroc": 1.0,
+          "mean": 0.9583333333333334,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 0.875
+          },
+          "worst": 0.875
+        },
+        "V24": {
+          "auroc": 1.0,
+          "mean": 0.9583333333333334,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 0.875
+          },
+          "worst": 0.875
+        },
+        "V32": {
+          "auroc": 1.0,
+          "mean": 0.9583333333333334,
+          "per_style": {
+            "line": 1.0,
+            "photo": 1.0,
+            "render": 0.875
+          },
+          "worst": 0.875
+        }
+      },
+      "selected": "Q24",
+      "selection": "worst style BA, mean style BA, AUC, shallower, Q/K/V"
+    }
+  }
+}

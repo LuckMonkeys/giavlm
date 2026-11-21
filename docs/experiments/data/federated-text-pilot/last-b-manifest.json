@@ -1,0 +1,95 @@
+{
+  "status": "completed",
+  "files": [
+    {
+      "source": "outputs/diagnostics/last_b_token_readout_20261104_v2/report/summary.csv",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-summary.csv",
+      "sha256": "3ce0acd303c33575eff6b9f2ba5fa73ee985d282aa226730ee3a55b38d5cbd2c"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_token_readout_20261104_v2/report/by-length.csv",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-by-length.csv",
+      "sha256": "416b4e8c5a8dde67b33ffeeb31ec2e078c84c296cd865b82ba55473c96fb0942"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_token_readout_20261104_v2/report/aggregate.json",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-aggregate.json",
+      "sha256": "695c61553f6ae07a8ed65b0e10bb376472df96dfa7928633d6a3b5d637856ff4"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_token_readout_20261104_v2/report/prior-audit.json",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-prior-audit.json",
+      "sha256": "ea7e980a39b508b81e0c33561e5a4f9cc43c2fbed80c266a6012707133a116c4"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_token_readout_20261104_v2/report/summary.md",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-summary.md",
+      "sha256": "cb8c1fc2635315b96365f3bfa9a37ed3e00e96b70e2708f48675a36410d7275d"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_token_readout_20261104_v2/report/fusion.csv",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-fusion.csv",
+      "sha256": "cd8b78a53c9fd7ae73a3015e3e40dce1b7245155bb0ca755204674079897d762"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_token_readout_20261104_v2/finalization-audit.json",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-finalization-audit.json",
+      "sha256": "5639f0068239d03edbdcc4f161aca59cebb08d262386a67fc72a0097555ae288"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_token_readout_20261104_v2/all-scores-complete.json",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-all-scores-complete.json",
+      "sha256": "117d50cd69f3348ab59c56a4fb132d8427462e3cb09733299db0031756b00403"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_token_readout_20261104_v2/fusion-gate.json",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-fusion-gate.json",
+      "sha256": "d82ce21a40e9e1d1bfed7beac4d1ae0b85c32c7dc4085aa8f4ed82f24294adbf"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_token_readout_20261104_v2/report/readout.png",
+      "path": "docs/experiments/figures/federated-text-pilot/last-b-readout.png",
+      "sha256": "043aff21e47cbc21358c9f0a2b30bbeb36fb95cba3d3ba670ab711ea1322b8f8"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_token_readout_20261104_v2/report/readout.svg",
+      "path": "docs/experiments/figures/federated-text-pilot/last-b-readout.svg",
+      "sha256": "9a396c8147a2165ad2ac5b3ccdb8156b8afb2fdd7769d201d3f81e24d91b2387"
+    }
+  ],
+  "source_sha256": "885c69d9edb5160ba2ca5d22dd0757144a611d7f1cd5d26c2921afac11059df5",
+  "base_commit": "2fd25b6",
+  "uncommitted": true,
+  "uses_private_reference": false,
+  "contains_private_tokens": false,
+  "code": [
+    {
+      "path": "evaluation/last_b_token_readout.py",
+      "sha256": "db9f0e8e875ed9cce904a52993fb1eff63e84492d38bca1262e98596b4b5d611"
+    },
+    {
+      "path": "tests/test_last_b_token_readout.py",
+      "sha256": "259c68a253c1c52338af443216fc8cc7c51ef5eed1d53e48f246c44e5dfe4939"
+    },
+    {
+      "path": "outputs/diagnostics/last_b_token_readout_20261104_v2/setup/controller.py",
+      "sha256": "98c3a37ae484395b9c8f4fb91f91a16e15790429304cf67632449cd77e1c3107"
+    },
+    {
+      "path": "outputs/diagnostics/last_b_token_readout_20261104_v2/setup/report.py",
+      "sha256": "6fd7997d5bd09cb35f2d9efa4c886c8d33c31472f861393d82b8dda3f99eff77"
+    },
+    {
+      "path": "outputs/diagnostics/last_b_token_readout_20261104_v2/setup/finalize.py",
+      "sha256": "29e82fcfad6c05ccd6ae60ca23f1724baf13142746aed140677d109c661073d2"
+    },
+    {
+      "path": "outputs/diagnostics/last_b_token_readout_20261104_v2/setup/record_results.py",
+      "sha256": "40fd2bc0f77f41f745e0a8fbcdd456abb765be6fdfc64bd348ee5da15c8f6ada"
+    },
+    {
+      "path": "outputs/diagnostics/last_b_token_readout_20261104_v2/setup/finish.py",
+      "sha256": "9d23842598384f097c1eb63bf7a1c555037824597cfb8061abf12776a0bd1a88"
+    }
+  ]
+}

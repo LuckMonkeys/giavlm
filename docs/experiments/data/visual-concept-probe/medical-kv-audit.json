@@ -1,0 +1,18 @@
+{
+  "all_previous_image_ids_excluded": 83,
+  "analysis_source_sha256": "e11a8dcbb3ecc40ab8496a365060c79fb9853877607e56b98a9ea545aa1e54cf",
+  "image_id_overlap": 0,
+  "max_distance_error": 0.0,
+  "method_distances_recomputed": 480,
+  "metric_groups_recomputed": 168,
+  "new_cohort_split": "eval",
+  "new_images": 20,
+  "pixel_overlap": 0,
+  "prediction_sha256": "3827dccc4a956d87a4f73c5e1f81c58061eaa45b52514c6d930769a4be9bdf4e",
+  "primary_public_rule_reproduced": "L24_v",
+  "private_images_or_text_used_for_inference": false,
+  "report_sha256": "023d1ce722539b3528f7b2b073eaa492bd6c8498d91775ec9194c3b7f755be73",
+  "source_manifest_sha256": "6ef0680a8fab3e08ab605a34a72a9b0d6d5e649669ee9bd75a4337336084dffd",
+  "status": "pass",
+  "uploads_recomputed": 40
+}

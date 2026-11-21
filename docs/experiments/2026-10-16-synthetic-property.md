@@ -121,11 +121,12 @@ artifacts:
   note: 主实验耗时、峰值显存和完成标记
 related:
 - image-property-ideas
+- candidate-scoring
 - image-property-inference
 - gradient-discriminability
 ---
 
-后续加权、类内抑制、概念探针与视觉 tokens 接口检查统一见 [[image-property-ideas]]。本页保留原合成候选基线。
+后续的加权与类内抑制见 [[candidate-scoring]]，概念探针与视觉 tokens 接口检查见 [[visual-concept-probe]]，各方法状态汇总见 [[image-property-ideas]]。本页保留原合成候选基线。
 
 ## 要点
 

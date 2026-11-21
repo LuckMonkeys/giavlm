@@ -1,0 +1,13 @@
+{
+  "analysis_source_sha256": "8c0e2059427876ca8af85540b9b6e28e0ac4686061ba458920b92d7755c814f1",
+  "artifacts": {
+    "docs/experiments/data/gradient-prototype-transfer/boundary-aggregate.json": "4d8a81c9094f26e7e096c2071c4b04de46ca3a74463a94080e96d2c7948864c4",
+    "docs/experiments/data/gradient-prototype-transfer/boundary-distributions.csv": "abd91196ce2117d23c32735b44ec74bea3c353e6ae43008a4d05a8bd9928dfe8",
+    "docs/experiments/data/gradient-prototype-transfer/boundary-integrity-audit.json": "da04f4bd0c898844303e5a9e6c7116c6981587b2c01cae96998edd0983e6a1bb",
+    "docs/experiments/data/gradient-prototype-transfer/boundary-summary.csv": "0c44b6e02fc62a33ccfe3e42816f987f769b3b01e5a4b33d1d73b954f6c87392",
+    "docs/experiments/figures/gradient-prototype-transfer/boundary-energy.png": "2595224bcf4b1ea7be752e1cf907bdd66bd9b55b5191aa2708e3e052ccab78d6",
+    "docs/experiments/figures/gradient-prototype-transfer/boundary-margins.png": "ac2e6e708aaad79e9db24434d9d96ed283f0e2a604775350e8378d996435a0e8"
+  },
+  "execution_source_manifest_sha256": "83186e5c5702d97b0f36c51c6c26319da7430cc60c0c0329492b147dcd6237e5",
+  "uncommitted": true
+}

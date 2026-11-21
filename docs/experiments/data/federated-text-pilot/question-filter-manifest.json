@@ -1,0 +1,36 @@
+{
+  "base_commit": "2fd25b6",
+  "code_files": {
+    "evaluation/question_filter_audit.py": "fd091d0a92af8d0e3699e25c8048647ade162d6e2ede5be2f98a7c289369b39f",
+    "evaluation/question_filter_evaluate.py": "28b358911e5a2a050e84e3a840270a7fab3cdaef26470029b9a501861c891f60",
+    "evaluation/question_filter_math.py": "2e5e1e33a84b4596c7fdba7b37de41f560781fa26c5ebdeaa192a17833160fe2",
+    "evaluation/question_filter_public.py": "b96c1188f26279cd4740c5b14df52049621e8e0b700dde06bb1160635540b25c",
+    "evaluation/question_filter_report.py": "86e12e5b44eef2ae17fe1aeaeabf07afa8410f7c91db7d94807d97ac701a4fb8",
+    "evaluation/question_filter_study.py": "eab2cafb1cc75617bdb48d100eda88865de6b5955b80b7c4ab3f5727ce262522",
+    "tests/test_question_filter.py": "278d47f8acec9d36f4b789c91181c921f94984a0ca829cb2fa29fb681072e32b"
+  },
+  "contains_private_tokens": false,
+  "files": {
+    "docs/experiments/data/federated-text-pilot/question-filter-aggregate.json": "234928cd8441f07b5f6909e9f4871a2f423cb09ab2ca341c3504b8d73b0dd8c2",
+    "docs/experiments/data/federated-text-pilot/question-filter-budget-generation-audit.json": "e695dc50f4441d5b02a8017ce159f16f3021bca42f0cc5a22c0dd1141dcf8826",
+    "docs/experiments/data/federated-text-pilot/question-filter-by-length.csv": "065f07d7c4ec334f82d8fc856d461d8c235e3dc071a5495b178fb84d5d97b7ca",
+    "docs/experiments/data/federated-text-pilot/question-filter-calibration.json": "19d77c584ab401d8466894a35cf3ed07e349a77d1a0391d5ba97828e9bdae920",
+    "docs/experiments/data/federated-text-pilot/question-filter-finalization-audit.json": "cfb263fbc61cbc1ea3d06f43f32560ba3dbabb06e58be99c1ac6a5d437e10a4c",
+    "docs/experiments/data/federated-text-pilot/question-filter-first-informative.csv": "125149eefc68c3cc753d54702f7346dea68e8f5a8b64298af836716937a427ce",
+    "docs/experiments/data/federated-text-pilot/question-filter-first.csv": "125149eefc68c3cc753d54702f7346dea68e8f5a8b64298af836716937a427ce",
+    "docs/experiments/data/federated-text-pilot/question-filter-paired.csv": "84e86e7cd1ba6a88a9175d490c4bdf199553f0546618107ff9fd36e6c496e661",
+    "docs/experiments/data/federated-text-pilot/question-filter-run.json": "78450559fd38cfc8de5cee837b9bb0ee677a1c03c039cca33f8f9c3a1ca7d017",
+    "docs/experiments/data/federated-text-pilot/question-filter-source.json": "40872fcc2d283b0028d34d37e099621e26029654fc54871a02b67515295d5bde",
+    "docs/experiments/data/federated-text-pilot/question-filter-summary.csv": "94751418387a42cb9e20e0e1455225ba6395ccae847af7009ace97a80c4cc5d5",
+    "docs/experiments/data/federated-text-pilot/question-filter-summary.md": "6c53e17a5b6c9c24d1596393436f5a7fc94a571e29b62846d43a6bb9d7297935",
+    "docs/experiments/data/federated-text-pilot/question-filter-supplemental-audit.json": "5cd2e4cefd81f95ad17390156a96d8fa829fe542de9a3d7b538a0817dac9beb3",
+    "docs/experiments/figures/federated-text-pilot/question-filter-budget.png": "d5e25bb78b05e9b70437dc5549f22a62aa0c06f8b1f52810b196a925219728d6",
+    "docs/experiments/figures/federated-text-pilot/question-filter-first-token.png": "2771e4fde66bb94f71e1d45a31b9ab7bc972ae6a1f471977cfcab0cb9e551720",
+    "docs/experiments/figures/federated-text-pilot/question-filter-question-answer.png": "c736cc8acbd9749b71a822ea5b4b91289beaee234b9a93de5c610d1263243974"
+  },
+  "scope": "SLAKE30 development; six Stage-1 directions; no new sequence reconstruction",
+  "source_root": "outputs/diagnostics/question_filter_defense_20261105",
+  "source_sha256": "68898372ed8d30275e6f52aae19d28c67e9f3d91e3d21e7819ae7ab2df908ada",
+  "uncommitted": true,
+  "uses_private_reference_for_scoring": false
+}

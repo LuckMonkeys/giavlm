@@ -1,0 +1,11 @@
+{
+  "full_bank_distances": 1536,
+  "gpu_used": false,
+  "independent_svd_geometry": 96,
+  "manual_metric_groups": 288,
+  "max_distance_error": 3.2751579226442118e-15,
+  "medical_bank_stopped_before_capture": true,
+  "public_thresholds_reproduced": true,
+  "status": "pass",
+  "target_labels_used_for_fit": false
+}

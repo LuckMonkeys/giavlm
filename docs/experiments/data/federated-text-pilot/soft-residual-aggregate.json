@@ -1,0 +1,254 @@
+{
+  "aggregate": [
+    {
+      "alpha": 0.0,
+      "candidate_recall": 0.8989379558129559,
+      "condition": "fedsgd-b1",
+      "full_coverage_count": 13,
+      "image": "gt",
+      "informative_ap": 0.8537594919941521,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 0.5,
+      "candidate_recall": 0.9269864507364507,
+      "condition": "fedsgd-b1",
+      "full_coverage_count": 16,
+      "image": "gt",
+      "informative_ap": 0.8899498536637103,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 0.9,
+      "candidate_recall": 0.9807660934744269,
+      "condition": "fedsgd-b1",
+      "full_coverage_count": 24,
+      "image": "gt",
+      "informative_ap": 0.9702870872852799,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 1.0,
+      "candidate_recall": 0.9943386243386243,
+      "condition": "fedsgd-b1",
+      "full_coverage_count": 26,
+      "image": "gt",
+      "informative_ap": 0.9921857754147242,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 0.0,
+      "candidate_recall": 0.021408435618961934,
+      "condition": "noise",
+      "full_coverage_count": 0,
+      "image": "gt",
+      "informative_ap": 0.009691573460535707,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 0.5,
+      "candidate_recall": 0.01729569650622282,
+      "condition": "noise",
+      "full_coverage_count": 0,
+      "image": "gt",
+      "informative_ap": 0.009324870916477468,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 0.9,
+      "candidate_recall": 0.07410329285329284,
+      "condition": "noise",
+      "full_coverage_count": 0,
+      "image": "gt",
+      "informative_ap": 0.0436014598456753,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 1.0,
+      "candidate_recall": 0.1738163557352154,
+      "condition": "noise",
+      "full_coverage_count": 0,
+      "image": "gt",
+      "informative_ap": 0.11002620248459002,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 0.0,
+      "candidate_recall": 0.4827923088417155,
+      "condition": "sparsify",
+      "full_coverage_count": 0,
+      "image": "gt",
+      "informative_ap": 0.31272462721168437,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 0.5,
+      "candidate_recall": 0.4733090837334903,
+      "condition": "sparsify",
+      "full_coverage_count": 0,
+      "image": "gt",
+      "informative_ap": 0.28880911360793177,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 0.9,
+      "candidate_recall": 0.5226048557988702,
+      "condition": "sparsify",
+      "full_coverage_count": 0,
+      "image": "gt",
+      "informative_ap": 0.34541181602874393,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 1.0,
+      "candidate_recall": 0.5784282156876326,
+      "condition": "sparsify",
+      "full_coverage_count": 0,
+      "image": "gt",
+      "informative_ap": 0.4006610142474087,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 0.0,
+      "candidate_recall": 0.8989379558129559,
+      "condition": "fedsgd-b1",
+      "full_coverage_count": 13,
+      "image": "random",
+      "informative_ap": 0.8537594919941521,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 0.5,
+      "candidate_recall": 0.9238093152676486,
+      "condition": "fedsgd-b1",
+      "full_coverage_count": 16,
+      "image": "random",
+      "informative_ap": 0.8868751650964175,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 0.9,
+      "candidate_recall": 0.977009479717813,
+      "condition": "fedsgd-b1",
+      "full_coverage_count": 24,
+      "image": "random",
+      "informative_ap": 0.965727094420182,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 1.0,
+      "candidate_recall": 0.9905820105820106,
+      "condition": "fedsgd-b1",
+      "full_coverage_count": 26,
+      "image": "random",
+      "informative_ap": 0.9870934389792474,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 0.0,
+      "candidate_recall": 0.021408435618961934,
+      "condition": "noise",
+      "full_coverage_count": 0,
+      "image": "random",
+      "informative_ap": 0.009691573460535707,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 0.5,
+      "candidate_recall": 0.019147548358074674,
+      "condition": "noise",
+      "full_coverage_count": 0,
+      "image": "random",
+      "informative_ap": 0.009312249809999245,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 0.9,
+      "candidate_recall": 0.07353349228349228,
+      "condition": "noise",
+      "full_coverage_count": 0,
+      "image": "random",
+      "informative_ap": 0.04119524011077559,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 1.0,
+      "candidate_recall": 0.1791779409323269,
+      "condition": "noise",
+      "full_coverage_count": 0,
+      "image": "random",
+      "informative_ap": 0.10770272939051558,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 0.0,
+      "candidate_recall": 0.4827923088417155,
+      "condition": "sparsify",
+      "full_coverage_count": 0,
+      "image": "random",
+      "informative_ap": 0.31272462721168437,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 0.5,
+      "candidate_recall": 0.46733842792730823,
+      "condition": "sparsify",
+      "full_coverage_count": 0,
+      "image": "random",
+      "informative_ap": 0.29035313570862836,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 0.9,
+      "candidate_recall": 0.508560156067896,
+      "condition": "sparsify",
+      "full_coverage_count": 0,
+      "image": "random",
+      "informative_ap": 0.3335298179668601,
+      "n": 30,
+      "selected_count_mean": 109.0
+    },
+    {
+      "alpha": 1.0,
+      "candidate_recall": 0.5688845896418135,
+      "condition": "sparsify",
+      "full_coverage_count": 0,
+      "image": "random",
+      "informative_ap": 0.3741656320456786,
+      "n": 30,
+      "selected_count_mean": 109.0
+    }
+  ],
+  "all_scores_committed_before_truth": true,
+  "alphas_frozen_before_scoring": true,
+  "cohort_n": 30,
+  "contains_private_tokens": false,
+  "note": "Paired filter-only diagnostic; no alpha chosen by truth, no sequence reconstruction. Common ambiguous extras for all alpha. AP excludes common ambiguous IDs.",
+  "score_conditions": 720,
+  "score_groups": 180,
+  "source_sha256": "2618782dccc6fbb8494b67d87a6be5d6f38945617b273ed18f8eba96b33f891c",
+  "status": "completed",
+  "uses_private_reference": false
+}

@@ -1,0 +1,11 @@
+{
+  "analysis_source_sha256": "49fb9ee46df07c7ca4a19c6498d93e5171794c24d91f0114f430dfdad46721f8",
+  "artifacts": {
+    "docs/experiments/data/gradient-prototype-transfer/crossmodel-aggregate.json": "4dd36d935bef5cb57a423777b9881cb6323a9083ba16956e9efcc9b2a5812da4",
+    "docs/experiments/data/gradient-prototype-transfer/crossmodel-audit.json": "a374d30afa7b4cb4bd2a3eb3e0710c9535fecbe9f7439ba5a06fddc4a3c2366c",
+    "docs/experiments/data/gradient-prototype-transfer/crossmodel-summary.csv": "59090a9431b91c6d809ea2b2b894c05547b0cbf641223123c0b6d0208d9cda6b",
+    "docs/experiments/figures/gradient-prototype-transfer/crossmodel-head.png": "071a5ae8da9cd77b4dc0d058fe6fb15cb8491f399bd49b2646bf66d97ed3ff87"
+  },
+  "execution_source_manifest_sha256": "80307774be8356fb2fa5d3b4a189f933ea1853d1933bdf900c8830eebaeadf82",
+  "uncommitted": true
+}

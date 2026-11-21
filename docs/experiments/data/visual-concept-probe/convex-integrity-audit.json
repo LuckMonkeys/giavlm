@@ -1,0 +1,16 @@
+{
+  "all_committed_hashes_match": true,
+  "anonymous_opposite_property_mapping_checked": true,
+  "independently_recomputed_correct": 9,
+  "initializations": 36,
+  "max_selected_replay_loss_abs_drift": 0.0012875199317932129,
+  "max_simplex_mass_error": 2.384185791015625e-07,
+  "mean_selected_replay_loss_abs_drift": 0.0005667209625244141,
+  "note": "Saved optimization trace and detached first-order replay are not bit-exact; no cause assumed and no results reselected. The earlier 1e-5 audit equality assumption was too strict, not a declared experiment success threshold.",
+  "optimization_steps": 3600,
+  "queries": 12,
+  "root_report_sha256": "4ce46e43db627356f1d3d7ae9a4cb76008af8d75711e01a71d06836fa0e39048",
+  "selection_uses_saved_heldout_loss_only": true,
+  "status": "pass_with_numerical_caveat",
+  "report_sha256_before_pair_audit": "44b42798be7c979c29cd73bbfca973470080368efac932fdad5551b246e54196"
+}

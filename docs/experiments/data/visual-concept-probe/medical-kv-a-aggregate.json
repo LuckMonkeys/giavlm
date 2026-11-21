@@ -1,0 +1,5692 @@
+{
+  "cohort": "A",
+  "composition": {
+    "answer_type": {
+      "other": 17,
+      "yes_no": 3
+    },
+    "modality": {
+      "CT": 8,
+      "MRI": 8,
+      "X-Ray": 4
+    },
+    "n": 20,
+    "region": {
+      "abdomen": 6,
+      "chest": 4,
+      "head": 10
+    }
+  },
+  "original_head_q_replay_max_error": 0.0,
+  "prediction_sha256": "43b702358f3ff98ad97d419031dcfc5a898ab70c44f3142b0405fd6902c4407d",
+  "primary": "L24_v",
+  "properties": {
+    "abdomen": {
+      "CT": {
+        "metrics": {
+          "L24_k": {
+            "accuracy": 0.625,
+            "accuracy_ci95": [
+              0.625,
+              0.625
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 1.0,
+              "non-abdomen": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                3,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 5,
+            "invalid": 0,
+            "macro_f1": 0.38461538461538464,
+            "n": 8,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 3,
+              "non-abdomen": 5
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.38461538461538464
+          },
+          "L24_q": {
+            "accuracy": 0.625,
+            "accuracy_ci95": [
+              0.625,
+              0.625
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 1.0,
+              "non-abdomen": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                3,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 5,
+            "invalid": 0,
+            "macro_f1": 0.38461538461538464,
+            "n": 8,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 3,
+              "non-abdomen": 5
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.38461538461538464
+          },
+          "L24_v": {
+            "accuracy": 0.625,
+            "accuracy_ci95": [
+              0.625,
+              0.625
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 1.0,
+              "non-abdomen": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                3,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 5,
+            "invalid": 0,
+            "macro_f1": 0.38461538461538464,
+            "n": 8,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 3,
+              "non-abdomen": 5
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.38461538461538464
+          },
+          "L32_k": {
+            "accuracy": 0.625,
+            "accuracy_ci95": [
+              0.625,
+              0.625
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 1.0,
+              "non-abdomen": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                3,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 5,
+            "invalid": 0,
+            "macro_f1": 0.38461538461538464,
+            "n": 8,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 3,
+              "non-abdomen": 5
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.38461538461538464
+          },
+          "L32_q": {
+            "accuracy": 0.75,
+            "accuracy_ci95": [
+              0.625,
+              1.0
+            ],
+            "balanced_accuracy": 0.6666666666666666,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.7333333333333333,
+              "non-abdomen": 0.7333333333333333
+            },
+            "confusion": [
+              [
+                1,
+                2,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 6,
+            "invalid": 0,
+            "macro_f1": 0.6666666666666667,
+            "n": 8,
+            "recall": {
+              "abdomen": 0.3333333333333333,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 3,
+              "non-abdomen": 5
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 0.6666666666666666,
+            "supported_class_macro_f1": 0.6666666666666667
+          },
+          "L32_v": {
+            "accuracy": 0.625,
+            "accuracy_ci95": [
+              0.625,
+              0.625
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 1.0,
+              "non-abdomen": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                3,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 5,
+            "invalid": 0,
+            "macro_f1": 0.38461538461538464,
+            "n": 8,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 3,
+              "non-abdomen": 5
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.38461538461538464
+          }
+        },
+        "paired_vs_same_layer_q": {
+          "L24_k": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_v": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_k": {
+            "accuracy_ci95": [
+              -0.375,
+              0.0
+            ],
+            "accuracy_gain": -0.125,
+            "balanced_accuracy_gain": -0.16666666666666663,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              -0.5,
+              0.0
+            ]
+          },
+          "L32_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_v": {
+            "accuracy_ci95": [
+              -0.375,
+              0.0
+            ],
+            "accuracy_gain": -0.125,
+            "balanced_accuracy_gain": -0.16666666666666663,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              -0.5,
+              0.0
+            ]
+          }
+        }
+      },
+      "MRI": {
+        "metrics": {
+          "L24_k": {
+            "accuracy": 0.625,
+            "accuracy_ci95": [
+              0.625,
+              0.625
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 1.0,
+              "non-abdomen": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                3,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 5,
+            "invalid": 0,
+            "macro_f1": 0.38461538461538464,
+            "n": 8,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 3,
+              "non-abdomen": 5
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.38461538461538464
+          },
+          "L24_q": {
+            "accuracy": 0.625,
+            "accuracy_ci95": [
+              0.625,
+              0.625
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.7333333333333333,
+              "non-abdomen": 0.7333333333333333
+            },
+            "confusion": [
+              [
+                0,
+                3,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 5,
+            "invalid": 0,
+            "macro_f1": 0.38461538461538464,
+            "n": 8,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 3,
+              "non-abdomen": 5
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.38461538461538464
+          },
+          "L24_v": {
+            "accuracy": 0.625,
+            "accuracy_ci95": [
+              0.625,
+              0.625
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 1.0,
+              "non-abdomen": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                3,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 5,
+            "invalid": 0,
+            "macro_f1": 0.38461538461538464,
+            "n": 8,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 3,
+              "non-abdomen": 5
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.38461538461538464
+          },
+          "L32_k": {
+            "accuracy": 0.625,
+            "accuracy_ci95": [
+              0.625,
+              0.625
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.4666666666666667,
+              "non-abdomen": 0.4666666666666667
+            },
+            "confusion": [
+              [
+                0,
+                3,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 5,
+            "invalid": 0,
+            "macro_f1": 0.38461538461538464,
+            "n": 8,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 3,
+              "non-abdomen": 5
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.38461538461538464
+          },
+          "L32_q": {
+            "accuracy": 0.75,
+            "accuracy_ci95": [
+              0.625,
+              1.0
+            ],
+            "balanced_accuracy": 0.6666666666666666,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.3333333333333333,
+              "non-abdomen": 0.3333333333333333
+            },
+            "confusion": [
+              [
+                1,
+                2,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 6,
+            "invalid": 0,
+            "macro_f1": 0.6666666666666667,
+            "n": 8,
+            "recall": {
+              "abdomen": 0.3333333333333333,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 3,
+              "non-abdomen": 5
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 0.6666666666666666,
+            "supported_class_macro_f1": 0.6666666666666667
+          },
+          "L32_v": {
+            "accuracy": 0.625,
+            "accuracy_ci95": [
+              0.625,
+              0.625
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.4,
+              "non-abdomen": 0.4
+            },
+            "confusion": [
+              [
+                0,
+                3,
+                0
+              ],
+              [
+                0,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 5,
+            "invalid": 0,
+            "macro_f1": 0.38461538461538464,
+            "n": 8,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 3,
+              "non-abdomen": 5
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.38461538461538464
+          }
+        },
+        "paired_vs_same_layer_q": {
+          "L24_k": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_v": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_k": {
+            "accuracy_ci95": [
+              -0.375,
+              0.0
+            ],
+            "accuracy_gain": -0.125,
+            "balanced_accuracy_gain": -0.16666666666666663,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              -0.5,
+              0.0
+            ]
+          },
+          "L32_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_v": {
+            "accuracy_ci95": [
+              -0.375,
+              0.0
+            ],
+            "accuracy_gain": -0.125,
+            "balanced_accuracy_gain": -0.16666666666666663,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              -0.5,
+              0.0
+            ]
+          }
+        }
+      },
+      "X-Ray": {
+        "metrics": {
+          "L24_k": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": null,
+              "non-abdomen": null
+            },
+            "confusion": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 4,
+            "invalid": 0,
+            "macro_f1": null,
+            "n": 4,
+            "recall": {
+              "abdomen": null,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 0,
+              "non-abdomen": 4
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "L24_q": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": null,
+              "non-abdomen": null
+            },
+            "confusion": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 4,
+            "invalid": 0,
+            "macro_f1": null,
+            "n": 4,
+            "recall": {
+              "abdomen": null,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 0,
+              "non-abdomen": 4
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "L24_v": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": null,
+              "non-abdomen": null
+            },
+            "confusion": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 4,
+            "invalid": 0,
+            "macro_f1": null,
+            "n": 4,
+            "recall": {
+              "abdomen": null,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 0,
+              "non-abdomen": 4
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "L32_k": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": null,
+              "non-abdomen": null
+            },
+            "confusion": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 4,
+            "invalid": 0,
+            "macro_f1": null,
+            "n": 4,
+            "recall": {
+              "abdomen": null,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 0,
+              "non-abdomen": 4
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "L32_q": {
+            "accuracy": 0.0,
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "balanced_accuracy": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": null,
+              "non-abdomen": null
+            },
+            "confusion": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                4,
+                0,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 0,
+            "invalid": 0,
+            "macro_f1": null,
+            "n": 4,
+            "recall": {
+              "abdomen": null,
+              "non-abdomen": 0.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 0,
+              "non-abdomen": 4
+            },
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ],
+            "supported_class_balanced_accuracy": 0.0,
+            "supported_class_macro_f1": 0.0
+          },
+          "L32_v": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": null,
+              "non-abdomen": null
+            },
+            "confusion": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 4,
+            "invalid": 0,
+            "macro_f1": null,
+            "n": 4,
+            "recall": {
+              "abdomen": null,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 0,
+              "non-abdomen": 4
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          }
+        },
+        "paired_vs_same_layer_q": {
+          "L24_k": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_v": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_k": {
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "accuracy_gain": 1.0,
+            "balanced_accuracy_gain": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ]
+          },
+          "L32_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_v": {
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "accuracy_gain": 1.0,
+            "balanced_accuracy_gain": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ]
+          }
+        }
+      },
+      "all": {
+        "metrics": {
+          "L24_k": {
+            "accuracy": 0.7,
+            "accuracy_ci95": [
+              0.7,
+              0.7
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.7142857142857143,
+              "non-abdomen": 0.7142857142857143
+            },
+            "confusion": [
+              [
+                0,
+                6,
+                0
+              ],
+              [
+                0,
+                14,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 14,
+            "invalid": 0,
+            "macro_f1": 0.4117647058823529,
+            "n": 20,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 6,
+              "non-abdomen": 14
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.4117647058823529
+          },
+          "L24_q": {
+            "accuracy": 0.7,
+            "accuracy_ci95": [
+              0.7,
+              0.7
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.6547619047619048,
+              "non-abdomen": 0.6547619047619048
+            },
+            "confusion": [
+              [
+                0,
+                6,
+                0
+              ],
+              [
+                0,
+                14,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 14,
+            "invalid": 0,
+            "macro_f1": 0.4117647058823529,
+            "n": 20,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 6,
+              "non-abdomen": 14
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.4117647058823529
+          },
+          "L24_v": {
+            "accuracy": 0.7,
+            "accuracy_ci95": [
+              0.7,
+              0.7
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.7142857142857143,
+              "non-abdomen": 0.7142857142857143
+            },
+            "confusion": [
+              [
+                0,
+                6,
+                0
+              ],
+              [
+                0,
+                14,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 14,
+            "invalid": 0,
+            "macro_f1": 0.4117647058823529,
+            "n": 20,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 6,
+              "non-abdomen": 14
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.4117647058823529
+          },
+          "L32_k": {
+            "accuracy": 0.7,
+            "accuracy_ci95": [
+              0.7,
+              0.7
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.5357142857142857,
+              "non-abdomen": 0.5357142857142857
+            },
+            "confusion": [
+              [
+                0,
+                6,
+                0
+              ],
+              [
+                0,
+                14,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 14,
+            "invalid": 0,
+            "macro_f1": 0.4117647058823529,
+            "n": 20,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 6,
+              "non-abdomen": 14
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.4117647058823529
+          },
+          "L32_q": {
+            "accuracy": 0.6,
+            "accuracy_ci95": [
+              0.4,
+              0.8
+            ],
+            "balanced_accuracy": 0.5238095238095238,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.47619047619047616,
+              "non-abdomen": 0.47619047619047616
+            },
+            "confusion": [
+              [
+                2,
+                4,
+                0
+              ],
+              [
+                4,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 12,
+            "invalid": 0,
+            "macro_f1": 0.5238095238095238,
+            "n": 20,
+            "recall": {
+              "abdomen": 0.3333333333333333,
+              "non-abdomen": 0.7142857142857143
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 6,
+              "non-abdomen": 14
+            },
+            "supported_class_ba_ci95": [
+              0.32142857142857145,
+              0.7383928571428555
+            ],
+            "supported_class_balanced_accuracy": 0.5238095238095238,
+            "supported_class_macro_f1": 0.5238095238095238
+          },
+          "L32_v": {
+            "accuracy": 0.7,
+            "accuracy_ci95": [
+              0.7,
+              0.7
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.5476190476190477,
+              "non-abdomen": 0.5476190476190477
+            },
+            "confusion": [
+              [
+                0,
+                6,
+                0
+              ],
+              [
+                0,
+                14,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 14,
+            "invalid": 0,
+            "macro_f1": 0.4117647058823529,
+            "n": 20,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 6,
+              "non-abdomen": 14
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.4117647058823529
+          }
+        },
+        "paired_vs_same_layer_q": {
+          "L24_k": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_v": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_k": {
+            "accuracy_ci95": [
+              -0.1,
+              0.3
+            ],
+            "accuracy_gain": 0.09999999999999998,
+            "balanced_accuracy_gain": -0.023809523809523836,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              -0.23839285714285713,
+              0.17857142857142858
+            ]
+          },
+          "L32_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_v": {
+            "accuracy_ci95": [
+              -0.1,
+              0.3
+            ],
+            "accuracy_gain": 0.09999999999999998,
+            "balanced_accuracy_gain": -0.023809523809523836,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              -0.23839285714285713,
+              0.17857142857142858
+            ]
+          }
+        }
+      },
+      "no_literal_property_terms": {
+        "metrics": {
+          "L24_k": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": null,
+              "non-abdomen": null
+            },
+            "confusion": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                14,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 14,
+            "invalid": 0,
+            "macro_f1": null,
+            "n": 14,
+            "recall": {
+              "abdomen": null,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 0,
+              "non-abdomen": 14
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "L24_q": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": null,
+              "non-abdomen": null
+            },
+            "confusion": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                14,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 14,
+            "invalid": 0,
+            "macro_f1": null,
+            "n": 14,
+            "recall": {
+              "abdomen": null,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 0,
+              "non-abdomen": 14
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "L24_v": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": null,
+              "non-abdomen": null
+            },
+            "confusion": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                14,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 14,
+            "invalid": 0,
+            "macro_f1": null,
+            "n": 14,
+            "recall": {
+              "abdomen": null,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 0,
+              "non-abdomen": 14
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "L32_k": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": null,
+              "non-abdomen": null
+            },
+            "confusion": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                14,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 14,
+            "invalid": 0,
+            "macro_f1": null,
+            "n": 14,
+            "recall": {
+              "abdomen": null,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 0,
+              "non-abdomen": 14
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "L32_q": {
+            "accuracy": 0.7142857142857143,
+            "accuracy_ci95": [
+              0.42857142857142855,
+              0.9285714285714286
+            ],
+            "balanced_accuracy": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": null,
+              "non-abdomen": null
+            },
+            "confusion": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                4,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 10,
+            "invalid": 0,
+            "macro_f1": null,
+            "n": 14,
+            "recall": {
+              "abdomen": null,
+              "non-abdomen": 0.7142857142857143
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 0,
+              "non-abdomen": 14
+            },
+            "supported_class_ba_ci95": [
+              0.42857142857142855,
+              0.9285714285714286
+            ],
+            "supported_class_balanced_accuracy": 0.7142857142857143,
+            "supported_class_macro_f1": 0.8333333333333334
+          },
+          "L32_v": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": null,
+              "non-abdomen": null
+            },
+            "confusion": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                14,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 14,
+            "invalid": 0,
+            "macro_f1": null,
+            "n": 14,
+            "recall": {
+              "abdomen": null,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 0,
+              "non-abdomen": 14
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          }
+        },
+        "paired_vs_same_layer_q": {
+          "L24_k": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_v": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_k": {
+            "accuracy_ci95": [
+              0.07142857142857142,
+              0.5714285714285714
+            ],
+            "accuracy_gain": 0.2857142857142857,
+            "balanced_accuracy_gain": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.07142857142857142,
+              0.5714285714285714
+            ]
+          },
+          "L32_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_v": {
+            "accuracy_ci95": [
+              0.07142857142857142,
+              0.5714285714285714
+            ],
+            "accuracy_gain": 0.2857142857142857,
+            "balanced_accuracy_gain": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.07142857142857142,
+              0.5714285714285714
+            ]
+          }
+        }
+      },
+      "other": {
+        "metrics": {
+          "L24_k": {
+            "accuracy": 0.7647058823529411,
+            "accuracy_ci95": [
+              0.7647058823529411,
+              0.7647058823529411
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.6923076923076923,
+              "non-abdomen": 0.6923076923076923
+            },
+            "confusion": [
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                13,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 13,
+            "invalid": 0,
+            "macro_f1": 0.43333333333333335,
+            "n": 17,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 4,
+              "non-abdomen": 13
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.43333333333333335
+          },
+          "L24_q": {
+            "accuracy": 0.7647058823529411,
+            "accuracy_ci95": [
+              0.7647058823529411,
+              0.7647058823529411
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.6346153846153846,
+              "non-abdomen": 0.6346153846153846
+            },
+            "confusion": [
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                13,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 13,
+            "invalid": 0,
+            "macro_f1": 0.43333333333333335,
+            "n": 17,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 4,
+              "non-abdomen": 13
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.43333333333333335
+          },
+          "L24_v": {
+            "accuracy": 0.7647058823529411,
+            "accuracy_ci95": [
+              0.7647058823529411,
+              0.7647058823529411
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.6923076923076923,
+              "non-abdomen": 0.6923076923076923
+            },
+            "confusion": [
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                13,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 13,
+            "invalid": 0,
+            "macro_f1": 0.43333333333333335,
+            "n": 17,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 4,
+              "non-abdomen": 13
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.43333333333333335
+          },
+          "L32_k": {
+            "accuracy": 0.7647058823529411,
+            "accuracy_ci95": [
+              0.7647058823529411,
+              0.7647058823529411
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.46153846153846156,
+              "non-abdomen": 0.46153846153846156
+            },
+            "confusion": [
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                13,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 13,
+            "invalid": 0,
+            "macro_f1": 0.43333333333333335,
+            "n": 17,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 4,
+              "non-abdomen": 13
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.43333333333333335
+          },
+          "L32_q": {
+            "accuracy": 0.6470588235294118,
+            "accuracy_ci95": [
+              0.4117647058823529,
+              0.8823529411764706
+            ],
+            "balanced_accuracy": 0.5961538461538461,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.6538461538461539,
+              "non-abdomen": 0.6538461538461539
+            },
+            "confusion": [
+              [
+                2,
+                2,
+                0
+              ],
+              [
+                4,
+                9,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 11,
+            "invalid": 0,
+            "macro_f1": 0.575,
+            "n": 17,
+            "recall": {
+              "abdomen": 0.5,
+              "non-abdomen": 0.6923076923076923
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 4,
+              "non-abdomen": 13
+            },
+            "supported_class_ba_ci95": [
+              0.3076923076923077,
+              0.8461538461538461
+            ],
+            "supported_class_balanced_accuracy": 0.5961538461538461,
+            "supported_class_macro_f1": 0.575
+          },
+          "L32_v": {
+            "accuracy": 0.7647058823529411,
+            "accuracy_ci95": [
+              0.7647058823529411,
+              0.7647058823529411
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.5576923076923077,
+              "non-abdomen": 0.5576923076923077
+            },
+            "confusion": [
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                13,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 13,
+            "invalid": 0,
+            "macro_f1": 0.43333333333333335,
+            "n": 17,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 4,
+              "non-abdomen": 13
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.43333333333333335
+          }
+        },
+        "paired_vs_same_layer_q": {
+          "L24_k": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_v": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_k": {
+            "accuracy_ci95": [
+              -0.11764705882352941,
+              0.35294117647058826
+            ],
+            "accuracy_gain": 0.11764705882352933,
+            "balanced_accuracy_gain": -0.09615384615384615,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              -0.34615384615384615,
+              0.19230769230769232
+            ]
+          },
+          "L32_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_v": {
+            "accuracy_ci95": [
+              -0.11764705882352941,
+              0.35294117647058826
+            ],
+            "accuracy_gain": 0.11764705882352933,
+            "balanced_accuracy_gain": -0.09615384615384615,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              -0.34615384615384615,
+              0.19230769230769232
+            ]
+          }
+        }
+      },
+      "yes_no": {
+        "metrics": {
+          "L24_k": {
+            "accuracy": 0.3333333333333333,
+            "accuracy_ci95": [
+              0.3333333333333333,
+              0.3333333333333333
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 1.0,
+              "non-abdomen": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                2,
+                0
+              ],
+              [
+                0,
+                1,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 1,
+            "invalid": 0,
+            "macro_f1": 0.25,
+            "n": 3,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 2,
+              "non-abdomen": 1
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.25
+          },
+          "L24_q": {
+            "accuracy": 0.3333333333333333,
+            "accuracy_ci95": [
+              0.3333333333333333,
+              0.3333333333333333
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 1.0,
+              "non-abdomen": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                2,
+                0
+              ],
+              [
+                0,
+                1,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 1,
+            "invalid": 0,
+            "macro_f1": 0.25,
+            "n": 3,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 2,
+              "non-abdomen": 1
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.25
+          },
+          "L24_v": {
+            "accuracy": 0.3333333333333333,
+            "accuracy_ci95": [
+              0.3333333333333333,
+              0.3333333333333333
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 1.0,
+              "non-abdomen": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                2,
+                0
+              ],
+              [
+                0,
+                1,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 1,
+            "invalid": 0,
+            "macro_f1": 0.25,
+            "n": 3,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 2,
+              "non-abdomen": 1
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.25
+          },
+          "L32_k": {
+            "accuracy": 0.3333333333333333,
+            "accuracy_ci95": [
+              0.3333333333333333,
+              0.3333333333333333
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 1.0,
+              "non-abdomen": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                2,
+                0
+              ],
+              [
+                0,
+                1,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 1,
+            "invalid": 0,
+            "macro_f1": 0.25,
+            "n": 3,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 2,
+              "non-abdomen": 1
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.25
+          },
+          "L32_q": {
+            "accuracy": 0.3333333333333333,
+            "accuracy_ci95": [
+              0.3333333333333333,
+              0.3333333333333333
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 0.0,
+              "non-abdomen": 0.0
+            },
+            "confusion": [
+              [
+                0,
+                2,
+                0
+              ],
+              [
+                0,
+                1,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 1,
+            "invalid": 0,
+            "macro_f1": 0.25,
+            "n": 3,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 2,
+              "non-abdomen": 1
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.25
+          },
+          "L32_v": {
+            "accuracy": 0.3333333333333333,
+            "accuracy_ci95": [
+              0.3333333333333333,
+              0.3333333333333333
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "abdomen": 1.0,
+              "non-abdomen": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                2,
+                0
+              ],
+              [
+                0,
+                1,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "abdomen",
+              "non-abdomen",
+              "invalid"
+            ],
+            "correct": 1,
+            "invalid": 0,
+            "macro_f1": 0.25,
+            "n": 3,
+            "recall": {
+              "abdomen": 0.0,
+              "non-abdomen": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "abdomen": 2,
+              "non-abdomen": 1
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.25
+          }
+        },
+        "paired_vs_same_layer_q": {
+          "L24_k": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_v": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_k": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_v": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          }
+        }
+      }
+    },
+    "head": {
+      "CT": {
+        "metrics": {
+          "L24_k": {
+            "accuracy": 0.375,
+            "accuracy_ci95": [
+              0.375,
+              0.375
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.9333333333333333,
+              "non-head": 0.9333333333333333
+            },
+            "confusion": [
+              [
+                0,
+                5,
+                0
+              ],
+              [
+                0,
+                3,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 3,
+            "invalid": 0,
+            "macro_f1": 0.2727272727272727,
+            "n": 8,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 5,
+              "non-head": 3
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.2727272727272727
+          },
+          "L24_q": {
+            "accuracy": 0.375,
+            "accuracy_ci95": [
+              0.375,
+              0.375
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                5,
+                0
+              ],
+              [
+                0,
+                3,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 3,
+            "invalid": 0,
+            "macro_f1": 0.2727272727272727,
+            "n": 8,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 5,
+              "non-head": 3
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.2727272727272727
+          },
+          "L24_v": {
+            "accuracy": 0.375,
+            "accuracy_ci95": [
+              0.375,
+              0.375
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                5,
+                0
+              ],
+              [
+                0,
+                3,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 3,
+            "invalid": 0,
+            "macro_f1": 0.2727272727272727,
+            "n": 8,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 5,
+              "non-head": 3
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.2727272727272727
+          },
+          "L32_k": {
+            "accuracy": 0.375,
+            "accuracy_ci95": [
+              0.375,
+              0.375
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                5,
+                0
+              ],
+              [
+                0,
+                3,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 3,
+            "invalid": 0,
+            "macro_f1": 0.2727272727272727,
+            "n": 8,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 5,
+              "non-head": 3
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.2727272727272727
+          },
+          "L32_q": {
+            "accuracy": 0.75,
+            "accuracy_ci95": [
+              0.5,
+              1.0
+            ],
+            "balanced_accuracy": 0.8,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.7333333333333333,
+              "non-head": 0.7333333333333333
+            },
+            "confusion": [
+              [
+                3,
+                2,
+                0
+              ],
+              [
+                0,
+                3,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 6,
+            "invalid": 0,
+            "macro_f1": 0.75,
+            "n": 8,
+            "recall": {
+              "head": 0.6,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 5,
+              "non-head": 3
+            },
+            "supported_class_ba_ci95": [
+              0.6,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 0.8,
+            "supported_class_macro_f1": 0.75
+          },
+          "L32_v": {
+            "accuracy": 0.375,
+            "accuracy_ci95": [
+              0.375,
+              0.375
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                5,
+                0
+              ],
+              [
+                0,
+                3,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 3,
+            "invalid": 0,
+            "macro_f1": 0.2727272727272727,
+            "n": 8,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 5,
+              "non-head": 3
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.2727272727272727
+          }
+        },
+        "paired_vs_same_layer_q": {
+          "L24_k": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_v": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_k": {
+            "accuracy_ci95": [
+              -0.625,
+              -0.125
+            ],
+            "accuracy_gain": -0.375,
+            "balanced_accuracy_gain": -0.30000000000000004,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              -0.5,
+              -0.1
+            ]
+          },
+          "L32_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_v": {
+            "accuracy_ci95": [
+              -0.625,
+              -0.125
+            ],
+            "accuracy_gain": -0.375,
+            "balanced_accuracy_gain": -0.30000000000000004,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              -0.5,
+              -0.1
+            ]
+          }
+        }
+      },
+      "MRI": {
+        "metrics": {
+          "L24_k": {
+            "accuracy": 0.375,
+            "accuracy_ci95": [
+              0.375,
+              0.375
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.9333333333333333,
+              "non-head": 0.9333333333333333
+            },
+            "confusion": [
+              [
+                0,
+                5,
+                0
+              ],
+              [
+                0,
+                3,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 3,
+            "invalid": 0,
+            "macro_f1": 0.2727272727272727,
+            "n": 8,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 5,
+              "non-head": 3
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.2727272727272727
+          },
+          "L24_q": {
+            "accuracy": 0.375,
+            "accuracy_ci95": [
+              0.375,
+              0.375
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                5,
+                0
+              ],
+              [
+                0,
+                3,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 3,
+            "invalid": 0,
+            "macro_f1": 0.2727272727272727,
+            "n": 8,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 5,
+              "non-head": 3
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.2727272727272727
+          },
+          "L24_v": {
+            "accuracy": 0.375,
+            "accuracy_ci95": [
+              0.375,
+              0.375
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                5,
+                0
+              ],
+              [
+                0,
+                3,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 3,
+            "invalid": 0,
+            "macro_f1": 0.2727272727272727,
+            "n": 8,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 5,
+              "non-head": 3
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.2727272727272727
+          },
+          "L32_k": {
+            "accuracy": 0.375,
+            "accuracy_ci95": [
+              0.375,
+              0.375
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                5,
+                0
+              ],
+              [
+                0,
+                3,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 3,
+            "invalid": 0,
+            "macro_f1": 0.2727272727272727,
+            "n": 8,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 5,
+              "non-head": 3
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.2727272727272727
+          },
+          "L32_q": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": 1.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "confusion": [
+              [
+                5,
+                0,
+                0
+              ],
+              [
+                0,
+                3,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 8,
+            "invalid": 0,
+            "macro_f1": 1.0,
+            "n": 8,
+            "recall": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 5,
+              "non-head": 3
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "L32_v": {
+            "accuracy": 0.375,
+            "accuracy_ci95": [
+              0.375,
+              0.375
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                5,
+                0
+              ],
+              [
+                0,
+                3,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 3,
+            "invalid": 0,
+            "macro_f1": 0.2727272727272727,
+            "n": 8,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 5,
+              "non-head": 3
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.2727272727272727
+          }
+        },
+        "paired_vs_same_layer_q": {
+          "L24_k": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_v": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_k": {
+            "accuracy_ci95": [
+              -0.625,
+              -0.625
+            ],
+            "accuracy_gain": -0.625,
+            "balanced_accuracy_gain": -0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              -0.5,
+              -0.5
+            ]
+          },
+          "L32_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_v": {
+            "accuracy_ci95": [
+              -0.625,
+              -0.625
+            ],
+            "accuracy_gain": -0.625,
+            "balanced_accuracy_gain": -0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              -0.5,
+              -0.5
+            ]
+          }
+        }
+      },
+      "X-Ray": {
+        "metrics": {
+          "L24_k": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": null,
+              "non-head": null
+            },
+            "confusion": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 4,
+            "invalid": 0,
+            "macro_f1": null,
+            "n": 4,
+            "recall": {
+              "head": null,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 0,
+              "non-head": 4
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "L24_q": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": null,
+              "non-head": null
+            },
+            "confusion": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 4,
+            "invalid": 0,
+            "macro_f1": null,
+            "n": 4,
+            "recall": {
+              "head": null,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 0,
+              "non-head": 4
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "L24_v": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": null,
+              "non-head": null
+            },
+            "confusion": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 4,
+            "invalid": 0,
+            "macro_f1": null,
+            "n": 4,
+            "recall": {
+              "head": null,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 0,
+              "non-head": 4
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "L32_k": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": null,
+              "non-head": null
+            },
+            "confusion": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 4,
+            "invalid": 0,
+            "macro_f1": null,
+            "n": 4,
+            "recall": {
+              "head": null,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 0,
+              "non-head": 4
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          },
+          "L32_q": {
+            "accuracy": 0.25,
+            "accuracy_ci95": [
+              0.0,
+              0.75
+            ],
+            "balanced_accuracy": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": null,
+              "non-head": null
+            },
+            "confusion": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                3,
+                1,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 1,
+            "invalid": 0,
+            "macro_f1": null,
+            "n": 4,
+            "recall": {
+              "head": null,
+              "non-head": 0.25
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 0,
+              "non-head": 4
+            },
+            "supported_class_ba_ci95": [
+              0.0,
+              0.75
+            ],
+            "supported_class_balanced_accuracy": 0.25,
+            "supported_class_macro_f1": 0.4
+          },
+          "L32_v": {
+            "accuracy": 1.0,
+            "accuracy_ci95": [
+              1.0,
+              1.0
+            ],
+            "balanced_accuracy": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": null,
+              "non-head": null
+            },
+            "confusion": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 4,
+            "invalid": 0,
+            "macro_f1": null,
+            "n": 4,
+            "recall": {
+              "head": null,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 0,
+              "non-head": 4
+            },
+            "supported_class_ba_ci95": [
+              1.0,
+              1.0
+            ],
+            "supported_class_balanced_accuracy": 1.0,
+            "supported_class_macro_f1": 1.0
+          }
+        },
+        "paired_vs_same_layer_q": {
+          "L24_k": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_v": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_k": {
+            "accuracy_ci95": [
+              0.25,
+              1.0
+            ],
+            "accuracy_gain": 0.75,
+            "balanced_accuracy_gain": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.25,
+              1.0
+            ]
+          },
+          "L32_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_v": {
+            "accuracy_ci95": [
+              0.25,
+              1.0
+            ],
+            "accuracy_gain": 0.75,
+            "balanced_accuracy_gain": null,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.25,
+              1.0
+            ]
+          }
+        }
+      },
+      "all": {
+        "metrics": {
+          "L24_k": {
+            "accuracy": 0.5,
+            "accuracy_ci95": [
+              0.5,
+              0.5
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.64,
+              "non-head": 0.64
+            },
+            "confusion": [
+              [
+                0,
+                10,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 10,
+            "invalid": 0,
+            "macro_f1": 0.3333333333333333,
+            "n": 20,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 10,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.3333333333333333
+          },
+          "L24_q": {
+            "accuracy": 0.5,
+            "accuracy_ci95": [
+              0.5,
+              0.5
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.6,
+              "non-head": 0.6
+            },
+            "confusion": [
+              [
+                0,
+                10,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 10,
+            "invalid": 0,
+            "macro_f1": 0.3333333333333333,
+            "n": 20,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 10,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.3333333333333333
+          },
+          "L24_v": {
+            "accuracy": 0.5,
+            "accuracy_ci95": [
+              0.5,
+              0.5
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.67,
+              "non-head": 0.67
+            },
+            "confusion": [
+              [
+                0,
+                10,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 10,
+            "invalid": 0,
+            "macro_f1": 0.3333333333333333,
+            "n": 20,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 10,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.3333333333333333
+          },
+          "L32_k": {
+            "accuracy": 0.5,
+            "accuracy_ci95": [
+              0.5,
+              0.5
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.61,
+              "non-head": 0.61
+            },
+            "confusion": [
+              [
+                0,
+                10,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 10,
+            "invalid": 0,
+            "macro_f1": 0.3333333333333333,
+            "n": 20,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 10,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.3333333333333333
+          },
+          "L32_q": {
+            "accuracy": 0.75,
+            "accuracy_ci95": [
+              0.55,
+              0.9
+            ],
+            "balanced_accuracy": 0.75,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.72,
+              "non-head": 0.72
+            },
+            "confusion": [
+              [
+                8,
+                2,
+                0
+              ],
+              [
+                3,
+                7,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 15,
+            "invalid": 0,
+            "macro_f1": 0.7493734335839599,
+            "n": 20,
+            "recall": {
+              "head": 0.8,
+              "non-head": 0.7
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 10,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              0.55,
+              0.9
+            ],
+            "supported_class_balanced_accuracy": 0.75,
+            "supported_class_macro_f1": 0.7493734335839599
+          },
+          "L32_v": {
+            "accuracy": 0.5,
+            "accuracy_ci95": [
+              0.5,
+              0.5
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.69,
+              "non-head": 0.69
+            },
+            "confusion": [
+              [
+                0,
+                10,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 10,
+            "invalid": 0,
+            "macro_f1": 0.3333333333333333,
+            "n": 20,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 10,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.3333333333333333
+          }
+        },
+        "paired_vs_same_layer_q": {
+          "L24_k": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_v": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_k": {
+            "accuracy_ci95": [
+              -0.4,
+              -0.05
+            ],
+            "accuracy_gain": -0.25,
+            "balanced_accuracy_gain": -0.25,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              -0.4,
+              -0.04999999999999999
+            ]
+          },
+          "L32_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_v": {
+            "accuracy_ci95": [
+              -0.4,
+              -0.05
+            ],
+            "accuracy_gain": -0.25,
+            "balanced_accuracy_gain": -0.25,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              -0.4,
+              -0.04999999999999999
+            ]
+          }
+        }
+      },
+      "no_literal_property_terms": {
+        "metrics": {
+          "L24_k": {
+            "accuracy": 0.625,
+            "accuracy_ci95": [
+              0.625,
+              0.625
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.6,
+              "non-head": 0.6
+            },
+            "confusion": [
+              [
+                0,
+                6,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 10,
+            "invalid": 0,
+            "macro_f1": 0.38461538461538464,
+            "n": 16,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 6,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.38461538461538464
+          },
+          "L24_q": {
+            "accuracy": 0.625,
+            "accuracy_ci95": [
+              0.625,
+              0.625
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.6,
+              "non-head": 0.6
+            },
+            "confusion": [
+              [
+                0,
+                6,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 10,
+            "invalid": 0,
+            "macro_f1": 0.38461538461538464,
+            "n": 16,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 6,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.38461538461538464
+          },
+          "L24_v": {
+            "accuracy": 0.625,
+            "accuracy_ci95": [
+              0.625,
+              0.625
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.6166666666666667,
+              "non-head": 0.6166666666666667
+            },
+            "confusion": [
+              [
+                0,
+                6,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 10,
+            "invalid": 0,
+            "macro_f1": 0.38461538461538464,
+            "n": 16,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 6,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.38461538461538464
+          },
+          "L32_k": {
+            "accuracy": 0.625,
+            "accuracy_ci95": [
+              0.625,
+              0.625
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.6,
+              "non-head": 0.6
+            },
+            "confusion": [
+              [
+                0,
+                6,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 10,
+            "invalid": 0,
+            "macro_f1": 0.38461538461538464,
+            "n": 16,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 6,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.38461538461538464
+          },
+          "L32_q": {
+            "accuracy": 0.6875,
+            "accuracy_ci95": [
+              0.4375,
+              0.875
+            ],
+            "balanced_accuracy": 0.6833333333333333,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.6666666666666666,
+              "non-head": 0.6666666666666666
+            },
+            "confusion": [
+              [
+                4,
+                2,
+                0
+              ],
+              [
+                3,
+                7,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 11,
+            "invalid": 0,
+            "macro_f1": 0.6761133603238867,
+            "n": 16,
+            "recall": {
+              "head": 0.6666666666666666,
+              "non-head": 0.7
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 6,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              0.43291666666666667,
+              0.9
+            ],
+            "supported_class_balanced_accuracy": 0.6833333333333333,
+            "supported_class_macro_f1": 0.6761133603238867
+          },
+          "L32_v": {
+            "accuracy": 0.625,
+            "accuracy_ci95": [
+              0.625,
+              0.625
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.6333333333333333,
+              "non-head": 0.6333333333333333
+            },
+            "confusion": [
+              [
+                0,
+                6,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 10,
+            "invalid": 0,
+            "macro_f1": 0.38461538461538464,
+            "n": 16,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 6,
+              "non-head": 10
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.38461538461538464
+          }
+        },
+        "paired_vs_same_layer_q": {
+          "L24_k": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_v": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_k": {
+            "accuracy_ci95": [
+              -0.25,
+              0.1875
+            ],
+            "accuracy_gain": -0.0625,
+            "balanced_accuracy_gain": -0.18333333333333335,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              -0.4,
+              0.0670833333333311
+            ]
+          },
+          "L32_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_v": {
+            "accuracy_ci95": [
+              -0.25,
+              0.1875
+            ],
+            "accuracy_gain": -0.0625,
+            "balanced_accuracy_gain": -0.18333333333333335,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              -0.4,
+              0.0670833333333311
+            ]
+          }
+        }
+      },
+      "other": {
+        "metrics": {
+          "L24_k": {
+            "accuracy": 0.47058823529411764,
+            "accuracy_ci95": [
+              0.47058823529411764,
+              0.47058823529411764
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.5833333333333334,
+              "non-head": 0.5833333333333334
+            },
+            "confusion": [
+              [
+                0,
+                9,
+                0
+              ],
+              [
+                0,
+                8,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 8,
+            "invalid": 0,
+            "macro_f1": 0.32,
+            "n": 17,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 9,
+              "non-head": 8
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.32
+          },
+          "L24_q": {
+            "accuracy": 0.47058823529411764,
+            "accuracy_ci95": [
+              0.47058823529411764,
+              0.47058823529411764
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.5,
+              "non-head": 0.5
+            },
+            "confusion": [
+              [
+                0,
+                9,
+                0
+              ],
+              [
+                0,
+                8,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 8,
+            "invalid": 0,
+            "macro_f1": 0.32,
+            "n": 17,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 9,
+              "non-head": 8
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.32
+          },
+          "L24_v": {
+            "accuracy": 0.47058823529411764,
+            "accuracy_ci95": [
+              0.47058823529411764,
+              0.47058823529411764
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.5972222222222222,
+              "non-head": 0.5972222222222222
+            },
+            "confusion": [
+              [
+                0,
+                9,
+                0
+              ],
+              [
+                0,
+                8,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 8,
+            "invalid": 0,
+            "macro_f1": 0.32,
+            "n": 17,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 9,
+              "non-head": 8
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.32
+          },
+          "L32_k": {
+            "accuracy": 0.47058823529411764,
+            "accuracy_ci95": [
+              0.47058823529411764,
+              0.47058823529411764
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.5138888888888888,
+              "non-head": 0.5138888888888888
+            },
+            "confusion": [
+              [
+                0,
+                9,
+                0
+              ],
+              [
+                0,
+                8,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 8,
+            "invalid": 0,
+            "macro_f1": 0.32,
+            "n": 17,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 9,
+              "non-head": 8
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.32
+          },
+          "L32_q": {
+            "accuracy": 0.7647058823529411,
+            "accuracy_ci95": [
+              0.5882352941176471,
+              0.9411764705882353
+            ],
+            "balanced_accuracy": 0.7569444444444444,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.7361111111111112,
+              "non-head": 0.7361111111111112
+            },
+            "confusion": [
+              [
+                8,
+                1,
+                0
+              ],
+              [
+                3,
+                5,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 13,
+            "invalid": 0,
+            "macro_f1": 0.7571428571428571,
+            "n": 17,
+            "recall": {
+              "head": 0.8888888888888888,
+              "non-head": 0.625
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 9,
+              "non-head": 8
+            },
+            "supported_class_ba_ci95": [
+              0.5694444444444444,
+              0.9375
+            ],
+            "supported_class_balanced_accuracy": 0.7569444444444444,
+            "supported_class_macro_f1": 0.7571428571428571
+          },
+          "L32_v": {
+            "accuracy": 0.47058823529411764,
+            "accuracy_ci95": [
+              0.47058823529411764,
+              0.47058823529411764
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 0.625,
+              "non-head": 0.625
+            },
+            "confusion": [
+              [
+                0,
+                9,
+                0
+              ],
+              [
+                0,
+                8,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 8,
+            "invalid": 0,
+            "macro_f1": 0.32,
+            "n": 17,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 9,
+              "non-head": 8
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.32
+          }
+        },
+        "paired_vs_same_layer_q": {
+          "L24_k": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_v": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_k": {
+            "accuracy_ci95": [
+              -0.47058823529411764,
+              -0.11764705882352941
+            ],
+            "accuracy_gain": -0.2941176470588235,
+            "balanced_accuracy_gain": -0.2569444444444444,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              -0.4375,
+              -0.06944444444444442
+            ]
+          },
+          "L32_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_v": {
+            "accuracy_ci95": [
+              -0.47058823529411764,
+              -0.11764705882352941
+            ],
+            "accuracy_gain": -0.2941176470588235,
+            "balanced_accuracy_gain": -0.2569444444444444,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              -0.4375,
+              -0.06944444444444442
+            ]
+          }
+        }
+      },
+      "yes_no": {
+        "metrics": {
+          "L24_k": {
+            "accuracy": 0.6666666666666666,
+            "accuracy_ci95": [
+              0.6666666666666666,
+              0.6666666666666666
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                1,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 2,
+            "invalid": 0,
+            "macro_f1": 0.4,
+            "n": 3,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 1,
+              "non-head": 2
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.4
+          },
+          "L24_q": {
+            "accuracy": 0.6666666666666666,
+            "accuracy_ci95": [
+              0.6666666666666666,
+              0.6666666666666666
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                1,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 2,
+            "invalid": 0,
+            "macro_f1": 0.4,
+            "n": 3,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 1,
+              "non-head": 2
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.4
+          },
+          "L24_v": {
+            "accuracy": 0.6666666666666666,
+            "accuracy_ci95": [
+              0.6666666666666666,
+              0.6666666666666666
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                1,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 2,
+            "invalid": 0,
+            "macro_f1": 0.4,
+            "n": 3,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 1,
+              "non-head": 2
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.4
+          },
+          "L32_k": {
+            "accuracy": 0.6666666666666666,
+            "accuracy_ci95": [
+              0.6666666666666666,
+              0.6666666666666666
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                1,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 2,
+            "invalid": 0,
+            "macro_f1": 0.4,
+            "n": 3,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 1,
+              "non-head": 2
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.4
+          },
+          "L32_q": {
+            "accuracy": 0.6666666666666666,
+            "accuracy_ci95": [
+              0.6666666666666666,
+              0.6666666666666666
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                1,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 2,
+            "invalid": 0,
+            "macro_f1": 0.4,
+            "n": 3,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 1,
+              "non-head": 2
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.4
+          },
+          "L32_v": {
+            "accuracy": 0.6666666666666666,
+            "accuracy_ci95": [
+              0.6666666666666666,
+              0.6666666666666666
+            ],
+            "balanced_accuracy": 0.5,
+            "bootstrap_method": "stratified image bootstrap",
+            "class_auroc": {
+              "head": 1.0,
+              "non-head": 1.0
+            },
+            "confusion": [
+              [
+                0,
+                1,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ],
+            "confusion_columns": [
+              "head",
+              "non-head",
+              "invalid"
+            ],
+            "correct": 2,
+            "invalid": 0,
+            "macro_f1": 0.4,
+            "n": 3,
+            "recall": {
+              "head": 0.0,
+              "non-head": 1.0
+            },
+            "repeats": 2000,
+            "seed": 20261016,
+            "support": {
+              "head": 1,
+              "non-head": 2
+            },
+            "supported_class_ba_ci95": [
+              0.5,
+              0.5
+            ],
+            "supported_class_balanced_accuracy": 0.5,
+            "supported_class_macro_f1": 0.4
+          }
+        },
+        "paired_vs_same_layer_q": {
+          "L24_k": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L24_v": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L24_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_k": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_q": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "L32_v": {
+            "accuracy_ci95": [
+              0.0,
+              0.0
+            ],
+            "accuracy_gain": 0.0,
+            "balanced_accuracy_gain": 0.0,
+            "bootstrap_method": "stratified image bootstrap",
+            "comparator": "L32_q",
+            "repeats": 2000,
+            "seed": 20261016,
+            "supported_class_ba_ci95": [
+              0.0,
+              0.0
+            ]
+          }
+        }
+      }
+    }
+  },
+  "protocol_differences_from_BC": {
+    "lr": {
+      "A": 0.01,
+      "BC": 0.0001
+    },
+    "rounds": {
+      "A": 0,
+      "BC": 10
+    },
+    "snapshots": {
+      "A": [
+        0
+      ],
+      "BC": [
+        5,
+        10
+      ]
+    },
+    "token_lengths_known": {
+      "A": true,
+      "BC": false
+    }
+  },
+  "runtime": {
+    "device": "cpu",
+    "gpu_used": false,
+    "report_sha256": "405075377e9355d85287caf368e381024a0191b2eb74a7c76fb28b038a8a8cd1",
+    "runtime_source": "/home/zx/nas/GitRepos/giavlm/outputs/diagnostics/multilayer_property_20261101/source-medical-kv-a-v1/evaluation/medical_kv_cohort_a.py",
+    "seconds": 14.259826792986132,
+    "status": "complete"
+  },
+  "scope": "Repeated original 20-image medical cohort A; no new images or independent confirmation",
+  "uses_private_reference": "Evaluation labels and subgroup definitions after prediction commit only",
+  "uses_target_lengths": false,
+  "uses_target_text": false
+}

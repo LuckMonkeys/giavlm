@@ -1,0 +1,14 @@
+{
+  "analysis_source_sha256": "ff2f870cf5d46739a18375068bff8fbb1cf4decf43995280dd46b66919a3e4a6",
+  "artifacts": {
+    "docs/experiments/data/gradient-prototype-transfer/method-aggregate.json": "beb14a518bac4595b72c8df14770461129b01101c069af598f707ed41125cc61",
+    "docs/experiments/data/gradient-prototype-transfer/method-audit.json": "7d177d19dd94d25534c38b6177567f48db510b305089f89eea457b56e0c09fa0",
+    "docs/experiments/data/gradient-prototype-transfer/method-public-rules.json": "3709c1ba583cec68e8bb6b1bbfc2496266294e74ee31ccfc54af5f961fe565be",
+    "docs/experiments/data/gradient-prototype-transfer/method-summary.csv": "d608585ac3a39684cc9bdb41cf81984cea26ee66242cc0592f7dc62f05400663",
+    "docs/experiments/figures/gradient-prototype-transfer/prototype-stability.png": "8137c68776bcd2d4a8fc41306d9be4d5b172c851e622f0688ad8a97c2798dfc8",
+    "docs/experiments/figures/gradient-prototype-transfer/public-rules.png": "c5ce5f9de4ccdb8cb6af8d7515b3db84e9606b9252522a76458932ecf0c4c521"
+  },
+  "execution_source_manifest_sha256": "af36af78e0ba291a7f81a8f3723b710859524384e1dfcbeea4cf27a079a98e34",
+  "uncommitted": true,
+  "uses_private_reference": "Post-commit evaluation labels only"
+}

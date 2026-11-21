@@ -11,7 +11,7 @@ tracks.yaml; edit those, not this page. -->
 - **uncommitted**：代码或结果还没有提交到 git。
 - **private-tokens**：页面引用了私有 token 片段，只能在本地查看。
 
-<div class="table-filter" data-groups='{"Importance": ["key", "supporting", "archive"], "Level": ["diagnostic", "development", "validation", "benchmark"], "Outcome": ["positive", "negative", "mixed", "inconclusive"], "Flags": ["使用私有数据", "private-tokens"]}'></div>
+<div class="table-filter" data-groups='{"Importance": ["key", "supporting", "archive"], "Level": ["diagnostic", "development", "validation", "benchmark"], "Outcome": ["positive", "negative", "mixed", "inconclusive"], "Flags": ["使用私有数据", "uncommitted", "private-tokens"]}'></div>
 
 ## 图像重建（IG）
 
@@ -46,18 +46,38 @@ tracks.yaml; edit those, not this page. -->
 
 ## 属性推断
 
+- 医学合成原型改善预定 Q24：LLaVA 在 SLAKE、VQA-RAD 原始问答均从等数量摄影库的 9/20、10/20 升至 20/20，Qwen 从 11/20、15/20 升至 20/20；两库公开阈值都为零，医学先验显式声明。
+- Q24 在 SLAKE CT、MRI 和 VQA-RAD CT 内均为 8/8，两模型一致；Qwen Q32 原始问答仍只有 14/20、15/20，不能把末层视为通用最佳层。
+- 当前满分来自反复分析过的四十图，新增一套三十二张生成库；部分 CT/MRI 提示并未生成真实对应模态，只验证 Head 属性，不代表临床有效或独立泛化确认。
+- 固定相同问答后，公开与医学图的分差仍明显错位，问答不同不是唯一原因；Qwen Q24 的头部中位分差从公开 0.146685 降至医学 0.004680、0.009599，低于公开阈值 0.053032。
+- 预定 Relative energy 的公开阈值在两模型 Q24、Q32 的全部医学条件中仍为 0.500、Head recall 为零；简单总体投影能量归一化不足，不代表医学上传没有排序信息。
+- 原纯真实公开医学库因头部 CT 目视入组仅六张、少于所需八张而停止；后经用户授权完成全合成医学库替代条件，两个条件分别记录。
+- 更多公开原型减少抽样波动但不保证更准：Qwen 的 VQA-RAD 从每类三张增至十二张，平均翻转从 44.50% 降至 1.00%，平均 Balanced accuracy 仍约 0.54。
+- 公开规则均选 Q24，但指标大量并列；Qwen 原始问答的 SLAKE、VQA-RAD 为 0.700、0.800，LLaVA 均为 0.500。不能把公开并列胜出视为通用最佳层。
+- 公开选层后校准的候选主方案在两模型、两数据集、两问答均全部判非头部，Balanced accuracy 为 0.500；这些是既有四十图的重复诊断，没有新目标确认。
+- 预定 Q32 主条件在本轮 LLaVA 的 SLAKE 与 VQA-RAD 均为 14/20，Qwen3.5 分别为 12/20、11/20；同一模型快照评价两个数据集，固定末层规则未稳定迁移。
+- Qwen 的 V24 在 VQA-RAD 原始问答下为 18/20，固定问答的 Q24 为 19/20；均是预定次要配置，需要公开选层和新目标确认，不能替换本轮主结果。
+- 固定问答改善排序但不保证分类：LLaVA 两数据集 Q32 的 Head AUROC 都为 1.000，Accuracy 仍为 0.700、0.600；Qwen 在 VQA-RAD 的 AUROC 为 0.920，却全部判非头部。
 - 公开原型库推断模态：三十张新图像上重构文本准确率 0.600，高于 Model-only 的 0.400；相对校准文本对照的优势仍不确定。
 - 医学合成候选能判断部位：CT 队列 10/10，混合模态队列 18/20；样本与此前 pilot 重叠，仍需独立验证。
 - 换成通用摄影候选后平均只有 0.550，现有成功证据限于具有医学外观的候选库。
-- 公开合成图的原始词向量概念探针未过门槛；真实视觉 tokens 可读出头部属性，接口一致性不等于梯度恢复成功。
+- 首层词向量概念探针未通过门槛；真实视觉 tokens 读出时摄影组 61/72、医学组 24/24 判对，视觉表征本身含部位信息。
+- 公开非医学原型的第 32 层 Q 能从医学上传判断头部：A、B、C 三批 Head Balanced accuracy 为 0.750、0.700、0.854，A 批 CT、MRI 内部分别判对 6/8、8/8；腹部仍接近随机。
+- 公开数据选定的第 24 层和换用的 V24 在三批医学图像上几乎全部判负；多层聚合与多问答校准也没有改善。
+- 末层 Q 对问题上下文敏感：公开图上固定回答、只换问题，Head Balanced accuracy 从 0.917 降到 0.500，加长回答不能恢复。
+- 候选评分的张量加权与类内抑制、视觉 tokens 凸组合恢复都没有超过简单基线。
 
-**先读：** [公开原型库推断模态](2026-10-16-image-property-inference.md)
+**先读：** [公开原型库推断模态](2026-10-16-image-property-inference.md)、[梯度原型的医学迁移](2026-10-28-gradient-prototype-transfer.md)
 
 | Importance | Dates | Experiment | Condition | n | Level | Outcome | Flags | Findings |
 |---|---|---|---|---:|---|---|---|---|
 | **key** | 2026-10-16 | [公开原型库推断模态](2026-10-16-image-property-inference.md) | F-L · round 10 · private / text_known · lengths known | 50 | diagnostic | inconclusive | 使用私有数据 | • 新队列上梯度评分优于 Model-only<br>• 评分依赖目标梯度<br>• 文本恢复误差带来小幅损失<br>• 同部位子集尚不稳定<br>• 两轮准确率不能合并 |
 | supporting | 2026-10-16 – 2026-10-18 | [合成候选推断部位](2026-10-16-synthetic-property.md) | F-L · round 10 · private / text_known · lengths known | 20 | diagnostic | mixed | 使用私有数据, private-tokens | • 医学合成候选能判断部位<br>• 换成通用摄影候选后效果消失<br>• 相对 Model-only 的优势尚不确定<br>• 同一问答的两张图可由梯度区分<br>• 生成提示不能当作模态真值 |
-| supporting | 2026-10-28 | [图像属性方法验证](2026-10-28-image-property-ideas.md) | F-L · round 10 · private / text_known / image_known · lengths known | 20 | diagnostic | mixed | 使用私有数据 | • 评分改进未解决跨域迁移<br>• 概念探针未通过前提检查<br>• 真实视觉 tokens 可读出属性<br>• 完整恢复路线尚未验证<br>• 两阶段证据需区分 |
+| supporting | 2026-10-28 – 2026-11-01 | [图像属性方法验证](2026-10-28-image-property-ideas.md) | F-L · round 10 · private / text_known / image_known | 60 | diagnostic | mixed | uncommitted | • 深层梯度原型是唯一有正面信号的方向<br>• 张量加权与类内抑制没有提高候选评分<br>• 首层词向量概念探针没有通过门槛<br>• 凸组合 tokens 恢复不如直接选单个候选<br>• 文本引导候选生成尚未执行 |
+| **key** | 2026-10-28 – 2026-11-05 | [梯度原型的医学迁移](2026-10-28-gradient-prototype-transfer.md) | F-L · round 10 · private / text_known | 80 | diagnostic | mixed | uncommitted | • 医学合成原型让 Q24 迁移到满分<br>• Q32 的头部信号不随模态或字面词消失<br>• 原型与目标的匹配是主因，不是阈值拟合<br>• 层不能通用选择<br>• 当前仍是重复目标的条件性正结果 |
+| supporting | 2026-10-28 | [候选评分的加权与抑制](2026-10-28-candidate-scoring.md) | F-L · round 10 · private / text_known · lengths known | 20 | diagnostic | negative | uncommitted | • 张量加权没有提高评分<br>• 类内抑制和 Fisher 也没有稳定收益<br>• 跨风格公开开发没有方法过门槛<br>• 内容覆盖可能比风格多样性更重要 |
+| supporting | 2026-10-28 | [视觉概念探针](2026-10-28-visual-concept-probe.md) | F-L · round 10 · image_known | 96 | diagnostic | negative | uncommitted | • 首层词向量概念探针没有通过推进门槛<br>• 视觉表征本身含有部位信息<br>• 对照条件同样接近随机 |
+| supporting | 2026-10-28 | [视觉 tokens 凸组合恢复](2026-10-28-convex-token-recovery.md) | F-L · round 10 · text_known | 12 | diagnostic | negative | uncommitted | • 凸组合恢复不如直接选一个候选<br>• 优化确实利用了上传梯度<br>• 二阶梯度链可以计算 |
 
 ## 文本重建（TAG）
 
@@ -73,22 +93,27 @@ tracks.yaml; edit those, not this page. -->
 ## 文本重建（DAGER）
 
 - 两模型、三数据集、72 个 QA 共 288 次攻击已完成（rank 32、先验权重 0.01）。
-- 固定每份上传四条 QA、bf16 主干与 FP32 LoRA 更新时，B1S4、B2S2、B4S1 的 Joint EM 为 GT 4/28、5/28、4/28，Random 1/28、1/28、3/28；四步仍泄露文本，七组数据不足以认定稳定的步数趋势。
-- bf16 计算、FP32 参数更新的真实 SGD 对照中，单步与梯度均恢复 GT 10/30、Random 6/30，两步仍为 9/30、5/30；两步同时改变 batch 与 loss 加权，不能单独估计纯步数影响。
-- 同一梯度的 SGD 单步更新对照中，标准 bf16 差值的 Joint EM 为 0/30；FP32 更新回到 GT 10/30、Random 6/30，表明参数舍入是本轮下降的主要原因，不能据此推断多步 FedAvg 的效果。AdamW 单步算术虽基本避免归零，但后续四样本差值提案在 FP32/bf16、单步/双步下均未恢复完整问答，当前不扩大矩阵。
+- 防御下六方向验证完成：Noise Random 的无条件问题先验将问题 recall 从 B anchor 的 0.1075 提高到 0.4659，新增命中 98.5% 为问句结构、图像通用词或标点；完整问答候选仍为 Noise 0/30、Top-k 1/30。
+- 浅层 L1 up 在 Noise Random 的首词 Top-5 命中为 8/30，同池 K/V 为 2/30、错配为 4/30；只有同批首词线索，没有新样本或序列确认。
+- 原固定攻击在加噪和 Top-k 下完整恢复为 0/30，全局裁剪几乎没有影响；第零层部分消除、谱加权和 A/B 校正都未改善完整候选覆盖，LM 动态候选也未恢复完整问答。
+- bf16 参数更新会抹掉所检坐标中约 93% 的 SGD 差值，恢复因此归零；改用 FP32 参数更新后回到与梯度相同的 GT 10/30、Random 6/30。
+- 混合与多步本地 SGD 都没有阻断泄露：每份上传 4 条问答、本地 4 步（B1S4）仍恢复 GT 4/28、Random 1/28。
+- AdamW 差值在 Pilot4 上全部失败（Joint EM 0/4），候选提案阶段就漏了 token；这不是隐私保证。
 - Random 条件下，Qwen3.5 在 SLAKE、VQA-RAD、VQAv2 的 Joint EM 为 25/30、11/21、8/21，LLaVA 为 11/30、3/21、2/21；两者结构不同，不能单独归因于架构。
 - 私有文本的 token 集合会泄露：rank 32 的 Residual 在随机图像下 Recall@100 约 0.994。
 - 提高 LoRA rank 改善恢复：已知图像时完整问答从 rank 8 的 0/10 升到 rank 32 的 5/10。
 - rank 32 加入语言先验后，十个新问答的完整恢复从 0/10 升到 8/10；rank 8 只升到 2/10；默认权重仍为 0。
 - 候选找齐仍不保证恢复：LLaVA 在 VQA-RAD 候选全部覆盖，完整恢复只有 GT 8/21、Random 3/21。
 - 三种第一阶段筛选改进都没有通过独立验证，保留现有筛选器。
+- 64 个 B 位置同预算扫描后，按预设 Noise/Top-k 补充答案 recall 均值选出的模块候选仍为 L31 down、L32 o（0.8482、0.8462）；Top-k 单项召回以 L29 o 的 0.8738 略高，联合候选覆盖仍最多 1/30，尚未独立确认或运行新序列搜索。
 
 **先读：** [跨模型与数据集 benchmark](2026-10-17-crossmodel-text-benchmark.md)
 
 | Importance | Dates | Experiment | Condition | n | Level | Outcome | Flags | Findings |
 |---|---|---|---|---:|---|---|---|---|
 | **key** | 2026-10-17 – 2026-10-18 | [跨模型与数据集 benchmark](2026-10-17-crossmodel-text-benchmark.md) | F-L · round 10 · image_known / private · lengths known | 72 | benchmark | mixed |  | • Qwen3.5 比 LLaVA 更容易恢复<br>• 恢复率随数据集变化<br>• 候选找齐仍可能恢复失败<br>• Qwen 在 VQAv2 还有候选漏检<br>• 长文本的结论有限 |
-| **key** | 2026-10-23 – 2026-10-26 | [DAGER 联邦更新与防御](2026-10-23-federated-text-pilot.md) | F-L · round 10 · image_known / private · lengths known | 30 | diagnostic | mixed |  | • 固定四条问答时，四步仍泄露文本<br>• AdamW 差值提案在四样本中失败<br>• SGD 单步失败主要来自 bf16 参数舍入<br>• 当前强度的噪声与稀疏化使恢复归零<br>• 长问答仍未完整恢复 |
+| **key** | 2026-10-23 – 2026-11-01 | [DAGER 联邦本地更新](2026-10-23-federated-text-pilot.md) | F-L · round 10 · image_known / private · lengths known | 30 | diagnostic | mixed | uncommitted | • bf16 参数更新是 SGD 差值恢复归零的主因<br>• 双样本混合降低但没有阻断泄露<br>• 多步本地 SGD 也没有阻断泄露<br>• AdamW 差值无法直接用于 DAGER<br>• 长问答在所有条件下都没有完整恢复 |
+| **key** | 2026-10-23 – 2026-11-05 | [DAGER 上传防御](2026-10-23-dager-upload-defense.md) | F-L · round 10 · image_known / private · lengths known | 30 | diagnostic | mixed | uncommitted | • 全局裁剪几乎没有影响<br>• 加噪与 Top-k 让完整恢复归零<br>• 六个筛选改进方向都没救回完整覆盖<br>• 问题先验主要补回通用词<br>• 深层 B 提供答案证据，综合最优是 L31 down 和 L32 o |
 | **key** | 2026-10-11 – 2026-10-12 | [语言先验辅助 DAGER](2026-10-11-dager-lm-prior.md) | F-L · round 10 · private · lengths known | 20 | validation | positive | 使用私有数据 | • rank 32 新问答完整恢复 8/10<br>• 开发集同样明显<br>• 先验主要减少了真前缀被剪掉<br>• rank 8 收益有限<br>• 默认行为不变 |
 | **key** | 2026-10-03 – 2026-10-10 | [DAGER 多样本重建与 rank](2026-10-03-dager-multisample.md) | F-L · round 10 · image_known / private · lengths known | 10 | development | mixed | private-tokens | • Residual 筛选几乎找全私有 token<br>• rank 8 下没有恢复任何完整问答<br>• 提高 rank 明显改善已知图像时的恢复<br>• 提升不只来自候选覆盖<br>• 随机图像下仍未恢复完整问答 |
 | **key** | 2026-10-05 | [DAGER token 筛选改进](2026-10-05-dager-filter-phase.md) | F-L · round 10 · image_known / private · lengths known | 50 | validation | negative | 使用私有数据, private-tokens | • 没有一种方法能稳定替代现有筛选器<br>• 稀疏字典排序只在已知图像时有效<br>• 公开图像统计加权没有通过验证<br>• 逐 token 校准只有局部提升<br>• 决定保留现有筛选器 |

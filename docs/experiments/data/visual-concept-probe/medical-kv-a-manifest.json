@@ -1,0 +1,10 @@
+{
+  "artifacts": {
+    "docs/experiments/data/visual-concept-probe/medical-kv-a-aggregate.json": "6db5e89a0ee044434004aa28f085329489bb07664f6eb05fa62ba1f7ba7f188f",
+    "docs/experiments/data/visual-concept-probe/medical-kv-a-audit.json": "e9fcab2e9e1238b34de127e89cf540cc556499fdad4c664ccde5e5bf63d499cf",
+    "docs/experiments/data/visual-concept-probe/medical-kv-a-summary.csv": "3a06cc7c8bc235081aa86f1c484c275759191a8ae3668ec94d8e5c44229bf298"
+  },
+  "source_manifest_sha256": "fe67b25e66c59d11a6c19bdbf207f4ea0184b376d140673405452bd965ab9a28",
+  "uncommitted": true,
+  "uses_private_reference": "Post-prediction evaluation labels only; no private images or text published"
+}

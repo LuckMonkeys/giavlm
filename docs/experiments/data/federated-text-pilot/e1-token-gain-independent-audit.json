@@ -1,0 +1,83 @@
+{
+  "candidate_sets_unchanged": true,
+  "conservative_generic_breakdown": [
+    {
+      "anatomical_hits": 4,
+      "condition": "noise",
+      "contrast": "blind_vs_residual",
+      "fraction": 0.9574468085106383,
+      "image": "random",
+      "new_hits": 141,
+      "structural_or_general_hits": 135
+    },
+    {
+      "anatomical_hits": 4,
+      "condition": "noise",
+      "contrast": "conditioned_vs_residual",
+      "fraction": 0.8809523809523809,
+      "image": "random",
+      "new_hits": 126,
+      "structural_or_general_hits": 111
+    },
+    {
+      "anatomical_hits": 0,
+      "condition": "noise",
+      "contrast": "blind_vs_b_anchor",
+      "fraction": 0.9852941176470589,
+      "image": "random",
+      "new_hits": 136,
+      "structural_or_general_hits": 134
+    },
+    {
+      "anatomical_hits": 0,
+      "condition": "noise",
+      "contrast": "conditioned_vs_b_anchor",
+      "fraction": 0.9098360655737705,
+      "image": "random",
+      "new_hits": 122,
+      "structural_or_general_hits": 111
+    },
+    {
+      "anatomical_hits": 4,
+      "condition": "sparsify",
+      "contrast": "blind_vs_residual",
+      "fraction": 0.7741935483870968,
+      "image": "random",
+      "new_hits": 31,
+      "structural_or_general_hits": 24
+    },
+    {
+      "anatomical_hits": 5,
+      "condition": "sparsify",
+      "contrast": "conditioned_vs_residual",
+      "fraction": 0.6216216216216216,
+      "image": "random",
+      "new_hits": 37,
+      "structural_or_general_hits": 23
+    },
+    {
+      "anatomical_hits": 0,
+      "condition": "sparsify",
+      "contrast": "blind_vs_b_anchor",
+      "fraction": 0.896551724137931,
+      "image": "random",
+      "new_hits": 29,
+      "structural_or_general_hits": 26
+    },
+    {
+      "anatomical_hits": 1,
+      "condition": "sparsify",
+      "contrast": "conditioned_vs_b_anchor",
+      "fraction": 0.6857142857142857,
+      "image": "random",
+      "new_hits": 35,
+      "structural_or_general_hits": 24
+    }
+  ],
+  "contains_private_tokens": false,
+  "exact_question_alignments": 27,
+  "no_new_predictions": true,
+  "status": "passed",
+  "summary_groups_checked": 144,
+  "token_events_checked": 6694
+}

@@ -1,0 +1,597 @@
+{
+  "folds": {
+    "line": {
+      "majority": {
+        "accuracy": 0.9375,
+        "balanced_accuracy": 0.9375,
+        "class_auroc": {
+          "head": 0.96875,
+          "non-head": 0.96875
+        },
+        "confusion": [
+          [
+            7,
+            1,
+            0
+          ],
+          [
+            0,
+            8,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 15,
+        "invalid": 0,
+        "macro_f1": 0.9372549019607843,
+        "n": 16,
+        "recall": {
+          "head": 0.875,
+          "non-head": 1.0
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 0.9375,
+        "supported_class_macro_f1": 0.9372549019607843
+      },
+      "mean_raw": {
+        "accuracy": 0.9375,
+        "balanced_accuracy": 0.9375,
+        "class_auroc": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "confusion": [
+          [
+            7,
+            1,
+            0
+          ],
+          [
+            0,
+            8,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 15,
+        "invalid": 0,
+        "macro_f1": 0.9372549019607843,
+        "n": 16,
+        "recall": {
+          "head": 0.875,
+          "non-head": 1.0
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 0.9375,
+        "supported_class_macro_f1": 0.9372549019607843
+      },
+      "mean_standardized": {
+        "accuracy": 0.9375,
+        "balanced_accuracy": 0.9375,
+        "class_auroc": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "confusion": [
+          [
+            7,
+            1,
+            0
+          ],
+          [
+            0,
+            8,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 15,
+        "invalid": 0,
+        "macro_f1": 0.9372549019607843,
+        "n": 16,
+        "recall": {
+          "head": 0.875,
+          "non-head": 1.0
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 0.9375,
+        "supported_class_macro_f1": 0.9372549019607843
+      },
+      "single_32": {
+        "accuracy": 0.9375,
+        "balanced_accuracy": 0.9375,
+        "class_auroc": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "confusion": [
+          [
+            8,
+            0,
+            0
+          ],
+          [
+            1,
+            7,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 15,
+        "invalid": 0,
+        "macro_f1": 0.9372549019607843,
+        "n": 16,
+        "recall": {
+          "head": 1.0,
+          "non-head": 0.875
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 0.9375,
+        "supported_class_macro_f1": 0.9372549019607843
+      },
+      "single_selected": {
+        "accuracy": 0.9375,
+        "balanced_accuracy": 0.9375,
+        "class_auroc": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "confusion": [
+          [
+            7,
+            1,
+            0
+          ],
+          [
+            0,
+            8,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 15,
+        "invalid": 0,
+        "macro_f1": 0.9372549019607843,
+        "n": 16,
+        "recall": {
+          "head": 0.875,
+          "non-head": 1.0
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 0.9375,
+        "supported_class_macro_f1": 0.9372549019607843
+      }
+    },
+    "photo": {
+      "majority": {
+        "accuracy": 1.0,
+        "balanced_accuracy": 1.0,
+        "class_auroc": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "confusion": [
+          [
+            8,
+            0,
+            0
+          ],
+          [
+            0,
+            8,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 16,
+        "invalid": 0,
+        "macro_f1": 1.0,
+        "n": 16,
+        "recall": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 1.0,
+        "supported_class_macro_f1": 1.0
+      },
+      "mean_raw": {
+        "accuracy": 1.0,
+        "balanced_accuracy": 1.0,
+        "class_auroc": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "confusion": [
+          [
+            8,
+            0,
+            0
+          ],
+          [
+            0,
+            8,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 16,
+        "invalid": 0,
+        "macro_f1": 1.0,
+        "n": 16,
+        "recall": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 1.0,
+        "supported_class_macro_f1": 1.0
+      },
+      "mean_standardized": {
+        "accuracy": 1.0,
+        "balanced_accuracy": 1.0,
+        "class_auroc": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "confusion": [
+          [
+            8,
+            0,
+            0
+          ],
+          [
+            0,
+            8,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 16,
+        "invalid": 0,
+        "macro_f1": 1.0,
+        "n": 16,
+        "recall": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 1.0,
+        "supported_class_macro_f1": 1.0
+      },
+      "single_32": {
+        "accuracy": 1.0,
+        "balanced_accuracy": 1.0,
+        "class_auroc": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "confusion": [
+          [
+            8,
+            0,
+            0
+          ],
+          [
+            0,
+            8,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 16,
+        "invalid": 0,
+        "macro_f1": 1.0,
+        "n": 16,
+        "recall": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 1.0,
+        "supported_class_macro_f1": 1.0
+      },
+      "single_selected": {
+        "accuracy": 1.0,
+        "balanced_accuracy": 1.0,
+        "class_auroc": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "confusion": [
+          [
+            8,
+            0,
+            0
+          ],
+          [
+            0,
+            8,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 16,
+        "invalid": 0,
+        "macro_f1": 1.0,
+        "n": 16,
+        "recall": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 1.0,
+        "supported_class_macro_f1": 1.0
+      }
+    },
+    "render": {
+      "majority": {
+        "accuracy": 0.9375,
+        "balanced_accuracy": 0.9375,
+        "class_auroc": {
+          "head": 0.9765625,
+          "non-head": 0.9765625
+        },
+        "confusion": [
+          [
+            7,
+            1,
+            0
+          ],
+          [
+            0,
+            8,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 15,
+        "invalid": 0,
+        "macro_f1": 0.9372549019607843,
+        "n": 16,
+        "recall": {
+          "head": 0.875,
+          "non-head": 1.0
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 0.9375,
+        "supported_class_macro_f1": 0.9372549019607843
+      },
+      "mean_raw": {
+        "accuracy": 1.0,
+        "balanced_accuracy": 1.0,
+        "class_auroc": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "confusion": [
+          [
+            8,
+            0,
+            0
+          ],
+          [
+            0,
+            8,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 16,
+        "invalid": 0,
+        "macro_f1": 1.0,
+        "n": 16,
+        "recall": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 1.0,
+        "supported_class_macro_f1": 1.0
+      },
+      "mean_standardized": {
+        "accuracy": 0.875,
+        "balanced_accuracy": 0.875,
+        "class_auroc": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "confusion": [
+          [
+            8,
+            0,
+            0
+          ],
+          [
+            2,
+            6,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 14,
+        "invalid": 0,
+        "macro_f1": 0.873015873015873,
+        "n": 16,
+        "recall": {
+          "head": 1.0,
+          "non-head": 0.75
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 0.875,
+        "supported_class_macro_f1": 0.873015873015873
+      },
+      "single_32": {
+        "accuracy": 0.875,
+        "balanced_accuracy": 0.875,
+        "class_auroc": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "confusion": [
+          [
+            8,
+            0,
+            0
+          ],
+          [
+            2,
+            6,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 14,
+        "invalid": 0,
+        "macro_f1": 0.873015873015873,
+        "n": 16,
+        "recall": {
+          "head": 1.0,
+          "non-head": 0.75
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 0.875,
+        "supported_class_macro_f1": 0.873015873015873
+      },
+      "single_selected": {
+        "accuracy": 0.9375,
+        "balanced_accuracy": 0.9375,
+        "class_auroc": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "confusion": [
+          [
+            7,
+            1,
+            0
+          ],
+          [
+            0,
+            8,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 15,
+        "invalid": 0,
+        "macro_f1": 0.9372549019607843,
+        "n": 16,
+        "recall": {
+          "head": 0.875,
+          "non-head": 1.0
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 0.9375,
+        "supported_class_macro_f1": 0.9372549019607843
+      }
+    }
+  },
+  "scope": "Same public development folds used for rule; not independent validation",
+  "source_sha256": "7798b95b419ac82455eabf9f4d36b2e1718496a7f2768c179ed7a5a304dee44b"
+}

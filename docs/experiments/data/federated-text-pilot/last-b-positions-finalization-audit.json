@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "score_groups": 90,
+  "position_scores": 270,
+  "candidate_groups": 180,
+  "candidate_conditions": 2160,
+  "hashes_verified": 271,
+  "candidate_counts": [
+    109
+  ],
+  "historical_candidate_sets_exact": 1080,
+  "anchor_max_score_delta": 0.0,
+  "image_blind_candidate_equalities": 90,
+  "all_scores_and_fixed_supplements_before_truth": true,
+  "metrics_and_paired_changes_recomputed": true,
+  "previous_control_metrics_reproduced": true,
+  "uses_private_reference": false,
+  "contains_private_tokens": false,
+  "uncommitted": true,
+  "source_sha256": "775c0093ddcc2878ff72b92e85dcb078eecfbd1fcfe2fcf550343f27674d0f09"
+}

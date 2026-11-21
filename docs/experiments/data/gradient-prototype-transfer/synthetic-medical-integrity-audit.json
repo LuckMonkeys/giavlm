@@ -1,0 +1,11 @@
+{
+  "both_prediction_commits_verified": true,
+  "independent_distance_pairs": 2688,
+  "manual_metric_groups": 960,
+  "max_distance_error": 0.0,
+  "native_capture_models": 2,
+  "prototypes_rebuilt": 24,
+  "public_only_thresholds_reproduced": true,
+  "status": "pass",
+  "targets_used_for_fitting": false
+}

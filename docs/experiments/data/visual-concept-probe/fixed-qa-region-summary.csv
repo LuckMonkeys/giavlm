@@ -1,0 +1,21 @@
+Property,Text condition,Method,Correct,Accuracy,Balanced accuracy,Positive recall,AUROC
+head,natural,single_selected,14,0.7,0.4666666666666667,0.0,0.56
+head,natural,single_32,15,0.75,0.7,0.6,0.7733333333333333
+head,natural,majority,12,0.6,0.4,0.0,0.26666666666666666
+head,natural,mean_raw,12,0.6,0.4,0.0,0.29333333333333333
+head,natural,mean_standardized,7,0.35,0.30000000000000004,0.2,0.28
+head,fixed,single_selected,15,0.75,0.5,0.0,0.4666666666666667
+head,fixed,single_32,17,0.85,0.9,1.0,1.0
+head,fixed,majority,12,0.6,0.4,0.0,0.37333333333333335
+head,fixed,mean_raw,10,0.5,0.3333333333333333,0.0,0.18666666666666668
+head,fixed,mean_standardized,6,0.3,0.2,0.0,0.21333333333333335
+abdomen,natural,single_selected,10,0.5,0.5,0.0,0.44
+abdomen,natural,single_32,12,0.6,0.6,0.3,0.57
+abdomen,natural,majority,10,0.5,0.5,0.1,0.51
+abdomen,natural,mean_raw,8,0.4,0.4,0.0,0.43
+abdomen,natural,mean_standardized,8,0.4,0.4,0.0,0.44
+abdomen,fixed,single_selected,10,0.5,0.5,0.0,0.51
+abdomen,fixed,single_32,15,0.75,0.75,1.0,0.59
+abdomen,fixed,majority,5,0.25,0.25,0.0,0.5
+abdomen,fixed,mean_raw,10,0.5,0.5,0.0,0.5
+abdomen,fixed,mean_standardized,6,0.3,0.3,0.0,0.5

@@ -1,0 +1,24 @@
+{
+  "exact_paired_tests": {
+    "best_single_public_label": {
+      "exact_two_sided_mcnemar_p": 0.25,
+      "improved": 0,
+      "worsened": 3
+    },
+    "mean": {
+      "exact_two_sided_mcnemar_p": 0.25,
+      "improved": 3,
+      "worsened": 0
+    }
+  },
+  "note": "Small-sample supplementary audit; preserve primary point estimates and do not promote bootstrap intervals to population confirmation",
+  "queries": 12,
+  "wrong_gradient_pair_bootstrap": {
+    "ci95": [
+      0.16666666666666666,
+      0.8333333333333334
+    ],
+    "gain": 0.5,
+    "pairs": 6
+  }
+}

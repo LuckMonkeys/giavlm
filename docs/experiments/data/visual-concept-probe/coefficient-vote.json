@@ -1,0 +1,43 @@
+{
+  "metrics": {
+    "accuracy": 0.9166666666666666,
+    "balanced_accuracy": 0.9166666666666667,
+    "class_auroc": {
+      "head": 1.0,
+      "non-head": 1.0
+    },
+    "confusion": [
+      [
+        6,
+        0,
+        0
+      ],
+      [
+        1,
+        5,
+        0
+      ]
+    ],
+    "confusion_columns": [
+      "head",
+      "non-head",
+      "invalid"
+    ],
+    "correct": 11,
+    "invalid": 0,
+    "macro_f1": 0.916083916083916,
+    "n": 12,
+    "recall": {
+      "head": 1.0,
+      "non-head": 0.8333333333333334
+    },
+    "support": {
+      "head": 6,
+      "non-head": 6
+    },
+    "supported_class_balanced_accuracy": 0.9166666666666667,
+    "supported_class_macro_f1": 0.916083916083916
+  },
+  "rule": "Sum selected coefficients per verified public dictionary class; not a calibrated posterior",
+  "scope": "Post-hoc decoder diagnostic; no change to optimized coefficients, heldout selection, primary readout or 0.5 decision threshold"
+}

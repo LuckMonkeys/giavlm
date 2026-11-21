@@ -1,0 +1,47 @@
+{
+  "uncommitted": true,
+  "contains_private_tokens": false,
+  "source_sha256": "ddd65ca355f2265cc7da9d18ac55e7ce6ea94631c91434982484d0bd6b947181",
+  "files": [
+    {
+      "path": "docs/experiments/data/federated-text-pilot/dynamic-candidates-aggregate.json",
+      "source": "outputs/diagnostics/dynamic_candidates_topk_20261101/report/aggregate.json",
+      "sha256": "4bccde535c5ded57c3f2982cf378b75d5062cfc61bcb13aa4d2320b3c97d8cb7"
+    },
+    {
+      "path": "docs/experiments/figures/federated-text-pilot/dynamic-candidates-recovery.png",
+      "source": "outputs/diagnostics/dynamic_candidates_topk_20261101/report/recovery.png",
+      "sha256": "929ed0cc085f745bb2f5726b8875c95871ba20d52f636f03e71bd7c8d2206681"
+    },
+    {
+      "path": "docs/experiments/figures/federated-text-pilot/dynamic-candidates-recovery.svg",
+      "source": "outputs/diagnostics/dynamic_candidates_topk_20261101/report/recovery.svg",
+      "sha256": "59642a8323698514fe4190d9a0e9fad953854fcdc075344dec2cc4b3f42c06a6"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/dynamic-candidates-summary.csv",
+      "source": "outputs/diagnostics/dynamic_candidates_topk_20261101/report/summary.csv",
+      "sha256": "7173b8e470a2da0f8fca94eae7c7e37418dc8861f589251f390f3a71ba016e95"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/dynamic-candidates-summary.md",
+      "source": "outputs/diagnostics/dynamic_candidates_topk_20261101/report/summary.md",
+      "sha256": "d9b22d6ca47a2b5e5c2bfe3012abb2f2eeca7481962b270c4653bc17b86aad15"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/dynamic-candidates-finalization-audit.json",
+      "source": "outputs/diagnostics/dynamic_candidates_topk_20261101/finalization-audit.json",
+      "sha256": "ff24ba0342198f366ab5c9d971b80a44b9ed3ce9a5f933beac8b8b6222dd89c4"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/dynamic-candidates-attacks-complete.json",
+      "source": "outputs/diagnostics/dynamic_candidates_topk_20261101/attacks-complete.json",
+      "sha256": "bd7679b76fd25ab9df902b76573494813d0f45f35d9025c71b7cd9717b440d2e"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/dynamic-candidates-lm-only-audit.json",
+      "source": "outputs/diagnostics/dynamic_candidates_topk_20261101/lm-only-output-audit.json",
+      "sha256": "6a55683eb3c03a8e465f82087b729780579b2817d2ad75ad8ab93a50fa98135d"
+    }
+  ]
+}

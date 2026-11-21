@@ -1,0 +1,12 @@
+{
+  "artifacts": {
+    "docs/experiments/data/visual-concept-probe/multi-qa-aggregate.json": "f9e05b0d14a9065e3892405514b11a47e14e3173a5c415f5686889f6cbe55e95",
+    "docs/experiments/data/visual-concept-probe/multi-qa-audit.json": "ccbde4b6ce3735f4a56fd3740627308ac11a8e50a0c3f0704bad601069adc261",
+    "docs/experiments/data/visual-concept-probe/multi-qa-summary.csv": "b94e783bd15693af352e5cf29dc670583fa6836eba41f468bf0cf0625e30d0b0",
+    "docs/experiments/figures/visual-concept-probe/multi-qa-calibration.png": "51f8b0f91d3fa7f1419350cc0b7d32d7eb800e92b4de82ebd7f75ad0ad812946",
+    "outputs/diagnostics/multilayer_property_20261101/multi-qa/analysis-source.py": "0b4d41914e2c74144c86ccac68302f658f590de16ea5fac60ab3ac6b64dc5051"
+  },
+  "base_commit": "2fd25b6a20b3ab142343c012b9f8be701352e935",
+  "uncommitted": true,
+  "uses_private_reference": "Post-prediction property labels for metrics only"
+}

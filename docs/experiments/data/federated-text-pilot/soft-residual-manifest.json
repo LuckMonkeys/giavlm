@@ -1,0 +1,42 @@
+{
+  "uncommitted": true,
+  "contains_private_tokens": false,
+  "source_sha256": "2618782dccc6fbb8494b67d87a6be5d6f38945617b273ed18f8eba96b33f891c",
+  "files": [
+    {
+      "path": "docs/experiments/data/federated-text-pilot/soft-residual-aggregate.json",
+      "source": "outputs/diagnostics/soft_residual_filter_20261101/report/aggregate.json",
+      "sha256": "e285efa56b9f2b6e8f90796c36dee0b2312b853c204edf2e44b82bed4508dff2"
+    },
+    {
+      "path": "docs/experiments/figures/federated-text-pilot/soft-residual-filter.png",
+      "source": "outputs/diagnostics/soft_residual_filter_20261101/report/soft-residual.png",
+      "sha256": "10be01293812bec5e2fce0d5f23ba56570dfb71e9110da4184c112a01f8e574f"
+    },
+    {
+      "path": "docs/experiments/figures/federated-text-pilot/soft-residual-filter.svg",
+      "source": "outputs/diagnostics/soft_residual_filter_20261101/report/soft-residual.svg",
+      "sha256": "b478fc89f9059249b29fc8f224453730ef633f7ae1dfb72f37444b84f37fdbc8"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/soft-residual-summary.csv",
+      "source": "outputs/diagnostics/soft_residual_filter_20261101/report/summary.csv",
+      "sha256": "d4b2b3943d37833a0f287061e36239e6f15cc7b869cd635167477685021839ae"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/soft-residual-summary.md",
+      "source": "outputs/diagnostics/soft_residual_filter_20261101/report/summary.md",
+      "sha256": "915540e1172f1efb6f694fe1856d4a8d7804a8430edb4961e466bedd93de48f4"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/soft-residual-finalization-audit.json",
+      "source": "outputs/diagnostics/soft_residual_filter_20261101/finalization-audit.json",
+      "sha256": "371319037abbe106579ce3960647f6159139b89ad09a2dabeb0c975bd6409684"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/soft-residual-all-scores-complete.json",
+      "source": "outputs/diagnostics/soft_residual_filter_20261101/all-scores-complete.json",
+      "sha256": "8706fa566324b6c77fb36a1d7ae7860a28cd14ce058e9a745f51844a6a0b9138"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "artifacts": {
+    "docs/experiments/data/visual-concept-probe/causal-feature-aggregate.json": "1e934240d0fdceb7ace2996b106074f55c2a9ce4ce9a8f1661f444d6df841946",
+    "docs/experiments/data/visual-concept-probe/causal-feature-audit.json": "d69ceee89c0094c62bdfe40500380ce9e7bc7351248cc0d9a985722e61f3ecfd",
+    "docs/experiments/data/visual-concept-probe/causal-feature-summary.csv": "2ca3ee1b7e4bd63984ec4db008797df7afacb6ff151b1ea00714b3d17b21f262",
+    "outputs/diagnostics/multilayer_property_20261101/causal/analysis-source.py": "239918bd0d094aefd9a62ee66b18e33f0e6e82fc89e039d0915b65c609d164ff"
+  },
+  "base_commit": "2fd25b6a20b3ab142343c012b9f8be701352e935",
+  "uncommitted": true,
+  "uses_private_reference": false
+}

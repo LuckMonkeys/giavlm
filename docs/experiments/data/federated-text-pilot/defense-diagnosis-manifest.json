@@ -1,0 +1,15 @@
+{
+  "uncommitted": true,
+  "contains_private_tokens": false,
+  "uses_private_reference": true,
+  "private_reference_note": "仅事后评价固定K的真实token覆盖，不生成或选择新重构",
+  "files": [
+    {
+      "path": "docs/experiments/data/federated-text-pilot/defense-diagnosis.json",
+      "source": "outputs/diagnostics/defense_text_diagnosis_20261101/audit.json",
+      "sha256": "c75bf6c86a83068bb72fe8c8a8d6f579833aa3b204ffc65f9767c5f15a0aa0ac"
+    }
+  ],
+  "script": "evaluation/defense_text_diagnosis.py",
+  "script_sha256": "84b4c5643a0a5bbe8148631cc6435f9a738600f72cca36b58de82613f7406ae0"
+}

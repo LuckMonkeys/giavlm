@@ -1,0 +1,16 @@
+{
+  "analysis_source_sha256": "0b4d41914e2c74144c86ccac68302f658f590de16ea5fac60ab3ac6b64dc5051",
+  "held_out_public_prediction_recompute": "exact",
+  "plan_sha256": "8337796432ba59e9150baf6f687906258a40c46edb234b50e97f104ac02ba62e",
+  "public_distance_max_error": 0.0,
+  "public_gradient_files": 396,
+  "public_layer_distances_recomputed": 2700,
+  "public_rule_recompute": "exact",
+  "report_sha256": "48ca7a85a5687b5766a6002235c2eca3c218a46c07ffbb20c6a7ad5833a08055",
+  "rules_sha256": "76db020840a34a6b12dc933c239bf937727869a0ad08ddb5a6f0203536d75c7d",
+  "source_manifest_sha256": "7cec1ced07aeffdcd13642d38983235176df804a27d53178d2e4e22ef233570f",
+  "status": "pass",
+  "target_metric_groups_recomputed": 90,
+  "target_predictions": 20,
+  "target_predictions_sha256": "b5bfbe0cb4b3dfe206a5c13b8f431a3fa5fc66e04e5048a9b1b4a4d3093e2c35"
+}

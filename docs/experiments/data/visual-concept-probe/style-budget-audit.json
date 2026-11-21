@@ -1,0 +1,369 @@
+{
+  "assignment": "Even content numbers use first fit style, odd numbers use second; same rule for both classes",
+  "candidate_images": 16,
+  "gram_sha256": "1f4a5903c88245f03b2d18e016b9a582cc61679501fe404c3a852d301a516c4b",
+  "original_paired_mixed_unique_groups": 8,
+  "results": {
+    "line": {
+      "mixed_disjoint": {
+        "accuracy": 0.9375,
+        "balanced_accuracy": 0.9375,
+        "class_auroc": {
+          "head": 0.984375,
+          "non-head": 0.984375
+        },
+        "confusion": [
+          [
+            8,
+            0,
+            0
+          ],
+          [
+            1,
+            7,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 15,
+        "invalid": 0,
+        "macro_f1": 0.9372549019607843,
+        "n": 16,
+        "recall": {
+          "head": 1.0,
+          "non-head": 0.875
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 0.9375,
+        "supported_class_macro_f1": 0.9372549019607843
+      },
+      "single_photo": {
+        "accuracy": 0.75,
+        "balanced_accuracy": 0.75,
+        "class_auroc": {
+          "head": 0.921875,
+          "non-head": 0.921875
+        },
+        "confusion": [
+          [
+            5,
+            3,
+            0
+          ],
+          [
+            1,
+            7,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 12,
+        "invalid": 0,
+        "macro_f1": 0.746031746031746,
+        "n": 16,
+        "recall": {
+          "head": 0.625,
+          "non-head": 0.875
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 0.75,
+        "supported_class_macro_f1": 0.746031746031746
+      },
+      "single_render": {
+        "accuracy": 0.9375,
+        "balanced_accuracy": 0.9375,
+        "class_auroc": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "confusion": [
+          [
+            8,
+            0,
+            0
+          ],
+          [
+            1,
+            7,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 15,
+        "invalid": 0,
+        "macro_f1": 0.9372549019607843,
+        "n": 16,
+        "recall": {
+          "head": 1.0,
+          "non-head": 0.875
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 0.9375,
+        "supported_class_macro_f1": 0.9372549019607843
+      }
+    },
+    "photo": {
+      "mixed_disjoint": {
+        "accuracy": 1.0,
+        "balanced_accuracy": 1.0,
+        "class_auroc": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "confusion": [
+          [
+            8,
+            0,
+            0
+          ],
+          [
+            0,
+            8,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 16,
+        "invalid": 0,
+        "macro_f1": 1.0,
+        "n": 16,
+        "recall": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 1.0,
+        "supported_class_macro_f1": 1.0
+      },
+      "single_line": {
+        "accuracy": 0.6875,
+        "balanced_accuracy": 0.6875,
+        "class_auroc": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "confusion": [
+          [
+            3,
+            5,
+            0
+          ],
+          [
+            0,
+            8,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 11,
+        "invalid": 0,
+        "macro_f1": 0.6536796536796536,
+        "n": 16,
+        "recall": {
+          "head": 0.375,
+          "non-head": 1.0
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 0.6875,
+        "supported_class_macro_f1": 0.6536796536796536
+      },
+      "single_render": {
+        "accuracy": 0.625,
+        "balanced_accuracy": 0.625,
+        "class_auroc": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "confusion": [
+          [
+            2,
+            6,
+            0
+          ],
+          [
+            0,
+            8,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 10,
+        "invalid": 0,
+        "macro_f1": 0.5636363636363637,
+        "n": 16,
+        "recall": {
+          "head": 0.25,
+          "non-head": 1.0
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 0.625,
+        "supported_class_macro_f1": 0.5636363636363637
+      }
+    },
+    "render": {
+      "mixed_disjoint": {
+        "accuracy": 0.875,
+        "balanced_accuracy": 0.875,
+        "class_auroc": {
+          "head": 0.984375,
+          "non-head": 0.984375
+        },
+        "confusion": [
+          [
+            8,
+            0,
+            0
+          ],
+          [
+            2,
+            6,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 14,
+        "invalid": 0,
+        "macro_f1": 0.873015873015873,
+        "n": 16,
+        "recall": {
+          "head": 1.0,
+          "non-head": 0.75
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 0.875,
+        "supported_class_macro_f1": 0.873015873015873
+      },
+      "single_line": {
+        "accuracy": 1.0,
+        "balanced_accuracy": 1.0,
+        "class_auroc": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "confusion": [
+          [
+            8,
+            0,
+            0
+          ],
+          [
+            0,
+            8,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 16,
+        "invalid": 0,
+        "macro_f1": 1.0,
+        "n": 16,
+        "recall": {
+          "head": 1.0,
+          "non-head": 1.0
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 1.0,
+        "supported_class_macro_f1": 1.0
+      },
+      "single_photo": {
+        "accuracy": 0.8125,
+        "balanced_accuracy": 0.8125,
+        "class_auroc": {
+          "head": 0.90625,
+          "non-head": 0.90625
+        },
+        "confusion": [
+          [
+            7,
+            1,
+            0
+          ],
+          [
+            2,
+            6,
+            0
+          ]
+        ],
+        "confusion_columns": [
+          "head",
+          "non-head",
+          "invalid"
+        ],
+        "correct": 13,
+        "invalid": 0,
+        "macro_f1": 0.8117647058823529,
+        "n": 16,
+        "recall": {
+          "head": 0.875,
+          "non-head": 0.75
+        },
+        "support": {
+          "head": 8,
+          "non-head": 8
+        },
+        "supported_class_balanced_accuracy": 0.8125,
+        "supported_class_macro_f1": 0.8117647058823529
+      }
+    }
+  },
+  "scope": "Post-hoc public-only budget audit; no change to original method or layer selection",
+  "scores": "Centered equal-tensor Top-3, common original valid-tensor rule; no new replays",
+  "source_predictions_sha256": "657e9c851c56c2c951cd0820db92c7d58f618a07d44ee22b4bde3f7559e17e79",
+  "unique_content_groups": 16
+}

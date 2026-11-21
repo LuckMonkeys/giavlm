@@ -1,0 +1,510 @@
+{
+  "budget_curves": [
+    {
+      "answer_full_coverage_count": 7,
+      "answer_recall": 0.49192022130489627,
+      "candidate_count": 14,
+      "condition": "fedsgd-b1",
+      "image": "random",
+      "k": 5,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 8,
+      "answer_recall": 0.5913126361655774,
+      "candidate_count": 19,
+      "condition": "fedsgd-b1",
+      "image": "random",
+      "k": 10,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 8,
+      "answer_recall": 0.691051484921454,
+      "candidate_count": 29,
+      "condition": "fedsgd-b1",
+      "image": "random",
+      "k": 20,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 9,
+      "answer_recall": 0.7478614837747964,
+      "candidate_count": 49,
+      "condition": "fedsgd-b1",
+      "image": "random",
+      "k": 40,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 6,
+      "answer_recall": 0.48307762871230364,
+      "candidate_count": 14,
+      "condition": "fedsgd-b1",
+      "image": "random",
+      "k": 5,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 8,
+      "answer_recall": 0.5874787868363719,
+      "candidate_count": 19,
+      "condition": "fedsgd-b1",
+      "image": "random",
+      "k": 10,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 8,
+      "answer_recall": 0.6947666552000917,
+      "candidate_count": 29,
+      "condition": "fedsgd-b1",
+      "image": "random",
+      "k": 20,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 9,
+      "answer_recall": 0.7549862401100792,
+      "candidate_count": 49,
+      "condition": "fedsgd-b1",
+      "image": "random",
+      "k": 40,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 7,
+      "answer_recall": 0.49192022130489627,
+      "candidate_count": 14,
+      "condition": "fedsgd-b1",
+      "image": "gt",
+      "k": 5,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 8,
+      "answer_recall": 0.5913126361655774,
+      "candidate_count": 19,
+      "condition": "fedsgd-b1",
+      "image": "gt",
+      "k": 10,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 8,
+      "answer_recall": 0.691051484921454,
+      "candidate_count": 29,
+      "condition": "fedsgd-b1",
+      "image": "gt",
+      "k": 20,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 9,
+      "answer_recall": 0.7478614837747964,
+      "candidate_count": 49,
+      "condition": "fedsgd-b1",
+      "image": "gt",
+      "k": 40,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 6,
+      "answer_recall": 0.48307762871230364,
+      "candidate_count": 14,
+      "condition": "fedsgd-b1",
+      "image": "gt",
+      "k": 5,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 8,
+      "answer_recall": 0.5874787868363719,
+      "candidate_count": 19,
+      "condition": "fedsgd-b1",
+      "image": "gt",
+      "k": 10,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 8,
+      "answer_recall": 0.6947666552000917,
+      "candidate_count": 29,
+      "condition": "fedsgd-b1",
+      "image": "gt",
+      "k": 20,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 9,
+      "answer_recall": 0.7549862401100792,
+      "candidate_count": 49,
+      "condition": "fedsgd-b1",
+      "image": "gt",
+      "k": 40,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 7,
+      "answer_recall": 0.49192022130489627,
+      "candidate_count": 14,
+      "condition": "noise",
+      "image": "random",
+      "k": 5,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 8,
+      "answer_recall": 0.5913126361655774,
+      "candidate_count": 19,
+      "condition": "noise",
+      "image": "random",
+      "k": 10,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 8,
+      "answer_recall": 0.691051484921454,
+      "candidate_count": 29,
+      "condition": "noise",
+      "image": "random",
+      "k": 20,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 9,
+      "answer_recall": 0.7478614837747964,
+      "candidate_count": 49,
+      "condition": "noise",
+      "image": "random",
+      "k": 40,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 6,
+      "answer_recall": 0.48307762871230364,
+      "candidate_count": 14,
+      "condition": "noise",
+      "image": "random",
+      "k": 5,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 8,
+      "answer_recall": 0.5874787868363719,
+      "candidate_count": 19,
+      "condition": "noise",
+      "image": "random",
+      "k": 10,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 8,
+      "answer_recall": 0.6947666552000917,
+      "candidate_count": 29,
+      "condition": "noise",
+      "image": "random",
+      "k": 20,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 9,
+      "answer_recall": 0.7549862401100792,
+      "candidate_count": 49,
+      "condition": "noise",
+      "image": "random",
+      "k": 40,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 7,
+      "answer_recall": 0.49192022130489627,
+      "candidate_count": 14,
+      "condition": "noise",
+      "image": "gt",
+      "k": 5,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 8,
+      "answer_recall": 0.5913126361655774,
+      "candidate_count": 19,
+      "condition": "noise",
+      "image": "gt",
+      "k": 10,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 8,
+      "answer_recall": 0.691051484921454,
+      "candidate_count": 29,
+      "condition": "noise",
+      "image": "gt",
+      "k": 20,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 9,
+      "answer_recall": 0.7478614837747964,
+      "candidate_count": 49,
+      "condition": "noise",
+      "image": "gt",
+      "k": 40,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 6,
+      "answer_recall": 0.48307762871230364,
+      "candidate_count": 14,
+      "condition": "noise",
+      "image": "gt",
+      "k": 5,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 8,
+      "answer_recall": 0.5874787868363719,
+      "candidate_count": 19,
+      "condition": "noise",
+      "image": "gt",
+      "k": 10,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 8,
+      "answer_recall": 0.6947666552000917,
+      "candidate_count": 29,
+      "condition": "noise",
+      "image": "gt",
+      "k": 20,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 9,
+      "answer_recall": 0.7549862401100792,
+      "candidate_count": 49,
+      "condition": "noise",
+      "image": "gt",
+      "k": 40,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 5,
+      "answer_recall": 0.42428133241600735,
+      "candidate_count": 14,
+      "condition": "sparsify",
+      "image": "random",
+      "k": 5,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 7,
+      "answer_recall": 0.5648861942437794,
+      "candidate_count": 19,
+      "condition": "sparsify",
+      "image": "random",
+      "k": 10,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 7,
+      "answer_recall": 0.6485563582158009,
+      "candidate_count": 29,
+      "condition": "sparsify",
+      "image": "random",
+      "k": 20,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 7,
+      "answer_recall": 0.7190700607728471,
+      "candidate_count": 49,
+      "condition": "sparsify",
+      "image": "random",
+      "k": 40,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 6,
+      "answer_recall": 0.47094799908267404,
+      "candidate_count": 14,
+      "condition": "sparsify",
+      "image": "random",
+      "k": 5,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 6,
+      "answer_recall": 0.5523398979474831,
+      "candidate_count": 19,
+      "condition": "sparsify",
+      "image": "random",
+      "k": 10,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 7,
+      "answer_recall": 0.6586326109391124,
+      "candidate_count": 29,
+      "condition": "sparsify",
+      "image": "random",
+      "k": 20,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 8,
+      "answer_recall": 0.7190700607728471,
+      "candidate_count": 49,
+      "condition": "sparsify",
+      "image": "random",
+      "k": 40,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 5,
+      "answer_recall": 0.42428133241600735,
+      "candidate_count": 14,
+      "condition": "sparsify",
+      "image": "gt",
+      "k": 5,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 7,
+      "answer_recall": 0.5648861942437794,
+      "candidate_count": 19,
+      "condition": "sparsify",
+      "image": "gt",
+      "k": 10,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 7,
+      "answer_recall": 0.6485563582158009,
+      "candidate_count": 29,
+      "condition": "sparsify",
+      "image": "gt",
+      "k": 20,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 7,
+      "answer_recall": 0.7190700607728471,
+      "candidate_count": 49,
+      "condition": "sparsify",
+      "image": "gt",
+      "k": 40,
+      "kind": "single",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 6,
+      "answer_recall": 0.47094799908267404,
+      "candidate_count": 14,
+      "condition": "sparsify",
+      "image": "gt",
+      "k": 5,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 6,
+      "answer_recall": 0.5523398979474831,
+      "candidate_count": 19,
+      "condition": "sparsify",
+      "image": "gt",
+      "k": 10,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 7,
+      "answer_recall": 0.6586326109391124,
+      "candidate_count": 29,
+      "condition": "sparsify",
+      "image": "gt",
+      "k": 20,
+      "kind": "consensus",
+      "n": 30
+    },
+    {
+      "answer_full_coverage_count": 8,
+      "answer_recall": 0.7190700607728471,
+      "candidate_count": 49,
+      "condition": "sparsify",
+      "image": "gt",
+      "k": 40,
+      "kind": "consensus",
+      "n": 30
+    }
+  ],
+  "budget_scope": "Post-hoc fixed-K coverage of committed full ranks; K informative plus 9 ambiguous, not main 109 budget",
+  "contains_private_tokens": false,
+  "generation": [
+    {
+      "condition": "fedsgd-b1",
+      "eos_first_count": 0,
+      "max_steps_count": 39,
+      "mean_steps": 13.922222222222222,
+      "traces": 90
+    },
+    {
+      "condition": "noise",
+      "eos_first_count": 0,
+      "max_steps_count": 39,
+      "mean_steps": 13.911111111111111,
+      "traces": 90
+    },
+    {
+      "condition": "sparsify",
+      "eos_first_count": 0,
+      "max_steps_count": 31,
+      "mean_steps": 13.666666666666666,
+      "traces": 90
+    }
+  ],
+  "parameters_selected_by_these_curves": false
+}

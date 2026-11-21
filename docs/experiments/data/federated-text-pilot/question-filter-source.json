@@ -1,0 +1,16 @@
+{
+  "base_commit": "2fd25b6",
+  "code_files": {
+    "evaluation/question_filter_evaluate.py": "28b358911e5a2a050e84e3a840270a7fab3cdaef26470029b9a501861c891f60",
+    "evaluation/question_filter_math.py": "2e5e1e33a84b4596c7fdba7b37de41f560781fa26c5ebdeaa192a17833160fe2",
+    "evaluation/question_filter_public.py": "b96c1188f26279cd4740c5b14df52049621e8e0b700dde06bb1160635540b25c",
+    "evaluation/question_filter_study.py": "eab2cafb1cc75617bdb48d100eda88865de6b5955b80b7c4ab3f5727ce262522"
+  },
+  "environment": "/home/zx/nas/miniconda3/envs/gia/bin/python",
+  "execution_host": "WN-A100",
+  "gpu_limit_total": 2,
+  "planned_gpus": 1,
+  "private_reference_used_for_scoring": false,
+  "snapshot": "/home/zx/nas/GitRepos/giavlm/outputs/diagnostics/question_filter_defense_20261105/source-question-v1",
+  "source_sha256": "68898372ed8d30275e6f52aae19d28c67e9f3d91e3d21e7819ae7ab2df908ada"
+}

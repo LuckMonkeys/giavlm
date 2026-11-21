@@ -1,0 +1,12 @@
+{
+  "analysis_source_sha256": "361a42568d19bf7e7f7bf37a555f1ad3dda42392f0f6c6110e1cbb3c35c5b460",
+  "artifacts": {
+    "docs/experiments/data/gradient-prototype-transfer/synthetic-medical-aggregate.json": "b75b93ae4f53ae253a7caeefcda14c279dda4f20e4f8c96ebd09733498aefa22",
+    "docs/experiments/data/gradient-prototype-transfer/synthetic-medical-integrity-audit.json": "8535ff4bcf639b2e718f7144247b71782351cc45cc3d92d674eec97b1ae137af",
+    "docs/experiments/data/gradient-prototype-transfer/synthetic-medical-summary.csv": "69648fa5e476876e67a4fddab760338f6de3e80423f16f707f8af554f74587db",
+    "docs/experiments/figures/gradient-prototype-transfer/synthetic-medical-transfer.png": "c801fc29e9cccf6e710511951a7c8ff9e8184773dc9f43e08295132d046c47e9"
+  },
+  "execution_source_manifest_sha256": "38770af1f0dc36a495cd5889cb056da25e396cf7dc71381822ce3a5b27601844",
+  "generation_source_manifest_sha256": "59f318613526722c4df53a3b1bf3ce74ee769321891b534fa6f1874e1233135e",
+  "uncommitted": true
+}

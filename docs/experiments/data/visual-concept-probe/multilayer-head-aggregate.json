@@ -1,0 +1,392 @@
+{
+  "complementarity": {
+    "any_layer_correct": 18,
+    "note": "Reference-aware upper-bound diagnostic only; no oracle selection",
+    "pairs": [
+      {
+        "both_wrong": 9,
+        "first": 8,
+        "first_only_correct": 4,
+        "prediction_disagreement": 8,
+        "second": 16,
+        "second_only_correct": 4
+      },
+      {
+        "both_wrong": 4,
+        "first": 8,
+        "first_only_correct": 6,
+        "prediction_disagreement": 15,
+        "second": 24,
+        "second_only_correct": 9
+      },
+      {
+        "both_wrong": 5,
+        "first": 8,
+        "first_only_correct": 0,
+        "prediction_disagreement": 8,
+        "second": 32,
+        "second_only_correct": 8
+      },
+      {
+        "both_wrong": 8,
+        "first": 16,
+        "first_only_correct": 2,
+        "prediction_disagreement": 7,
+        "second": 24,
+        "second_only_correct": 5
+      },
+      {
+        "both_wrong": 5,
+        "first": 16,
+        "first_only_correct": 0,
+        "prediction_disagreement": 8,
+        "second": 32,
+        "second_only_correct": 8
+      },
+      {
+        "both_wrong": 2,
+        "first": 24,
+        "first_only_correct": 3,
+        "prediction_disagreement": 11,
+        "second": 32,
+        "second_only_correct": 8
+      }
+    ]
+  },
+  "metrics": {
+    "majority": {
+      "accuracy": 0.45,
+      "accuracy_ci95": [
+        0.25,
+        0.65
+      ],
+      "balanced_accuracy": 0.44999999999999996,
+      "bootstrap_method": "stratified image bootstrap",
+      "class_auroc": {
+        "head": 0.48,
+        "non-head": 0.48
+      },
+      "confusion": [
+        [
+          2,
+          8,
+          0
+        ],
+        [
+          3,
+          7,
+          0
+        ]
+      ],
+      "confusion_columns": [
+        "head",
+        "non-head",
+        "invalid"
+      ],
+      "correct": 9,
+      "invalid": 0,
+      "macro_f1": 0.41333333333333333,
+      "n": 20,
+      "recall": {
+        "head": 0.2,
+        "non-head": 0.7
+      },
+      "repeats": 2000,
+      "seed": 20261016,
+      "support": {
+        "head": 10,
+        "non-head": 10
+      },
+      "supported_class_ba_ci95": [
+        0.25,
+        0.65
+      ],
+      "supported_class_balanced_accuracy": 0.44999999999999996,
+      "supported_class_macro_f1": 0.41333333333333333
+    },
+    "mean_raw": {
+      "accuracy": 0.35,
+      "accuracy_ci95": [
+        0.15,
+        0.55
+      ],
+      "balanced_accuracy": 0.35,
+      "bootstrap_method": "stratified image bootstrap",
+      "class_auroc": {
+        "head": 0.5,
+        "non-head": 0.5
+      },
+      "confusion": [
+        [
+          1,
+          9,
+          0
+        ],
+        [
+          4,
+          6,
+          0
+        ]
+      ],
+      "confusion_columns": [
+        "head",
+        "non-head",
+        "invalid"
+      ],
+      "correct": 7,
+      "invalid": 0,
+      "macro_f1": 0.30666666666666664,
+      "n": 20,
+      "recall": {
+        "head": 0.1,
+        "non-head": 0.6
+      },
+      "repeats": 2000,
+      "seed": 20261016,
+      "support": {
+        "head": 10,
+        "non-head": 10
+      },
+      "supported_class_ba_ci95": [
+        0.15000000000000002,
+        0.55
+      ],
+      "supported_class_balanced_accuracy": 0.35,
+      "supported_class_macro_f1": 0.30666666666666664
+    },
+    "mean_standardized": {
+      "accuracy": 0.4,
+      "accuracy_ci95": [
+        0.2,
+        0.6
+      ],
+      "balanced_accuracy": 0.4,
+      "bootstrap_method": "stratified image bootstrap",
+      "class_auroc": {
+        "head": 0.46,
+        "non-head": 0.46
+      },
+      "confusion": [
+        [
+          2,
+          8,
+          0
+        ],
+        [
+          4,
+          6,
+          0
+        ]
+      ],
+      "confusion_columns": [
+        "head",
+        "non-head",
+        "invalid"
+      ],
+      "correct": 8,
+      "invalid": 0,
+      "macro_f1": 0.375,
+      "n": 20,
+      "recall": {
+        "head": 0.2,
+        "non-head": 0.6
+      },
+      "repeats": 2000,
+      "seed": 20261016,
+      "support": {
+        "head": 10,
+        "non-head": 10
+      },
+      "supported_class_ba_ci95": [
+        0.2,
+        0.6000000000000001
+      ],
+      "supported_class_balanced_accuracy": 0.4,
+      "supported_class_macro_f1": 0.375
+    },
+    "single_32": {
+      "accuracy": 0.75,
+      "accuracy_ci95": [
+        0.55,
+        0.9
+      ],
+      "balanced_accuracy": 0.75,
+      "bootstrap_method": "stratified image bootstrap",
+      "class_auroc": {
+        "head": 0.72,
+        "non-head": 0.72
+      },
+      "confusion": [
+        [
+          8,
+          2,
+          0
+        ],
+        [
+          3,
+          7,
+          0
+        ]
+      ],
+      "confusion_columns": [
+        "head",
+        "non-head",
+        "invalid"
+      ],
+      "correct": 15,
+      "invalid": 0,
+      "macro_f1": 0.7493734335839599,
+      "n": 20,
+      "recall": {
+        "head": 0.8,
+        "non-head": 0.7
+      },
+      "repeats": 2000,
+      "seed": 20261016,
+      "support": {
+        "head": 10,
+        "non-head": 10
+      },
+      "supported_class_ba_ci95": [
+        0.55,
+        0.9
+      ],
+      "supported_class_balanced_accuracy": 0.75,
+      "supported_class_macro_f1": 0.7493734335839599
+    },
+    "single_selected": {
+      "accuracy": 0.5,
+      "accuracy_ci95": [
+        0.5,
+        0.5
+      ],
+      "balanced_accuracy": 0.5,
+      "bootstrap_method": "stratified image bootstrap",
+      "class_auroc": {
+        "head": 0.6,
+        "non-head": 0.6
+      },
+      "confusion": [
+        [
+          0,
+          10,
+          0
+        ],
+        [
+          0,
+          10,
+          0
+        ]
+      ],
+      "confusion_columns": [
+        "head",
+        "non-head",
+        "invalid"
+      ],
+      "correct": 10,
+      "invalid": 0,
+      "macro_f1": 0.3333333333333333,
+      "n": 20,
+      "recall": {
+        "head": 0.0,
+        "non-head": 1.0
+      },
+      "repeats": 2000,
+      "seed": 20261016,
+      "support": {
+        "head": 10,
+        "non-head": 10
+      },
+      "supported_class_ba_ci95": [
+        0.5,
+        0.5
+      ],
+      "supported_class_balanced_accuracy": 0.5,
+      "supported_class_macro_f1": 0.3333333333333333
+    }
+  },
+  "n": 20,
+  "paired_vs_single": {
+    "majority": {
+      "accuracy_ci95": [
+        -0.25,
+        0.15
+      ],
+      "bootstrap_method": "stratified image bootstrap",
+      "repeats": 2000,
+      "seed": 20261016,
+      "supported_class_ba_ci95": [
+        -0.25,
+        0.15
+      ]
+    },
+    "mean_raw": {
+      "accuracy_ci95": [
+        -0.35,
+        0.05
+      ],
+      "bootstrap_method": "stratified image bootstrap",
+      "repeats": 2000,
+      "seed": 20261016,
+      "supported_class_ba_ci95": [
+        -0.35,
+        0.04999999999999999
+      ]
+    },
+    "mean_standardized": {
+      "accuracy_ci95": [
+        -0.3,
+        0.1
+      ],
+      "bootstrap_method": "stratified image bootstrap",
+      "repeats": 2000,
+      "seed": 20261016,
+      "supported_class_ba_ci95": [
+        -0.3,
+        0.1
+      ]
+    },
+    "single_32": {
+      "accuracy_ci95": [
+        0.05,
+        0.4
+      ],
+      "bootstrap_method": "stratified image bootstrap",
+      "repeats": 2000,
+      "seed": 20261016,
+      "supported_class_ba_ci95": [
+        0.04999999999999999,
+        0.4
+      ]
+    }
+  },
+  "predictions_sha256": "625e3792f717572fdbd43859681628da7a308d77c21fac74a11a48c2907c1e60",
+  "rule": {
+    "layers": [
+      8,
+      16,
+      24,
+      32
+    ],
+    "methods": [
+      "single_selected",
+      "single_32",
+      "majority",
+      "mean_raw",
+      "mean_standardized"
+    ],
+    "primary": "mean_standardized",
+    "rms_scales": {
+      "16": 0.04720943134915118,
+      "24": 0.11084548288383035,
+      "32": 0.02789298489861134,
+      "8": 0.03574956296285745
+    },
+    "scale": "Public RMS of signed distance margin; no centering or target calibration",
+    "selection": "Public mean BA >= .65; single best mean BA, then mean AUC, then shallower",
+    "single_layer": 24,
+    "threshold": 0.0,
+    "vote_tie": "Fall back to public-selected single layer; exact distance tie predicts positive"
+  },
+  "scope": "Post-hoc audit on the same historical 20 medical images; no independent confirmation"
+}

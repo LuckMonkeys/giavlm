@@ -1,0 +1,18 @@
+{
+  "cohort": "A",
+  "distances_recomputed": 240,
+  "image_id_overlap_with_BC": {
+    "B": 0,
+    "C": 0
+  },
+  "max_distance_error": 0.0,
+  "metrics_and_bootstrap_recomputed": true,
+  "original_head_q_replay_max_error": 0.0,
+  "prediction_sha256": "43b702358f3ff98ad97d419031dcfc5a898ab70c44f3142b0405fd6902c4407d",
+  "report_sha256": "405075377e9355d85287caf368e381024a0191b2eb74a7c76fb28b038a8a8cd1",
+  "same_model_as_BC": true,
+  "source_manifest_sha256": "fe67b25e66c59d11a6c19bdbf207f4ea0184b376d140673405452bd965ab9a28",
+  "status": "pass",
+  "target_text_or_lengths_used_by_classifier": false,
+  "uploads": 20
+}

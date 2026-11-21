@@ -1,0 +1,121 @@
+{
+  "status": "completed",
+  "files": [
+    {
+      "source": "outputs/diagnostics/last_b_layer_sweep_20261104/report/summary.csv",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-sweep-summary.csv",
+      "sha256": "45ae578390098506c8978e4f1997ae2766c997c675a0e95b2c1a206c2992c33d"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_layer_sweep_20261104/report/by-length.csv",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-sweep-by-length.csv",
+      "sha256": "32cfb24ce3009470a1a31797a213a638dc7cdf95022364a4d43f64d3d49ed83d"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_layer_sweep_20261104/report/ranking.csv",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-sweep-ranking.csv",
+      "sha256": "701eeb89eb3539ba3997933747a265151f8da11e5996305583e1e0c94d11bb9d"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_layer_sweep_20261104/report/paired-changes.csv",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-sweep-paired-changes.csv",
+      "sha256": "62807cada44451562fb1d75853ec154f276840d24f49084b3d7c4d73d170ebc0"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_layer_sweep_20261104/report/aggregate.json",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-sweep-aggregate.json",
+      "sha256": "e4cfe896d34f509a8d65533ab616ade175ef9ae1987b576717cdfff80ccccf39"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_layer_sweep_20261104/report/development-candidates.json",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-sweep-development-candidates.json",
+      "sha256": "31d0e4eee13fffd722af054ccbb854b9d7df3536a4c45589ee2173fd379555a2"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_layer_sweep_20261104/report/ranking.md",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-sweep-ranking.md",
+      "sha256": "bf929858ab020635d96e037e049a3462afdc38e1f764090ed31ad3dcc437a89b"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_layer_sweep_20261104/finalization-audit.json",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-sweep-finalization-audit.json",
+      "sha256": "a934d86955e9e6e1d7c54c5da43f464ab0e085cbaf015770f800406e89ce89a0"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_layer_sweep_20261104/all-scores-complete.json",
+      "path": "docs/experiments/data/federated-text-pilot/last-b-sweep-all-scores-complete.json",
+      "sha256": "014dc3126ccfca88ef6bad1aa71cb7c9d9038598f23efc9a8b50c0d374256d0f"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_layer_sweep_20261104/report/readout-heatmap.png",
+      "path": "docs/experiments/figures/federated-text-pilot/last-b-sweep-readout-heatmap.png",
+      "sha256": "cd368ddad4211bcd42de2844f39236d59ab99557182decb313d3d2656fb3a2b9"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_layer_sweep_20261104/report/readout-heatmap.svg",
+      "path": "docs/experiments/figures/federated-text-pilot/last-b-sweep-readout-heatmap.svg",
+      "sha256": "54d7c78b7b4abc2def50beada7f5e36b5d67c9b88aa615477e6216f27119be11"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_layer_sweep_20261104/report/supplement-heatmap.png",
+      "path": "docs/experiments/figures/federated-text-pilot/last-b-sweep-supplement-heatmap.png",
+      "sha256": "5e0896986030f5a525314c728784f2ebf53f8e8c8bb9b6643ea3928b7122f371"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_layer_sweep_20261104/report/supplement-heatmap.svg",
+      "path": "docs/experiments/figures/federated-text-pilot/last-b-sweep-supplement-heatmap.svg",
+      "sha256": "a9f0fc0527d45164a0f5fd26b73d20bded2d4a8d1811c4e2996b72e018f516b4"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_layer_sweep_20261104/report/question-joint-heatmap.png",
+      "path": "docs/experiments/figures/federated-text-pilot/last-b-sweep-question-joint-heatmap.png",
+      "sha256": "a0653d2f97cd012c286ee625ec65457a317f04072c9ebfdbba6a93074efda8b9"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_layer_sweep_20261104/report/question-joint-heatmap.svg",
+      "path": "docs/experiments/figures/federated-text-pilot/last-b-sweep-question-joint-heatmap.svg",
+      "sha256": "b47b08f80a10fb60eb214aeefd6a37ea83046864267eaf8dcbb19768583a68e7"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_layer_sweep_20261104/report/layer-curves.png",
+      "path": "docs/experiments/figures/federated-text-pilot/last-b-sweep-layer-curves.png",
+      "sha256": "f27ededd91da691338924d3adf6429938649514aa03ea28c9b632bd3bf1ed6eb"
+    },
+    {
+      "source": "outputs/diagnostics/last_b_layer_sweep_20261104/report/layer-curves.svg",
+      "path": "docs/experiments/figures/federated-text-pilot/last-b-sweep-layer-curves.svg",
+      "sha256": "a06492f94468c666fccf043a7d55fde255fc6ef0ff2b1e11244ad6529a8d42e0"
+    }
+  ],
+  "code": [
+    {
+      "path": "evaluation/last_b_layer_sweep.py",
+      "sha256": "6619f81491a407ba3d62aad85150fbc40a3e777ecf6a1bc5a090c604fbf5a85a"
+    },
+    {
+      "path": "evaluation/last_b_sweep_math.py",
+      "sha256": "3d5e841a05c034653340db309dd09d47ec32ee2e2f5db0aad3b6097d91faab47"
+    },
+    {
+      "path": "tests/test_last_b_sweep.py",
+      "sha256": "86cc017aa430198631ff4f05f3036a16e605693c7246ad655fb491ec56b2a287"
+    },
+    {
+      "path": "outputs/diagnostics/last_b_layer_sweep_20261104/setup/controller.py",
+      "sha256": "940b067bc42e4a38e44b3dc75897b43fcfe55a2955adbc3a4ec5cfa4cb8efe3e"
+    },
+    {
+      "path": "outputs/diagnostics/last_b_layer_sweep_20261104/setup/report.py",
+      "sha256": "e9547c1354864b9d4ee672798b83e5ddd83f1e5769eb0499fba7237b695ee250"
+    },
+    {
+      "path": "outputs/diagnostics/last_b_layer_sweep_20261104/setup/finalize.py",
+      "sha256": "ff156c7f79e15ed81683ae83fa157ffe927dda1777958c39da295f51816aa973"
+    }
+  ],
+  "source_sha256": "3222549a7254438dc0198804b70f2f6d3867ac714d5ffc265994ba2e53020f83",
+  "base_commit": "2fd25b6",
+  "uncommitted": true,
+  "uses_private_reference": false,
+  "contains_private_tokens": false
+}

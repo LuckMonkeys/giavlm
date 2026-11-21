@@ -1,0 +1,19 @@
+Property,Method,Correct,Accuracy,Balanced accuracy,Recall,AUROC
+head,multi_ridge,11,0.55,0.43333333333333335,0.2,0.36
+head,multi_threshold_24,14,0.7,0.4666666666666667,0.0,0.56
+head,multi_threshold_32,9,0.45,0.5666666666666667,0.8,0.7733333333333333
+head,original_24,14,0.7,0.4666666666666667,0.0,0.56
+head,original_32,15,0.75,0.7,0.6,0.7733333333333333
+head,original_fusion,7,0.35,0.30000000000000004,0.2,0.28
+head,single_ridge,13,0.65,0.43333333333333335,0.0,0.6
+head,single_threshold_24,13,0.65,0.43333333333333335,0.0,0.56
+head,single_threshold_32,15,0.75,0.5,0.0,0.7733333333333333
+abdomen,multi_ridge,7,0.35,0.35,0.0,0.41
+abdomen,multi_threshold_24,9,0.45,0.45,0.0,0.44
+abdomen,multi_threshold_32,10,0.5,0.5,0.0,0.57
+abdomen,original_24,10,0.5,0.5,0.0,0.44
+abdomen,original_32,12,0.6,0.6,0.3,0.57
+abdomen,original_fusion,8,0.4,0.4,0.0,0.44
+abdomen,single_ridge,9,0.45,0.45,0.0,0.42
+abdomen,single_threshold_24,9,0.45,0.45,0.0,0.44
+abdomen,single_threshold_32,10,0.5,0.5,0.0,0.57

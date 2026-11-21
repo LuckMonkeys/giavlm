@@ -1,0 +1,162 @@
+{
+  "status": "passed",
+  "source_sha256": "2618782dccc6fbb8494b67d87a6be5d6f38945617b273ed18f8eba96b33f891c",
+  "score_groups": 180,
+  "score_conditions": 720,
+  "all_score_hashes_verified": true,
+  "all_hard_endpoint_candidates_exact": true,
+  "hard_endpoint_max_score_delta": 6.850076061937216e-14,
+  "same_candidate_budget_across_alpha": true,
+  "aggregate_metrics_recomputed": true,
+  "all_scores_committed_before_truth": true,
+  "private_reference_read_by_finalizer": false,
+  "gpu_peak_allocated_gib": 16.06392526626587,
+  "wall_minutes": 8.885403855641682,
+  "finished_local": "2026-11-01T18:17:46.978966+08:00",
+  "paired_coverage_transitions": [
+    {
+      "condition": "fedsgd-b1",
+      "image": "gt",
+      "alpha": 0.0,
+      "coverage_gained": 0,
+      "coverage_lost": 13,
+      "candidate_recall_delta": -0.09540066852566852
+    },
+    {
+      "condition": "fedsgd-b1",
+      "image": "gt",
+      "alpha": 0.5,
+      "coverage_gained": 0,
+      "coverage_lost": 10,
+      "candidate_recall_delta": -0.0673521736021736
+    },
+    {
+      "condition": "fedsgd-b1",
+      "image": "gt",
+      "alpha": 0.9,
+      "coverage_gained": 0,
+      "coverage_lost": 2,
+      "candidate_recall_delta": -0.013572530864197529
+    },
+    {
+      "condition": "noise",
+      "image": "gt",
+      "alpha": 0.0,
+      "coverage_gained": 0,
+      "coverage_lost": 0,
+      "candidate_recall_delta": -0.15240792011625345
+    },
+    {
+      "condition": "noise",
+      "image": "gt",
+      "alpha": 0.5,
+      "coverage_gained": 0,
+      "coverage_lost": 0,
+      "candidate_recall_delta": -0.15652065922899258
+    },
+    {
+      "condition": "noise",
+      "image": "gt",
+      "alpha": 0.9,
+      "coverage_gained": 0,
+      "coverage_lost": 0,
+      "candidate_recall_delta": -0.09971306288192253
+    },
+    {
+      "condition": "sparsify",
+      "image": "gt",
+      "alpha": 0.0,
+      "coverage_gained": 0,
+      "coverage_lost": 0,
+      "candidate_recall_delta": -0.09563590684591716
+    },
+    {
+      "condition": "sparsify",
+      "image": "gt",
+      "alpha": 0.5,
+      "coverage_gained": 0,
+      "coverage_lost": 0,
+      "candidate_recall_delta": -0.10511913195414227
+    },
+    {
+      "condition": "sparsify",
+      "image": "gt",
+      "alpha": 0.9,
+      "coverage_gained": 0,
+      "coverage_lost": 0,
+      "candidate_recall_delta": -0.05582335988876238
+    },
+    {
+      "condition": "fedsgd-b1",
+      "image": "random",
+      "alpha": 0.0,
+      "coverage_gained": 0,
+      "coverage_lost": 13,
+      "candidate_recall_delta": -0.09164405476905475
+    },
+    {
+      "condition": "fedsgd-b1",
+      "image": "random",
+      "alpha": 0.5,
+      "coverage_gained": 0,
+      "coverage_lost": 10,
+      "candidate_recall_delta": -0.06677269531436197
+    },
+    {
+      "condition": "fedsgd-b1",
+      "image": "random",
+      "alpha": 0.9,
+      "coverage_gained": 0,
+      "coverage_lost": 2,
+      "candidate_recall_delta": -0.013572530864197529
+    },
+    {
+      "condition": "noise",
+      "image": "random",
+      "alpha": 0.0,
+      "coverage_gained": 0,
+      "coverage_lost": 0,
+      "candidate_recall_delta": -0.15776950531336495
+    },
+    {
+      "condition": "noise",
+      "image": "random",
+      "alpha": 0.5,
+      "coverage_gained": 0,
+      "coverage_lost": 0,
+      "candidate_recall_delta": -0.16003039257425222
+    },
+    {
+      "condition": "noise",
+      "image": "random",
+      "alpha": 0.9,
+      "coverage_gained": 0,
+      "coverage_lost": 0,
+      "candidate_recall_delta": -0.10564444864883461
+    },
+    {
+      "condition": "sparsify",
+      "image": "random",
+      "alpha": 0.0,
+      "coverage_gained": 0,
+      "coverage_lost": 0,
+      "candidate_recall_delta": -0.08609228080009813
+    },
+    {
+      "condition": "sparsify",
+      "image": "random",
+      "alpha": 0.5,
+      "coverage_gained": 0,
+      "coverage_lost": 0,
+      "candidate_recall_delta": -0.10154616171450535
+    },
+    {
+      "condition": "sparsify",
+      "image": "random",
+      "alpha": 0.9,
+      "coverage_gained": 0,
+      "coverage_lost": 0,
+      "candidate_recall_delta": -0.060324433573917584
+    }
+  ]
+}

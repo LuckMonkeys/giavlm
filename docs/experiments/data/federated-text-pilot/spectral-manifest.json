@@ -1,0 +1,42 @@
+{
+  "uncommitted": true,
+  "contains_private_tokens": false,
+  "source_sha256": "8da55ae61b2b0bb03e6fd5d46eb4dacb0deffac4524af980ab3ae06441bbc11a",
+  "files": [
+    {
+      "path": "docs/experiments/data/federated-text-pilot/spectral-aggregate.json",
+      "source": "outputs/diagnostics/spectral_filter_20261101/report/aggregate.json",
+      "sha256": "934a8b18da22d17878392d2a4954a932dfbd4743ebbe9f12dc5f6c8afd7006be"
+    },
+    {
+      "path": "docs/experiments/figures/federated-text-pilot/spectral-filter.png",
+      "source": "outputs/diagnostics/spectral_filter_20261101/report/filter.png",
+      "sha256": "ea498a6659a9a45772fc47ce99087179013dfd7236a84e200082cd23fb468801"
+    },
+    {
+      "path": "docs/experiments/figures/federated-text-pilot/spectral-filter.svg",
+      "source": "outputs/diagnostics/spectral_filter_20261101/report/filter.svg",
+      "sha256": "a2d0cc2367e311cb39d75ffcba421925d7e1c47e78474042a8573badac20ba64"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/spectral-summary.csv",
+      "source": "outputs/diagnostics/spectral_filter_20261101/report/summary.csv",
+      "sha256": "16238238efc9e671c92340d3c9f7b9061c223125e7e6bb43039bf73d5b1c42b2"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/spectral-summary.md",
+      "source": "outputs/diagnostics/spectral_filter_20261101/report/summary.md",
+      "sha256": "b16796655c66af97f901f96cc333c67f5e15513b7635eb6cec6e8b32e679a3cb"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/spectral-finalization-audit.json",
+      "source": "outputs/diagnostics/spectral_filter_20261101/finalization-audit.json",
+      "sha256": "41fd3e5d517e81e13784c451fae468ba39efb79f3ad1d423fa40c168c40f0771"
+    },
+    {
+      "path": "docs/experiments/data/federated-text-pilot/spectral-all-scores-complete.json",
+      "source": "outputs/diagnostics/spectral_filter_20261101/all-scores-complete.json",
+      "sha256": "301db4f42e30f7ad93d427e4ded41fdb5dd2584bf6afe4a98ed5d7643561825f"
+    }
+  ]
+}

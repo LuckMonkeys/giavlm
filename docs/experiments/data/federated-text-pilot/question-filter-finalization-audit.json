@@ -1,0 +1,17 @@
+{
+  "aggregate_checks": 2768,
+  "all_budgets_109": true,
+  "all_six_context_modules_present": true,
+  "candidate_sets_checked": 10380,
+  "code_sha256": "fd091d0a92af8d0e3699e25c8048647ade162d6e2ede5be2f98a7c289369b39f",
+  "commitment_files_checked": 811,
+  "contains_private_tokens": false,
+  "first_bundles_checked": 180,
+  "fixed20_equals_historical_anchor": true,
+  "frozen_code_unchanged": true,
+  "historical_metric_checks": 72,
+  "independent_metric_checks": 83040,
+  "private_reference_used_only_for_metric_audit": true,
+  "status": "passed",
+  "summary_sha256": "3b6994fb94fd6dea8af2136209e39fc18e19e23e3755924d17345d1d157f95fb"
+}

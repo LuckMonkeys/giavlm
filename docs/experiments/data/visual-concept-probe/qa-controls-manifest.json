@@ -1,0 +1,12 @@
+{
+  "artifacts": {
+    "docs/experiments/data/visual-concept-probe/qa-controls-aggregate.json": "4a0e65cf440e315f27c5a716144ec51e63b3ca5cbc5111b4163e9fbf0bad99a3",
+    "docs/experiments/data/visual-concept-probe/qa-controls-audit.json": "8dfeac6c9809fb2e7a46490eca44ad4e95127c7811d94127db79581d258d0c70",
+    "docs/experiments/data/visual-concept-probe/qa-controls-summary.csv": "5dfb7c32aa592f65339efe298b5db87011cb1fac63f5f2e12cf031dc034a5622",
+    "docs/experiments/figures/visual-concept-probe/qa-controls.png": "112c436b2fcaaa2ab899e1e27c250ac0b798f79292ff0157c40f0b0036792489",
+    "outputs/diagnostics/multilayer_property_20261101/qa-controls/analysis-source.py": "285b6493963020480b2486b75cffb74b77410fa434b237795047d1cdb8e84d81"
+  },
+  "source_manifest_sha256": "aee97407a4c684727f756d4f7aa4b6c05f571678eac36fe8135851cb5107294b",
+  "uncommitted": true,
+  "uses_private_reference": false
+}

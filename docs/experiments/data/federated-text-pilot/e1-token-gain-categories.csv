@@ -1,0 +1,882 @@
+condition,image,contrast,part,direction,category,count
+fedsgd-b1,gt,blind_vs_b_anchor,exclusive,loss,Other lexical content,1
+fedsgd-b1,gt,blind_vs_b_anchor,joint,loss,Other lexical content,1
+fedsgd-b1,gt,blind_vs_b_anchor,question,loss,Other lexical content,1
+fedsgd-b1,gt,blind_vs_residual,answer,gain,Unaligned or answer-only,2
+fedsgd-b1,gt,blind_vs_residual,exclusive,loss,Anatomical content,1
+fedsgd-b1,gt,blind_vs_residual,exclusive,loss,Other lexical content,1
+fedsgd-b1,gt,blind_vs_residual,joint,gain,Unaligned or answer-only,2
+fedsgd-b1,gt,blind_vs_residual,joint,loss,Anatomical content,1
+fedsgd-b1,gt,blind_vs_residual,joint,loss,Other lexical content,1
+fedsgd-b1,gt,blind_vs_residual,question,loss,Anatomical content,1
+fedsgd-b1,gt,blind_vs_residual,question,loss,Other lexical content,1
+fedsgd-b1,gt,conditioned_vs_b_anchor,exclusive,loss,Other lexical content,1
+fedsgd-b1,gt,conditioned_vs_b_anchor,joint,loss,Other lexical content,1
+fedsgd-b1,gt,conditioned_vs_b_anchor,question,loss,Other lexical content,1
+fedsgd-b1,gt,conditioned_vs_residual,answer,gain,Unaligned or answer-only,2
+fedsgd-b1,gt,conditioned_vs_residual,exclusive,loss,Anatomical content,1
+fedsgd-b1,gt,conditioned_vs_residual,exclusive,loss,Other lexical content,1
+fedsgd-b1,gt,conditioned_vs_residual,joint,gain,Unaligned or answer-only,2
+fedsgd-b1,gt,conditioned_vs_residual,joint,loss,Anatomical content,1
+fedsgd-b1,gt,conditioned_vs_residual,joint,loss,Other lexical content,1
+fedsgd-b1,gt,conditioned_vs_residual,question,loss,Anatomical content,1
+fedsgd-b1,gt,conditioned_vs_residual,question,loss,Other lexical content,1
+fedsgd-b1,random,blind_vs_b_anchor,exclusive,loss,Other lexical content,2
+fedsgd-b1,random,blind_vs_b_anchor,joint,loss,Other lexical content,2
+fedsgd-b1,random,blind_vs_b_anchor,question,loss,Other lexical content,2
+fedsgd-b1,random,blind_vs_residual,answer,gain,Unaligned or answer-only,2
+fedsgd-b1,random,blind_vs_residual,exclusive,loss,Anatomical content,1
+fedsgd-b1,random,blind_vs_residual,exclusive,loss,Other lexical content,2
+fedsgd-b1,random,blind_vs_residual,joint,gain,Unaligned or answer-only,2
+fedsgd-b1,random,blind_vs_residual,joint,loss,Anatomical content,1
+fedsgd-b1,random,blind_vs_residual,joint,loss,Other lexical content,2
+fedsgd-b1,random,blind_vs_residual,question,loss,Anatomical content,1
+fedsgd-b1,random,blind_vs_residual,question,loss,Other lexical content,2
+fedsgd-b1,random,conditioned_vs_b_anchor,exclusive,loss,Other lexical content,2
+fedsgd-b1,random,conditioned_vs_b_anchor,joint,loss,Other lexical content,2
+fedsgd-b1,random,conditioned_vs_b_anchor,question,loss,Other lexical content,2
+fedsgd-b1,random,conditioned_vs_residual,answer,gain,Unaligned or answer-only,2
+fedsgd-b1,random,conditioned_vs_residual,exclusive,loss,Anatomical content,1
+fedsgd-b1,random,conditioned_vs_residual,exclusive,loss,Other lexical content,2
+fedsgd-b1,random,conditioned_vs_residual,joint,gain,Unaligned or answer-only,2
+fedsgd-b1,random,conditioned_vs_residual,joint,loss,Anatomical content,1
+fedsgd-b1,random,conditioned_vs_residual,joint,loss,Other lexical content,2
+fedsgd-b1,random,conditioned_vs_residual,question,loss,Anatomical content,1
+fedsgd-b1,random,conditioned_vs_residual,question,loss,Other lexical content,2
+noise,gt,blind_vs_b_anchor,exclusive,gain,Function word,79
+noise,gt,blind_vs_b_anchor,exclusive,gain,General VQA task term,1
+noise,gt,blind_vs_b_anchor,exclusive,gain,General image term,13
+noise,gt,blind_vs_b_anchor,exclusive,gain,Punctuation,29
+noise,gt,blind_vs_b_anchor,exclusive,gain,Question word,14
+noise,gt,blind_vs_b_anchor,exclusive,loss,Spatial content,1
+noise,gt,blind_vs_b_anchor,joint,gain,Function word,79
+noise,gt,blind_vs_b_anchor,joint,gain,General VQA task term,1
+noise,gt,blind_vs_b_anchor,joint,gain,General image term,13
+noise,gt,blind_vs_b_anchor,joint,gain,Punctuation,29
+noise,gt,blind_vs_b_anchor,joint,gain,Question word,14
+noise,gt,blind_vs_b_anchor,joint,loss,Spatial content,1
+noise,gt,blind_vs_b_anchor,question,gain,Function word,79
+noise,gt,blind_vs_b_anchor,question,gain,General VQA task term,1
+noise,gt,blind_vs_b_anchor,question,gain,General image term,13
+noise,gt,blind_vs_b_anchor,question,gain,Punctuation,29
+noise,gt,blind_vs_b_anchor,question,gain,Question word,14
+noise,gt,blind_vs_b_anchor,question,loss,Spatial content,1
+noise,gt,blind_vs_residual,answer,gain,Anatomical content,2
+noise,gt,blind_vs_residual,answer,gain,Function word,1
+noise,gt,blind_vs_residual,answer,gain,Unaligned or answer-only,110
+noise,gt,blind_vs_residual,exclusive,gain,Anatomical content,2
+noise,gt,blind_vs_residual,exclusive,gain,Function word,78
+noise,gt,blind_vs_residual,exclusive,gain,General VQA task term,1
+noise,gt,blind_vs_residual,exclusive,gain,General image term,13
+noise,gt,blind_vs_residual,exclusive,gain,Punctuation,29
+noise,gt,blind_vs_residual,exclusive,gain,Question word,14
+noise,gt,blind_vs_residual,exclusive,loss,Function word,2
+noise,gt,blind_vs_residual,exclusive,loss,Spatial content,1
+noise,gt,blind_vs_residual,joint,gain,Anatomical content,4
+noise,gt,blind_vs_residual,joint,gain,Function word,79
+noise,gt,blind_vs_residual,joint,gain,General VQA task term,1
+noise,gt,blind_vs_residual,joint,gain,General image term,13
+noise,gt,blind_vs_residual,joint,gain,Punctuation,29
+noise,gt,blind_vs_residual,joint,gain,Question word,14
+noise,gt,blind_vs_residual,joint,gain,Unaligned or answer-only,110
+noise,gt,blind_vs_residual,joint,loss,Function word,2
+noise,gt,blind_vs_residual,joint,loss,Spatial content,1
+noise,gt,blind_vs_residual,question,gain,Anatomical content,4
+noise,gt,blind_vs_residual,question,gain,Function word,79
+noise,gt,blind_vs_residual,question,gain,General VQA task term,1
+noise,gt,blind_vs_residual,question,gain,General image term,13
+noise,gt,blind_vs_residual,question,gain,Punctuation,29
+noise,gt,blind_vs_residual,question,gain,Question word,14
+noise,gt,blind_vs_residual,question,loss,Function word,2
+noise,gt,blind_vs_residual,question,loss,Spatial content,1
+noise,gt,conditioned_vs_b_anchor,answer,gain,Function word,2
+noise,gt,conditioned_vs_b_anchor,answer,gain,Unaligned or answer-only,1
+noise,gt,conditioned_vs_b_anchor,exclusive,gain,Function word,61
+noise,gt,conditioned_vs_b_anchor,exclusive,gain,General VQA task term,3
+noise,gt,conditioned_vs_b_anchor,exclusive,gain,General image term,11
+noise,gt,conditioned_vs_b_anchor,exclusive,gain,Medical task term,6
+noise,gt,conditioned_vs_b_anchor,exclusive,gain,Other lexical content,2
+noise,gt,conditioned_vs_b_anchor,exclusive,gain,Punctuation,25
+noise,gt,conditioned_vs_b_anchor,exclusive,gain,Question word,13
+noise,gt,conditioned_vs_b_anchor,exclusive,loss,Spatial content,1
+noise,gt,conditioned_vs_b_anchor,joint,gain,Function word,63
+noise,gt,conditioned_vs_b_anchor,joint,gain,General VQA task term,3
+noise,gt,conditioned_vs_b_anchor,joint,gain,General image term,11
+noise,gt,conditioned_vs_b_anchor,joint,gain,Medical task term,6
+noise,gt,conditioned_vs_b_anchor,joint,gain,Other lexical content,2
+noise,gt,conditioned_vs_b_anchor,joint,gain,Punctuation,25
+noise,gt,conditioned_vs_b_anchor,joint,gain,Question word,13
+noise,gt,conditioned_vs_b_anchor,joint,gain,Unaligned or answer-only,1
+noise,gt,conditioned_vs_b_anchor,joint,loss,Spatial content,1
+noise,gt,conditioned_vs_b_anchor,question,gain,Function word,63
+noise,gt,conditioned_vs_b_anchor,question,gain,General VQA task term,3
+noise,gt,conditioned_vs_b_anchor,question,gain,General image term,11
+noise,gt,conditioned_vs_b_anchor,question,gain,Medical task term,6
+noise,gt,conditioned_vs_b_anchor,question,gain,Other lexical content,2
+noise,gt,conditioned_vs_b_anchor,question,gain,Punctuation,25
+noise,gt,conditioned_vs_b_anchor,question,gain,Question word,13
+noise,gt,conditioned_vs_b_anchor,question,loss,Spatial content,1
+noise,gt,conditioned_vs_blind,answer,gain,Function word,2
+noise,gt,conditioned_vs_blind,answer,gain,Unaligned or answer-only,1
+noise,gt,conditioned_vs_blind,exclusive,gain,Function word,4
+noise,gt,conditioned_vs_blind,exclusive,gain,General VQA task term,2
+noise,gt,conditioned_vs_blind,exclusive,gain,Medical task term,6
+noise,gt,conditioned_vs_blind,exclusive,gain,Other lexical content,2
+noise,gt,conditioned_vs_blind,exclusive,loss,Function word,22
+noise,gt,conditioned_vs_blind,exclusive,loss,General image term,2
+noise,gt,conditioned_vs_blind,exclusive,loss,Punctuation,4
+noise,gt,conditioned_vs_blind,exclusive,loss,Question word,1
+noise,gt,conditioned_vs_blind,joint,gain,Function word,6
+noise,gt,conditioned_vs_blind,joint,gain,General VQA task term,2
+noise,gt,conditioned_vs_blind,joint,gain,Medical task term,6
+noise,gt,conditioned_vs_blind,joint,gain,Other lexical content,2
+noise,gt,conditioned_vs_blind,joint,gain,Unaligned or answer-only,1
+noise,gt,conditioned_vs_blind,joint,loss,Function word,22
+noise,gt,conditioned_vs_blind,joint,loss,General image term,2
+noise,gt,conditioned_vs_blind,joint,loss,Punctuation,4
+noise,gt,conditioned_vs_blind,joint,loss,Question word,1
+noise,gt,conditioned_vs_blind,question,gain,Function word,6
+noise,gt,conditioned_vs_blind,question,gain,General VQA task term,2
+noise,gt,conditioned_vs_blind,question,gain,Medical task term,6
+noise,gt,conditioned_vs_blind,question,gain,Other lexical content,2
+noise,gt,conditioned_vs_blind,question,loss,Function word,22
+noise,gt,conditioned_vs_blind,question,loss,General image term,2
+noise,gt,conditioned_vs_blind,question,loss,Punctuation,4
+noise,gt,conditioned_vs_blind,question,loss,Question word,1
+noise,gt,conditioned_vs_residual,answer,gain,Anatomical content,2
+noise,gt,conditioned_vs_residual,answer,gain,Function word,3
+noise,gt,conditioned_vs_residual,answer,gain,Unaligned or answer-only,111
+noise,gt,conditioned_vs_residual,exclusive,gain,Anatomical content,2
+noise,gt,conditioned_vs_residual,exclusive,gain,Function word,60
+noise,gt,conditioned_vs_residual,exclusive,gain,General VQA task term,3
+noise,gt,conditioned_vs_residual,exclusive,gain,General image term,11
+noise,gt,conditioned_vs_residual,exclusive,gain,Medical task term,6
+noise,gt,conditioned_vs_residual,exclusive,gain,Other lexical content,2
+noise,gt,conditioned_vs_residual,exclusive,gain,Punctuation,25
+noise,gt,conditioned_vs_residual,exclusive,gain,Question word,13
+noise,gt,conditioned_vs_residual,exclusive,loss,Function word,2
+noise,gt,conditioned_vs_residual,exclusive,loss,Spatial content,1
+noise,gt,conditioned_vs_residual,joint,gain,Anatomical content,4
+noise,gt,conditioned_vs_residual,joint,gain,Function word,63
+noise,gt,conditioned_vs_residual,joint,gain,General VQA task term,3
+noise,gt,conditioned_vs_residual,joint,gain,General image term,11
+noise,gt,conditioned_vs_residual,joint,gain,Medical task term,6
+noise,gt,conditioned_vs_residual,joint,gain,Other lexical content,2
+noise,gt,conditioned_vs_residual,joint,gain,Punctuation,25
+noise,gt,conditioned_vs_residual,joint,gain,Question word,13
+noise,gt,conditioned_vs_residual,joint,gain,Unaligned or answer-only,111
+noise,gt,conditioned_vs_residual,joint,loss,Function word,2
+noise,gt,conditioned_vs_residual,joint,loss,Spatial content,1
+noise,gt,conditioned_vs_residual,question,gain,Anatomical content,4
+noise,gt,conditioned_vs_residual,question,gain,Function word,63
+noise,gt,conditioned_vs_residual,question,gain,General VQA task term,3
+noise,gt,conditioned_vs_residual,question,gain,General image term,11
+noise,gt,conditioned_vs_residual,question,gain,Medical task term,6
+noise,gt,conditioned_vs_residual,question,gain,Other lexical content,2
+noise,gt,conditioned_vs_residual,question,gain,Punctuation,25
+noise,gt,conditioned_vs_residual,question,gain,Question word,13
+noise,gt,conditioned_vs_residual,question,loss,Function word,2
+noise,gt,conditioned_vs_residual,question,loss,Spatial content,1
+noise,gt,conditioned_vs_wrong,answer,gain,Function word,2
+noise,gt,conditioned_vs_wrong,answer,gain,Unaligned or answer-only,1
+noise,gt,conditioned_vs_wrong,answer,loss,Unaligned or answer-only,2
+noise,gt,conditioned_vs_wrong,exclusive,gain,Function word,8
+noise,gt,conditioned_vs_wrong,exclusive,gain,General VQA task term,3
+noise,gt,conditioned_vs_wrong,exclusive,gain,General image term,2
+noise,gt,conditioned_vs_wrong,exclusive,gain,Medical task term,5
+noise,gt,conditioned_vs_wrong,exclusive,gain,Other lexical content,2
+noise,gt,conditioned_vs_wrong,exclusive,gain,Punctuation,3
+noise,gt,conditioned_vs_wrong,exclusive,gain,Question word,4
+noise,gt,conditioned_vs_wrong,exclusive,loss,Function word,12
+noise,gt,conditioned_vs_wrong,exclusive,loss,General VQA task term,1
+noise,gt,conditioned_vs_wrong,exclusive,loss,General image term,1
+noise,gt,conditioned_vs_wrong,exclusive,loss,Medical task term,2
+noise,gt,conditioned_vs_wrong,exclusive,loss,Punctuation,2
+noise,gt,conditioned_vs_wrong,exclusive,loss,Spatial content,1
+noise,gt,conditioned_vs_wrong,joint,gain,Function word,10
+noise,gt,conditioned_vs_wrong,joint,gain,General VQA task term,3
+noise,gt,conditioned_vs_wrong,joint,gain,General image term,2
+noise,gt,conditioned_vs_wrong,joint,gain,Medical task term,5
+noise,gt,conditioned_vs_wrong,joint,gain,Other lexical content,2
+noise,gt,conditioned_vs_wrong,joint,gain,Punctuation,3
+noise,gt,conditioned_vs_wrong,joint,gain,Question word,4
+noise,gt,conditioned_vs_wrong,joint,gain,Unaligned or answer-only,1
+noise,gt,conditioned_vs_wrong,joint,loss,Function word,12
+noise,gt,conditioned_vs_wrong,joint,loss,General VQA task term,1
+noise,gt,conditioned_vs_wrong,joint,loss,General image term,1
+noise,gt,conditioned_vs_wrong,joint,loss,Medical task term,2
+noise,gt,conditioned_vs_wrong,joint,loss,Punctuation,2
+noise,gt,conditioned_vs_wrong,joint,loss,Spatial content,1
+noise,gt,conditioned_vs_wrong,joint,loss,Unaligned or answer-only,2
+noise,gt,conditioned_vs_wrong,question,gain,Function word,10
+noise,gt,conditioned_vs_wrong,question,gain,General VQA task term,3
+noise,gt,conditioned_vs_wrong,question,gain,General image term,2
+noise,gt,conditioned_vs_wrong,question,gain,Medical task term,5
+noise,gt,conditioned_vs_wrong,question,gain,Other lexical content,2
+noise,gt,conditioned_vs_wrong,question,gain,Punctuation,3
+noise,gt,conditioned_vs_wrong,question,gain,Question word,4
+noise,gt,conditioned_vs_wrong,question,loss,Function word,12
+noise,gt,conditioned_vs_wrong,question,loss,General VQA task term,1
+noise,gt,conditioned_vs_wrong,question,loss,General image term,1
+noise,gt,conditioned_vs_wrong,question,loss,Medical task term,2
+noise,gt,conditioned_vs_wrong,question,loss,Punctuation,2
+noise,gt,conditioned_vs_wrong,question,loss,Spatial content,1
+noise,random,blind_vs_b_anchor,exclusive,gain,Function word,78
+noise,random,blind_vs_b_anchor,exclusive,gain,General VQA task term,1
+noise,random,blind_vs_b_anchor,exclusive,gain,General image term,14
+noise,random,blind_vs_b_anchor,exclusive,gain,Other lexical content,1
+noise,random,blind_vs_b_anchor,exclusive,gain,Punctuation,28
+noise,random,blind_vs_b_anchor,exclusive,gain,Question word,14
+noise,random,blind_vs_b_anchor,exclusive,loss,Function word,1
+noise,random,blind_vs_b_anchor,joint,gain,Function word,78
+noise,random,blind_vs_b_anchor,joint,gain,General VQA task term,1
+noise,random,blind_vs_b_anchor,joint,gain,General image term,14
+noise,random,blind_vs_b_anchor,joint,gain,Other lexical content,1
+noise,random,blind_vs_b_anchor,joint,gain,Punctuation,28
+noise,random,blind_vs_b_anchor,joint,gain,Question word,14
+noise,random,blind_vs_b_anchor,joint,loss,Function word,1
+noise,random,blind_vs_b_anchor,question,gain,Function word,78
+noise,random,blind_vs_b_anchor,question,gain,General VQA task term,1
+noise,random,blind_vs_b_anchor,question,gain,General image term,14
+noise,random,blind_vs_b_anchor,question,gain,Other lexical content,1
+noise,random,blind_vs_b_anchor,question,gain,Punctuation,28
+noise,random,blind_vs_b_anchor,question,gain,Question word,14
+noise,random,blind_vs_b_anchor,question,loss,Function word,1
+noise,random,blind_vs_residual,answer,gain,Anatomical content,2
+noise,random,blind_vs_residual,answer,gain,Function word,1
+noise,random,blind_vs_residual,answer,gain,Unaligned or answer-only,110
+noise,random,blind_vs_residual,exclusive,gain,Anatomical content,2
+noise,random,blind_vs_residual,exclusive,gain,Function word,78
+noise,random,blind_vs_residual,exclusive,gain,General VQA task term,1
+noise,random,blind_vs_residual,exclusive,gain,General image term,14
+noise,random,blind_vs_residual,exclusive,gain,Other lexical content,1
+noise,random,blind_vs_residual,exclusive,gain,Punctuation,28
+noise,random,blind_vs_residual,exclusive,gain,Question word,14
+noise,random,blind_vs_residual,exclusive,loss,Function word,3
+noise,random,blind_vs_residual,joint,gain,Anatomical content,4
+noise,random,blind_vs_residual,joint,gain,Function word,79
+noise,random,blind_vs_residual,joint,gain,General VQA task term,1
+noise,random,blind_vs_residual,joint,gain,General image term,14
+noise,random,blind_vs_residual,joint,gain,Other lexical content,1
+noise,random,blind_vs_residual,joint,gain,Punctuation,28
+noise,random,blind_vs_residual,joint,gain,Question word,14
+noise,random,blind_vs_residual,joint,gain,Unaligned or answer-only,110
+noise,random,blind_vs_residual,joint,loss,Function word,3
+noise,random,blind_vs_residual,question,gain,Anatomical content,4
+noise,random,blind_vs_residual,question,gain,Function word,79
+noise,random,blind_vs_residual,question,gain,General VQA task term,1
+noise,random,blind_vs_residual,question,gain,General image term,14
+noise,random,blind_vs_residual,question,gain,Other lexical content,1
+noise,random,blind_vs_residual,question,gain,Punctuation,28
+noise,random,blind_vs_residual,question,gain,Question word,14
+noise,random,blind_vs_residual,question,loss,Function word,3
+noise,random,conditioned_vs_b_anchor,answer,gain,Function word,1
+noise,random,conditioned_vs_b_anchor,answer,gain,Unaligned or answer-only,1
+noise,random,conditioned_vs_b_anchor,exclusive,gain,Function word,61
+noise,random,conditioned_vs_b_anchor,exclusive,gain,General VQA task term,3
+noise,random,conditioned_vs_b_anchor,exclusive,gain,General image term,12
+noise,random,conditioned_vs_b_anchor,exclusive,gain,Medical task term,6
+noise,random,conditioned_vs_b_anchor,exclusive,gain,Other lexical content,2
+noise,random,conditioned_vs_b_anchor,exclusive,gain,Punctuation,24
+noise,random,conditioned_vs_b_anchor,exclusive,gain,Question word,13
+noise,random,conditioned_vs_b_anchor,exclusive,loss,Function word,1
+noise,random,conditioned_vs_b_anchor,joint,gain,Function word,62
+noise,random,conditioned_vs_b_anchor,joint,gain,General VQA task term,3
+noise,random,conditioned_vs_b_anchor,joint,gain,General image term,12
+noise,random,conditioned_vs_b_anchor,joint,gain,Medical task term,6
+noise,random,conditioned_vs_b_anchor,joint,gain,Other lexical content,2
+noise,random,conditioned_vs_b_anchor,joint,gain,Punctuation,24
+noise,random,conditioned_vs_b_anchor,joint,gain,Question word,13
+noise,random,conditioned_vs_b_anchor,joint,gain,Unaligned or answer-only,1
+noise,random,conditioned_vs_b_anchor,joint,loss,Function word,1
+noise,random,conditioned_vs_b_anchor,question,gain,Function word,62
+noise,random,conditioned_vs_b_anchor,question,gain,General VQA task term,3
+noise,random,conditioned_vs_b_anchor,question,gain,General image term,12
+noise,random,conditioned_vs_b_anchor,question,gain,Medical task term,6
+noise,random,conditioned_vs_b_anchor,question,gain,Other lexical content,2
+noise,random,conditioned_vs_b_anchor,question,gain,Punctuation,24
+noise,random,conditioned_vs_b_anchor,question,gain,Question word,13
+noise,random,conditioned_vs_b_anchor,question,loss,Function word,1
+noise,random,conditioned_vs_blind,answer,gain,Function word,1
+noise,random,conditioned_vs_blind,answer,gain,Unaligned or answer-only,1
+noise,random,conditioned_vs_blind,exclusive,gain,Function word,4
+noise,random,conditioned_vs_blind,exclusive,gain,General VQA task term,2
+noise,random,conditioned_vs_blind,exclusive,gain,Medical task term,6
+noise,random,conditioned_vs_blind,exclusive,gain,Other lexical content,2
+noise,random,conditioned_vs_blind,exclusive,loss,Function word,21
+noise,random,conditioned_vs_blind,exclusive,loss,General image term,2
+noise,random,conditioned_vs_blind,exclusive,loss,Other lexical content,1
+noise,random,conditioned_vs_blind,exclusive,loss,Punctuation,4
+noise,random,conditioned_vs_blind,exclusive,loss,Question word,1
+noise,random,conditioned_vs_blind,joint,gain,Function word,5
+noise,random,conditioned_vs_blind,joint,gain,General VQA task term,2
+noise,random,conditioned_vs_blind,joint,gain,Medical task term,6
+noise,random,conditioned_vs_blind,joint,gain,Other lexical content,2
+noise,random,conditioned_vs_blind,joint,gain,Unaligned or answer-only,1
+noise,random,conditioned_vs_blind,joint,loss,Function word,21
+noise,random,conditioned_vs_blind,joint,loss,General image term,2
+noise,random,conditioned_vs_blind,joint,loss,Other lexical content,1
+noise,random,conditioned_vs_blind,joint,loss,Punctuation,4
+noise,random,conditioned_vs_blind,joint,loss,Question word,1
+noise,random,conditioned_vs_blind,question,gain,Function word,5
+noise,random,conditioned_vs_blind,question,gain,General VQA task term,2
+noise,random,conditioned_vs_blind,question,gain,Medical task term,6
+noise,random,conditioned_vs_blind,question,gain,Other lexical content,2
+noise,random,conditioned_vs_blind,question,loss,Function word,21
+noise,random,conditioned_vs_blind,question,loss,General image term,2
+noise,random,conditioned_vs_blind,question,loss,Other lexical content,1
+noise,random,conditioned_vs_blind,question,loss,Punctuation,4
+noise,random,conditioned_vs_blind,question,loss,Question word,1
+noise,random,conditioned_vs_residual,answer,gain,Anatomical content,2
+noise,random,conditioned_vs_residual,answer,gain,Function word,2
+noise,random,conditioned_vs_residual,answer,gain,Unaligned or answer-only,111
+noise,random,conditioned_vs_residual,exclusive,gain,Anatomical content,2
+noise,random,conditioned_vs_residual,exclusive,gain,Function word,60
+noise,random,conditioned_vs_residual,exclusive,gain,General VQA task term,3
+noise,random,conditioned_vs_residual,exclusive,gain,General image term,12
+noise,random,conditioned_vs_residual,exclusive,gain,Medical task term,6
+noise,random,conditioned_vs_residual,exclusive,gain,Other lexical content,2
+noise,random,conditioned_vs_residual,exclusive,gain,Punctuation,24
+noise,random,conditioned_vs_residual,exclusive,gain,Question word,13
+noise,random,conditioned_vs_residual,exclusive,loss,Function word,2
+noise,random,conditioned_vs_residual,joint,gain,Anatomical content,4
+noise,random,conditioned_vs_residual,joint,gain,Function word,62
+noise,random,conditioned_vs_residual,joint,gain,General VQA task term,3
+noise,random,conditioned_vs_residual,joint,gain,General image term,12
+noise,random,conditioned_vs_residual,joint,gain,Medical task term,6
+noise,random,conditioned_vs_residual,joint,gain,Other lexical content,2
+noise,random,conditioned_vs_residual,joint,gain,Punctuation,24
+noise,random,conditioned_vs_residual,joint,gain,Question word,13
+noise,random,conditioned_vs_residual,joint,gain,Unaligned or answer-only,111
+noise,random,conditioned_vs_residual,joint,loss,Function word,2
+noise,random,conditioned_vs_residual,question,gain,Anatomical content,4
+noise,random,conditioned_vs_residual,question,gain,Function word,62
+noise,random,conditioned_vs_residual,question,gain,General VQA task term,3
+noise,random,conditioned_vs_residual,question,gain,General image term,12
+noise,random,conditioned_vs_residual,question,gain,Medical task term,6
+noise,random,conditioned_vs_residual,question,gain,Other lexical content,2
+noise,random,conditioned_vs_residual,question,gain,Punctuation,24
+noise,random,conditioned_vs_residual,question,gain,Question word,13
+noise,random,conditioned_vs_residual,question,loss,Function word,2
+noise,random,conditioned_vs_wrong,answer,gain,Function word,1
+noise,random,conditioned_vs_wrong,answer,gain,Unaligned or answer-only,1
+noise,random,conditioned_vs_wrong,answer,loss,Unaligned or answer-only,1
+noise,random,conditioned_vs_wrong,exclusive,gain,Function word,7
+noise,random,conditioned_vs_wrong,exclusive,gain,General VQA task term,3
+noise,random,conditioned_vs_wrong,exclusive,gain,General image term,3
+noise,random,conditioned_vs_wrong,exclusive,gain,Medical task term,5
+noise,random,conditioned_vs_wrong,exclusive,gain,Other lexical content,2
+noise,random,conditioned_vs_wrong,exclusive,gain,Punctuation,3
+noise,random,conditioned_vs_wrong,exclusive,gain,Question word,4
+noise,random,conditioned_vs_wrong,exclusive,loss,Function word,11
+noise,random,conditioned_vs_wrong,exclusive,loss,General VQA task term,1
+noise,random,conditioned_vs_wrong,exclusive,loss,General image term,1
+noise,random,conditioned_vs_wrong,exclusive,loss,Medical task term,2
+noise,random,conditioned_vs_wrong,exclusive,loss,Punctuation,2
+noise,random,conditioned_vs_wrong,exclusive,loss,Spatial content,1
+noise,random,conditioned_vs_wrong,joint,gain,Function word,8
+noise,random,conditioned_vs_wrong,joint,gain,General VQA task term,3
+noise,random,conditioned_vs_wrong,joint,gain,General image term,3
+noise,random,conditioned_vs_wrong,joint,gain,Medical task term,5
+noise,random,conditioned_vs_wrong,joint,gain,Other lexical content,2
+noise,random,conditioned_vs_wrong,joint,gain,Punctuation,3
+noise,random,conditioned_vs_wrong,joint,gain,Question word,4
+noise,random,conditioned_vs_wrong,joint,gain,Unaligned or answer-only,1
+noise,random,conditioned_vs_wrong,joint,loss,Function word,11
+noise,random,conditioned_vs_wrong,joint,loss,General VQA task term,1
+noise,random,conditioned_vs_wrong,joint,loss,General image term,1
+noise,random,conditioned_vs_wrong,joint,loss,Medical task term,2
+noise,random,conditioned_vs_wrong,joint,loss,Punctuation,2
+noise,random,conditioned_vs_wrong,joint,loss,Spatial content,1
+noise,random,conditioned_vs_wrong,joint,loss,Unaligned or answer-only,1
+noise,random,conditioned_vs_wrong,question,gain,Function word,8
+noise,random,conditioned_vs_wrong,question,gain,General VQA task term,3
+noise,random,conditioned_vs_wrong,question,gain,General image term,3
+noise,random,conditioned_vs_wrong,question,gain,Medical task term,5
+noise,random,conditioned_vs_wrong,question,gain,Other lexical content,2
+noise,random,conditioned_vs_wrong,question,gain,Punctuation,3
+noise,random,conditioned_vs_wrong,question,gain,Question word,4
+noise,random,conditioned_vs_wrong,question,loss,Function word,11
+noise,random,conditioned_vs_wrong,question,loss,General VQA task term,1
+noise,random,conditioned_vs_wrong,question,loss,General image term,1
+noise,random,conditioned_vs_wrong,question,loss,Medical task term,2
+noise,random,conditioned_vs_wrong,question,loss,Punctuation,2
+noise,random,conditioned_vs_wrong,question,loss,Spatial content,1
+sparsify,gt,blind_vs_b_anchor,answer,loss,Unaligned or answer-only,5
+sparsify,gt,blind_vs_b_anchor,exclusive,gain,Function word,2
+sparsify,gt,blind_vs_b_anchor,exclusive,gain,General image term,12
+sparsify,gt,blind_vs_b_anchor,exclusive,gain,Other lexical content,3
+sparsify,gt,blind_vs_b_anchor,exclusive,gain,Punctuation,1
+sparsify,gt,blind_vs_b_anchor,exclusive,gain,Question word,10
+sparsify,gt,blind_vs_b_anchor,exclusive,loss,Anatomical content,1
+sparsify,gt,blind_vs_b_anchor,exclusive,loss,Medical task term,2
+sparsify,gt,blind_vs_b_anchor,exclusive,loss,Other lexical content,3
+sparsify,gt,blind_vs_b_anchor,joint,gain,Function word,2
+sparsify,gt,blind_vs_b_anchor,joint,gain,General image term,12
+sparsify,gt,blind_vs_b_anchor,joint,gain,Other lexical content,3
+sparsify,gt,blind_vs_b_anchor,joint,gain,Punctuation,1
+sparsify,gt,blind_vs_b_anchor,joint,gain,Question word,10
+sparsify,gt,blind_vs_b_anchor,joint,loss,Anatomical content,1
+sparsify,gt,blind_vs_b_anchor,joint,loss,Medical task term,2
+sparsify,gt,blind_vs_b_anchor,joint,loss,Other lexical content,3
+sparsify,gt,blind_vs_b_anchor,joint,loss,Unaligned or answer-only,5
+sparsify,gt,blind_vs_b_anchor,question,gain,Function word,2
+sparsify,gt,blind_vs_b_anchor,question,gain,General image term,12
+sparsify,gt,blind_vs_b_anchor,question,gain,Other lexical content,3
+sparsify,gt,blind_vs_b_anchor,question,gain,Punctuation,1
+sparsify,gt,blind_vs_b_anchor,question,gain,Question word,10
+sparsify,gt,blind_vs_b_anchor,question,loss,Anatomical content,1
+sparsify,gt,blind_vs_b_anchor,question,loss,Medical task term,2
+sparsify,gt,blind_vs_b_anchor,question,loss,Other lexical content,3
+sparsify,gt,blind_vs_residual,answer,gain,Anatomical content,2
+sparsify,gt,blind_vs_residual,answer,gain,Unaligned or answer-only,69
+sparsify,gt,blind_vs_residual,answer,loss,Unaligned or answer-only,8
+sparsify,gt,blind_vs_residual,exclusive,gain,Anatomical content,2
+sparsify,gt,blind_vs_residual,exclusive,gain,Function word,2
+sparsify,gt,blind_vs_residual,exclusive,gain,General image term,12
+sparsify,gt,blind_vs_residual,exclusive,gain,Other lexical content,3
+sparsify,gt,blind_vs_residual,exclusive,gain,Punctuation,1
+sparsify,gt,blind_vs_residual,exclusive,gain,Question word,10
+sparsify,gt,blind_vs_residual,exclusive,loss,Anatomical content,1
+sparsify,gt,blind_vs_residual,exclusive,loss,Function word,1
+sparsify,gt,blind_vs_residual,exclusive,loss,Medical task term,2
+sparsify,gt,blind_vs_residual,exclusive,loss,Other lexical content,3
+sparsify,gt,blind_vs_residual,exclusive,loss,Punctuation,1
+sparsify,gt,blind_vs_residual,exclusive,loss,Question word,1
+sparsify,gt,blind_vs_residual,exclusive,loss,Spatial content,1
+sparsify,gt,blind_vs_residual,joint,gain,Anatomical content,4
+sparsify,gt,blind_vs_residual,joint,gain,Function word,2
+sparsify,gt,blind_vs_residual,joint,gain,General image term,12
+sparsify,gt,blind_vs_residual,joint,gain,Other lexical content,3
+sparsify,gt,blind_vs_residual,joint,gain,Punctuation,1
+sparsify,gt,blind_vs_residual,joint,gain,Question word,10
+sparsify,gt,blind_vs_residual,joint,gain,Unaligned or answer-only,69
+sparsify,gt,blind_vs_residual,joint,loss,Anatomical content,1
+sparsify,gt,blind_vs_residual,joint,loss,Function word,1
+sparsify,gt,blind_vs_residual,joint,loss,Medical task term,2
+sparsify,gt,blind_vs_residual,joint,loss,Other lexical content,3
+sparsify,gt,blind_vs_residual,joint,loss,Punctuation,1
+sparsify,gt,blind_vs_residual,joint,loss,Question word,1
+sparsify,gt,blind_vs_residual,joint,loss,Spatial content,1
+sparsify,gt,blind_vs_residual,joint,loss,Unaligned or answer-only,8
+sparsify,gt,blind_vs_residual,question,gain,Anatomical content,4
+sparsify,gt,blind_vs_residual,question,gain,Function word,2
+sparsify,gt,blind_vs_residual,question,gain,General image term,12
+sparsify,gt,blind_vs_residual,question,gain,Other lexical content,3
+sparsify,gt,blind_vs_residual,question,gain,Punctuation,1
+sparsify,gt,blind_vs_residual,question,gain,Question word,10
+sparsify,gt,blind_vs_residual,question,loss,Anatomical content,1
+sparsify,gt,blind_vs_residual,question,loss,Function word,1
+sparsify,gt,blind_vs_residual,question,loss,Medical task term,2
+sparsify,gt,blind_vs_residual,question,loss,Other lexical content,3
+sparsify,gt,blind_vs_residual,question,loss,Punctuation,1
+sparsify,gt,blind_vs_residual,question,loss,Question word,1
+sparsify,gt,blind_vs_residual,question,loss,Spatial content,1
+sparsify,gt,conditioned_vs_b_anchor,answer,gain,Unaligned or answer-only,3
+sparsify,gt,conditioned_vs_b_anchor,answer,loss,Unaligned or answer-only,5
+sparsify,gt,conditioned_vs_b_anchor,exclusive,gain,Anatomical content,1
+sparsify,gt,conditioned_vs_b_anchor,exclusive,gain,Function word,1
+sparsify,gt,conditioned_vs_b_anchor,exclusive,gain,General VQA task term,1
+sparsify,gt,conditioned_vs_b_anchor,exclusive,gain,General image term,11
+sparsify,gt,conditioned_vs_b_anchor,exclusive,gain,Medical task term,2
+sparsify,gt,conditioned_vs_b_anchor,exclusive,gain,Other lexical content,4
+sparsify,gt,conditioned_vs_b_anchor,exclusive,gain,Question word,12
+sparsify,gt,conditioned_vs_b_anchor,exclusive,gain,Spatial content,2
+sparsify,gt,conditioned_vs_b_anchor,exclusive,loss,Anatomical content,1
+sparsify,gt,conditioned_vs_b_anchor,exclusive,loss,Other lexical content,3
+sparsify,gt,conditioned_vs_b_anchor,joint,gain,Anatomical content,1
+sparsify,gt,conditioned_vs_b_anchor,joint,gain,Function word,1
+sparsify,gt,conditioned_vs_b_anchor,joint,gain,General VQA task term,1
+sparsify,gt,conditioned_vs_b_anchor,joint,gain,General image term,11
+sparsify,gt,conditioned_vs_b_anchor,joint,gain,Medical task term,2
+sparsify,gt,conditioned_vs_b_anchor,joint,gain,Other lexical content,4
+sparsify,gt,conditioned_vs_b_anchor,joint,gain,Question word,12
+sparsify,gt,conditioned_vs_b_anchor,joint,gain,Spatial content,2
+sparsify,gt,conditioned_vs_b_anchor,joint,gain,Unaligned or answer-only,3
+sparsify,gt,conditioned_vs_b_anchor,joint,loss,Anatomical content,1
+sparsify,gt,conditioned_vs_b_anchor,joint,loss,Other lexical content,3
+sparsify,gt,conditioned_vs_b_anchor,joint,loss,Unaligned or answer-only,5
+sparsify,gt,conditioned_vs_b_anchor,question,gain,Anatomical content,1
+sparsify,gt,conditioned_vs_b_anchor,question,gain,Function word,1
+sparsify,gt,conditioned_vs_b_anchor,question,gain,General VQA task term,1
+sparsify,gt,conditioned_vs_b_anchor,question,gain,General image term,11
+sparsify,gt,conditioned_vs_b_anchor,question,gain,Medical task term,2
+sparsify,gt,conditioned_vs_b_anchor,question,gain,Other lexical content,4
+sparsify,gt,conditioned_vs_b_anchor,question,gain,Question word,12
+sparsify,gt,conditioned_vs_b_anchor,question,gain,Spatial content,2
+sparsify,gt,conditioned_vs_b_anchor,question,loss,Anatomical content,1
+sparsify,gt,conditioned_vs_b_anchor,question,loss,Other lexical content,3
+sparsify,gt,conditioned_vs_blind,answer,gain,Unaligned or answer-only,3
+sparsify,gt,conditioned_vs_blind,exclusive,gain,Anatomical content,1
+sparsify,gt,conditioned_vs_blind,exclusive,gain,General VQA task term,1
+sparsify,gt,conditioned_vs_blind,exclusive,gain,General image term,1
+sparsify,gt,conditioned_vs_blind,exclusive,gain,Medical task term,4
+sparsify,gt,conditioned_vs_blind,exclusive,gain,Other lexical content,2
+sparsify,gt,conditioned_vs_blind,exclusive,gain,Question word,2
+sparsify,gt,conditioned_vs_blind,exclusive,gain,Spatial content,2
+sparsify,gt,conditioned_vs_blind,exclusive,loss,Function word,1
+sparsify,gt,conditioned_vs_blind,exclusive,loss,General image term,2
+sparsify,gt,conditioned_vs_blind,exclusive,loss,Other lexical content,1
+sparsify,gt,conditioned_vs_blind,exclusive,loss,Punctuation,1
+sparsify,gt,conditioned_vs_blind,joint,gain,Anatomical content,1
+sparsify,gt,conditioned_vs_blind,joint,gain,General VQA task term,1
+sparsify,gt,conditioned_vs_blind,joint,gain,General image term,1
+sparsify,gt,conditioned_vs_blind,joint,gain,Medical task term,4
+sparsify,gt,conditioned_vs_blind,joint,gain,Other lexical content,2
+sparsify,gt,conditioned_vs_blind,joint,gain,Question word,2
+sparsify,gt,conditioned_vs_blind,joint,gain,Spatial content,2
+sparsify,gt,conditioned_vs_blind,joint,gain,Unaligned or answer-only,3
+sparsify,gt,conditioned_vs_blind,joint,loss,Function word,1
+sparsify,gt,conditioned_vs_blind,joint,loss,General image term,2
+sparsify,gt,conditioned_vs_blind,joint,loss,Other lexical content,1
+sparsify,gt,conditioned_vs_blind,joint,loss,Punctuation,1
+sparsify,gt,conditioned_vs_blind,question,gain,Anatomical content,1
+sparsify,gt,conditioned_vs_blind,question,gain,General VQA task term,1
+sparsify,gt,conditioned_vs_blind,question,gain,General image term,1
+sparsify,gt,conditioned_vs_blind,question,gain,Medical task term,4
+sparsify,gt,conditioned_vs_blind,question,gain,Other lexical content,2
+sparsify,gt,conditioned_vs_blind,question,gain,Question word,2
+sparsify,gt,conditioned_vs_blind,question,gain,Spatial content,2
+sparsify,gt,conditioned_vs_blind,question,loss,Function word,1
+sparsify,gt,conditioned_vs_blind,question,loss,General image term,2
+sparsify,gt,conditioned_vs_blind,question,loss,Other lexical content,1
+sparsify,gt,conditioned_vs_blind,question,loss,Punctuation,1
+sparsify,gt,conditioned_vs_residual,answer,gain,Anatomical content,2
+sparsify,gt,conditioned_vs_residual,answer,gain,Unaligned or answer-only,72
+sparsify,gt,conditioned_vs_residual,answer,loss,Unaligned or answer-only,8
+sparsify,gt,conditioned_vs_residual,exclusive,gain,Anatomical content,3
+sparsify,gt,conditioned_vs_residual,exclusive,gain,Function word,1
+sparsify,gt,conditioned_vs_residual,exclusive,gain,General VQA task term,1
+sparsify,gt,conditioned_vs_residual,exclusive,gain,General image term,11
+sparsify,gt,conditioned_vs_residual,exclusive,gain,Medical task term,2
+sparsify,gt,conditioned_vs_residual,exclusive,gain,Other lexical content,4
+sparsify,gt,conditioned_vs_residual,exclusive,gain,Question word,11
+sparsify,gt,conditioned_vs_residual,exclusive,gain,Spatial content,2
+sparsify,gt,conditioned_vs_residual,exclusive,loss,Anatomical content,1
+sparsify,gt,conditioned_vs_residual,exclusive,loss,Function word,1
+sparsify,gt,conditioned_vs_residual,exclusive,loss,Other lexical content,3
+sparsify,gt,conditioned_vs_residual,exclusive,loss,Punctuation,1
+sparsify,gt,conditioned_vs_residual,exclusive,loss,Spatial content,1
+sparsify,gt,conditioned_vs_residual,joint,gain,Anatomical content,5
+sparsify,gt,conditioned_vs_residual,joint,gain,Function word,1
+sparsify,gt,conditioned_vs_residual,joint,gain,General VQA task term,1
+sparsify,gt,conditioned_vs_residual,joint,gain,General image term,11
+sparsify,gt,conditioned_vs_residual,joint,gain,Medical task term,2
+sparsify,gt,conditioned_vs_residual,joint,gain,Other lexical content,4
+sparsify,gt,conditioned_vs_residual,joint,gain,Question word,11
+sparsify,gt,conditioned_vs_residual,joint,gain,Spatial content,2
+sparsify,gt,conditioned_vs_residual,joint,gain,Unaligned or answer-only,72
+sparsify,gt,conditioned_vs_residual,joint,loss,Anatomical content,1
+sparsify,gt,conditioned_vs_residual,joint,loss,Function word,1
+sparsify,gt,conditioned_vs_residual,joint,loss,Other lexical content,3
+sparsify,gt,conditioned_vs_residual,joint,loss,Punctuation,1
+sparsify,gt,conditioned_vs_residual,joint,loss,Spatial content,1
+sparsify,gt,conditioned_vs_residual,joint,loss,Unaligned or answer-only,8
+sparsify,gt,conditioned_vs_residual,question,gain,Anatomical content,5
+sparsify,gt,conditioned_vs_residual,question,gain,Function word,1
+sparsify,gt,conditioned_vs_residual,question,gain,General VQA task term,1
+sparsify,gt,conditioned_vs_residual,question,gain,General image term,11
+sparsify,gt,conditioned_vs_residual,question,gain,Medical task term,2
+sparsify,gt,conditioned_vs_residual,question,gain,Other lexical content,4
+sparsify,gt,conditioned_vs_residual,question,gain,Question word,11
+sparsify,gt,conditioned_vs_residual,question,gain,Spatial content,2
+sparsify,gt,conditioned_vs_residual,question,loss,Anatomical content,1
+sparsify,gt,conditioned_vs_residual,question,loss,Function word,1
+sparsify,gt,conditioned_vs_residual,question,loss,Other lexical content,3
+sparsify,gt,conditioned_vs_residual,question,loss,Punctuation,1
+sparsify,gt,conditioned_vs_residual,question,loss,Spatial content,1
+sparsify,gt,conditioned_vs_wrong,answer,gain,Unaligned or answer-only,3
+sparsify,gt,conditioned_vs_wrong,exclusive,gain,Anatomical content,1
+sparsify,gt,conditioned_vs_wrong,exclusive,gain,General VQA task term,1
+sparsify,gt,conditioned_vs_wrong,exclusive,gain,General image term,1
+sparsify,gt,conditioned_vs_wrong,exclusive,gain,Medical task term,4
+sparsify,gt,conditioned_vs_wrong,exclusive,gain,Other lexical content,2
+sparsify,gt,conditioned_vs_wrong,exclusive,gain,Question word,2
+sparsify,gt,conditioned_vs_wrong,exclusive,gain,Spatial content,2
+sparsify,gt,conditioned_vs_wrong,exclusive,loss,Anatomical content,1
+sparsify,gt,conditioned_vs_wrong,exclusive,loss,General VQA task term,1
+sparsify,gt,conditioned_vs_wrong,exclusive,loss,General image term,1
+sparsify,gt,conditioned_vs_wrong,exclusive,loss,Medical task term,2
+sparsify,gt,conditioned_vs_wrong,exclusive,loss,Other lexical content,1
+sparsify,gt,conditioned_vs_wrong,exclusive,loss,Punctuation,1
+sparsify,gt,conditioned_vs_wrong,exclusive,loss,Question word,1
+sparsify,gt,conditioned_vs_wrong,exclusive,loss,Spatial content,1
+sparsify,gt,conditioned_vs_wrong,joint,gain,Anatomical content,1
+sparsify,gt,conditioned_vs_wrong,joint,gain,General VQA task term,1
+sparsify,gt,conditioned_vs_wrong,joint,gain,General image term,1
+sparsify,gt,conditioned_vs_wrong,joint,gain,Medical task term,4
+sparsify,gt,conditioned_vs_wrong,joint,gain,Other lexical content,2
+sparsify,gt,conditioned_vs_wrong,joint,gain,Question word,2
+sparsify,gt,conditioned_vs_wrong,joint,gain,Spatial content,2
+sparsify,gt,conditioned_vs_wrong,joint,gain,Unaligned or answer-only,3
+sparsify,gt,conditioned_vs_wrong,joint,loss,Anatomical content,1
+sparsify,gt,conditioned_vs_wrong,joint,loss,General VQA task term,1
+sparsify,gt,conditioned_vs_wrong,joint,loss,General image term,1
+sparsify,gt,conditioned_vs_wrong,joint,loss,Medical task term,2
+sparsify,gt,conditioned_vs_wrong,joint,loss,Other lexical content,1
+sparsify,gt,conditioned_vs_wrong,joint,loss,Punctuation,1
+sparsify,gt,conditioned_vs_wrong,joint,loss,Question word,1
+sparsify,gt,conditioned_vs_wrong,joint,loss,Spatial content,1
+sparsify,gt,conditioned_vs_wrong,question,gain,Anatomical content,1
+sparsify,gt,conditioned_vs_wrong,question,gain,General VQA task term,1
+sparsify,gt,conditioned_vs_wrong,question,gain,General image term,1
+sparsify,gt,conditioned_vs_wrong,question,gain,Medical task term,4
+sparsify,gt,conditioned_vs_wrong,question,gain,Other lexical content,2
+sparsify,gt,conditioned_vs_wrong,question,gain,Question word,2
+sparsify,gt,conditioned_vs_wrong,question,gain,Spatial content,2
+sparsify,gt,conditioned_vs_wrong,question,loss,Anatomical content,1
+sparsify,gt,conditioned_vs_wrong,question,loss,General VQA task term,1
+sparsify,gt,conditioned_vs_wrong,question,loss,General image term,1
+sparsify,gt,conditioned_vs_wrong,question,loss,Medical task term,2
+sparsify,gt,conditioned_vs_wrong,question,loss,Other lexical content,1
+sparsify,gt,conditioned_vs_wrong,question,loss,Punctuation,1
+sparsify,gt,conditioned_vs_wrong,question,loss,Question word,1
+sparsify,gt,conditioned_vs_wrong,question,loss,Spatial content,1
+sparsify,random,blind_vs_b_anchor,answer,loss,Unaligned or answer-only,8
+sparsify,random,blind_vs_b_anchor,exclusive,gain,Function word,2
+sparsify,random,blind_vs_b_anchor,exclusive,gain,General image term,13
+sparsify,random,blind_vs_b_anchor,exclusive,gain,Other lexical content,3
+sparsify,random,blind_vs_b_anchor,exclusive,gain,Punctuation,1
+sparsify,random,blind_vs_b_anchor,exclusive,gain,Question word,10
+sparsify,random,blind_vs_b_anchor,exclusive,loss,Anatomical content,1
+sparsify,random,blind_vs_b_anchor,exclusive,loss,Function word,1
+sparsify,random,blind_vs_b_anchor,exclusive,loss,Medical task term,1
+sparsify,random,blind_vs_b_anchor,exclusive,loss,Other lexical content,3
+sparsify,random,blind_vs_b_anchor,exclusive,loss,Punctuation,2
+sparsify,random,blind_vs_b_anchor,exclusive,loss,Question word,1
+sparsify,random,blind_vs_b_anchor,joint,gain,Function word,2
+sparsify,random,blind_vs_b_anchor,joint,gain,General image term,13
+sparsify,random,blind_vs_b_anchor,joint,gain,Other lexical content,3
+sparsify,random,blind_vs_b_anchor,joint,gain,Punctuation,1
+sparsify,random,blind_vs_b_anchor,joint,gain,Question word,10
+sparsify,random,blind_vs_b_anchor,joint,loss,Anatomical content,1
+sparsify,random,blind_vs_b_anchor,joint,loss,Function word,1
+sparsify,random,blind_vs_b_anchor,joint,loss,Medical task term,1
+sparsify,random,blind_vs_b_anchor,joint,loss,Other lexical content,3
+sparsify,random,blind_vs_b_anchor,joint,loss,Punctuation,2
+sparsify,random,blind_vs_b_anchor,joint,loss,Question word,1
+sparsify,random,blind_vs_b_anchor,joint,loss,Unaligned or answer-only,8
+sparsify,random,blind_vs_b_anchor,question,gain,Function word,2
+sparsify,random,blind_vs_b_anchor,question,gain,General image term,13
+sparsify,random,blind_vs_b_anchor,question,gain,Other lexical content,3
+sparsify,random,blind_vs_b_anchor,question,gain,Punctuation,1
+sparsify,random,blind_vs_b_anchor,question,gain,Question word,10
+sparsify,random,blind_vs_b_anchor,question,loss,Anatomical content,1
+sparsify,random,blind_vs_b_anchor,question,loss,Function word,1
+sparsify,random,blind_vs_b_anchor,question,loss,Medical task term,1
+sparsify,random,blind_vs_b_anchor,question,loss,Other lexical content,3
+sparsify,random,blind_vs_b_anchor,question,loss,Punctuation,2
+sparsify,random,blind_vs_b_anchor,question,loss,Question word,1
+sparsify,random,blind_vs_residual,answer,gain,Anatomical content,2
+sparsify,random,blind_vs_residual,answer,gain,Unaligned or answer-only,70
+sparsify,random,blind_vs_residual,answer,loss,Unaligned or answer-only,10
+sparsify,random,blind_vs_residual,exclusive,gain,Anatomical content,2
+sparsify,random,blind_vs_residual,exclusive,gain,Function word,2
+sparsify,random,blind_vs_residual,exclusive,gain,General image term,13
+sparsify,random,blind_vs_residual,exclusive,gain,Other lexical content,3
+sparsify,random,blind_vs_residual,exclusive,gain,Question word,9
+sparsify,random,blind_vs_residual,exclusive,loss,Anatomical content,2
+sparsify,random,blind_vs_residual,exclusive,loss,Function word,1
+sparsify,random,blind_vs_residual,exclusive,loss,General image term,1
+sparsify,random,blind_vs_residual,exclusive,loss,Medical task term,3
+sparsify,random,blind_vs_residual,exclusive,loss,Other lexical content,4
+sparsify,random,blind_vs_residual,exclusive,loss,Punctuation,2
+sparsify,random,blind_vs_residual,exclusive,loss,Question word,1
+sparsify,random,blind_vs_residual,joint,gain,Anatomical content,4
+sparsify,random,blind_vs_residual,joint,gain,Function word,2
+sparsify,random,blind_vs_residual,joint,gain,General image term,13
+sparsify,random,blind_vs_residual,joint,gain,Other lexical content,3
+sparsify,random,blind_vs_residual,joint,gain,Question word,9
+sparsify,random,blind_vs_residual,joint,gain,Unaligned or answer-only,70
+sparsify,random,blind_vs_residual,joint,loss,Anatomical content,2
+sparsify,random,blind_vs_residual,joint,loss,Function word,1
+sparsify,random,blind_vs_residual,joint,loss,General image term,1
+sparsify,random,blind_vs_residual,joint,loss,Medical task term,3
+sparsify,random,blind_vs_residual,joint,loss,Other lexical content,4
+sparsify,random,blind_vs_residual,joint,loss,Punctuation,2
+sparsify,random,blind_vs_residual,joint,loss,Question word,1
+sparsify,random,blind_vs_residual,joint,loss,Unaligned or answer-only,10
+sparsify,random,blind_vs_residual,question,gain,Anatomical content,4
+sparsify,random,blind_vs_residual,question,gain,Function word,2
+sparsify,random,blind_vs_residual,question,gain,General image term,13
+sparsify,random,blind_vs_residual,question,gain,Other lexical content,3
+sparsify,random,blind_vs_residual,question,gain,Question word,9
+sparsify,random,blind_vs_residual,question,loss,Anatomical content,2
+sparsify,random,blind_vs_residual,question,loss,Function word,1
+sparsify,random,blind_vs_residual,question,loss,General image term,1
+sparsify,random,blind_vs_residual,question,loss,Medical task term,3
+sparsify,random,blind_vs_residual,question,loss,Other lexical content,4
+sparsify,random,blind_vs_residual,question,loss,Punctuation,2
+sparsify,random,blind_vs_residual,question,loss,Question word,1
+sparsify,random,conditioned_vs_b_anchor,answer,gain,Unaligned or answer-only,3
+sparsify,random,conditioned_vs_b_anchor,answer,loss,Unaligned or answer-only,7
+sparsify,random,conditioned_vs_b_anchor,exclusive,gain,Anatomical content,1
+sparsify,random,conditioned_vs_b_anchor,exclusive,gain,Function word,1
+sparsify,random,conditioned_vs_b_anchor,exclusive,gain,General VQA task term,1
+sparsify,random,conditioned_vs_b_anchor,exclusive,gain,General image term,12
+sparsify,random,conditioned_vs_b_anchor,exclusive,gain,Medical task term,4
+sparsify,random,conditioned_vs_b_anchor,exclusive,gain,Other lexical content,3
+sparsify,random,conditioned_vs_b_anchor,exclusive,gain,Question word,11
+sparsify,random,conditioned_vs_b_anchor,exclusive,gain,Spatial content,2
+sparsify,random,conditioned_vs_b_anchor,exclusive,loss,Anatomical content,1
+sparsify,random,conditioned_vs_b_anchor,exclusive,loss,Function word,1
+sparsify,random,conditioned_vs_b_anchor,exclusive,loss,Medical task term,1
+sparsify,random,conditioned_vs_b_anchor,exclusive,loss,Other lexical content,3
+sparsify,random,conditioned_vs_b_anchor,exclusive,loss,Punctuation,2
+sparsify,random,conditioned_vs_b_anchor,joint,gain,Anatomical content,1
+sparsify,random,conditioned_vs_b_anchor,joint,gain,Function word,1
+sparsify,random,conditioned_vs_b_anchor,joint,gain,General VQA task term,1
+sparsify,random,conditioned_vs_b_anchor,joint,gain,General image term,12
+sparsify,random,conditioned_vs_b_anchor,joint,gain,Medical task term,4
+sparsify,random,conditioned_vs_b_anchor,joint,gain,Other lexical content,3
+sparsify,random,conditioned_vs_b_anchor,joint,gain,Question word,11
+sparsify,random,conditioned_vs_b_anchor,joint,gain,Spatial content,2
+sparsify,random,conditioned_vs_b_anchor,joint,gain,Unaligned or answer-only,3
+sparsify,random,conditioned_vs_b_anchor,joint,loss,Anatomical content,1
+sparsify,random,conditioned_vs_b_anchor,joint,loss,Function word,1
+sparsify,random,conditioned_vs_b_anchor,joint,loss,Medical task term,1
+sparsify,random,conditioned_vs_b_anchor,joint,loss,Other lexical content,3
+sparsify,random,conditioned_vs_b_anchor,joint,loss,Punctuation,2
+sparsify,random,conditioned_vs_b_anchor,joint,loss,Unaligned or answer-only,7
+sparsify,random,conditioned_vs_b_anchor,question,gain,Anatomical content,1
+sparsify,random,conditioned_vs_b_anchor,question,gain,Function word,1
+sparsify,random,conditioned_vs_b_anchor,question,gain,General VQA task term,1
+sparsify,random,conditioned_vs_b_anchor,question,gain,General image term,12
+sparsify,random,conditioned_vs_b_anchor,question,gain,Medical task term,4
+sparsify,random,conditioned_vs_b_anchor,question,gain,Other lexical content,3
+sparsify,random,conditioned_vs_b_anchor,question,gain,Question word,11
+sparsify,random,conditioned_vs_b_anchor,question,gain,Spatial content,2
+sparsify,random,conditioned_vs_b_anchor,question,loss,Anatomical content,1
+sparsify,random,conditioned_vs_b_anchor,question,loss,Function word,1
+sparsify,random,conditioned_vs_b_anchor,question,loss,Medical task term,1
+sparsify,random,conditioned_vs_b_anchor,question,loss,Other lexical content,3
+sparsify,random,conditioned_vs_b_anchor,question,loss,Punctuation,2
+sparsify,random,conditioned_vs_blind,answer,gain,Unaligned or answer-only,4
+sparsify,random,conditioned_vs_blind,exclusive,gain,Anatomical content,1
+sparsify,random,conditioned_vs_blind,exclusive,gain,General VQA task term,1
+sparsify,random,conditioned_vs_blind,exclusive,gain,General image term,1
+sparsify,random,conditioned_vs_blind,exclusive,gain,Medical task term,4
+sparsify,random,conditioned_vs_blind,exclusive,gain,Other lexical content,2
+sparsify,random,conditioned_vs_blind,exclusive,gain,Question word,2
+sparsify,random,conditioned_vs_blind,exclusive,gain,Spatial content,2
+sparsify,random,conditioned_vs_blind,exclusive,loss,Function word,1
+sparsify,random,conditioned_vs_blind,exclusive,loss,General image term,2
+sparsify,random,conditioned_vs_blind,exclusive,loss,Other lexical content,2
+sparsify,random,conditioned_vs_blind,exclusive,loss,Punctuation,1
+sparsify,random,conditioned_vs_blind,joint,gain,Anatomical content,1
+sparsify,random,conditioned_vs_blind,joint,gain,General VQA task term,1
+sparsify,random,conditioned_vs_blind,joint,gain,General image term,1
+sparsify,random,conditioned_vs_blind,joint,gain,Medical task term,4
+sparsify,random,conditioned_vs_blind,joint,gain,Other lexical content,2
+sparsify,random,conditioned_vs_blind,joint,gain,Question word,2
+sparsify,random,conditioned_vs_blind,joint,gain,Spatial content,2
+sparsify,random,conditioned_vs_blind,joint,gain,Unaligned or answer-only,4
+sparsify,random,conditioned_vs_blind,joint,loss,Function word,1
+sparsify,random,conditioned_vs_blind,joint,loss,General image term,2
+sparsify,random,conditioned_vs_blind,joint,loss,Other lexical content,2
+sparsify,random,conditioned_vs_blind,joint,loss,Punctuation,1
+sparsify,random,conditioned_vs_blind,question,gain,Anatomical content,1
+sparsify,random,conditioned_vs_blind,question,gain,General VQA task term,1
+sparsify,random,conditioned_vs_blind,question,gain,General image term,1
+sparsify,random,conditioned_vs_blind,question,gain,Medical task term,4
+sparsify,random,conditioned_vs_blind,question,gain,Other lexical content,2
+sparsify,random,conditioned_vs_blind,question,gain,Question word,2
+sparsify,random,conditioned_vs_blind,question,gain,Spatial content,2
+sparsify,random,conditioned_vs_blind,question,loss,Function word,1
+sparsify,random,conditioned_vs_blind,question,loss,General image term,2
+sparsify,random,conditioned_vs_blind,question,loss,Other lexical content,2
+sparsify,random,conditioned_vs_blind,question,loss,Punctuation,1
+sparsify,random,conditioned_vs_residual,answer,gain,Anatomical content,2
+sparsify,random,conditioned_vs_residual,answer,gain,Unaligned or answer-only,72
+sparsify,random,conditioned_vs_residual,answer,loss,Unaligned or answer-only,8
+sparsify,random,conditioned_vs_residual,exclusive,gain,Anatomical content,3
+sparsify,random,conditioned_vs_residual,exclusive,gain,Function word,1
+sparsify,random,conditioned_vs_residual,exclusive,gain,General VQA task term,1
+sparsify,random,conditioned_vs_residual,exclusive,gain,General image term,12
+sparsify,random,conditioned_vs_residual,exclusive,gain,Medical task term,3
+sparsify,random,conditioned_vs_residual,exclusive,gain,Other lexical content,3
+sparsify,random,conditioned_vs_residual,exclusive,gain,Question word,10
+sparsify,random,conditioned_vs_residual,exclusive,gain,Spatial content,2
+sparsify,random,conditioned_vs_residual,exclusive,loss,Anatomical content,2
+sparsify,random,conditioned_vs_residual,exclusive,loss,Function word,1
+sparsify,random,conditioned_vs_residual,exclusive,loss,General image term,1
+sparsify,random,conditioned_vs_residual,exclusive,loss,Medical task term,2
+sparsify,random,conditioned_vs_residual,exclusive,loss,Other lexical content,4
+sparsify,random,conditioned_vs_residual,exclusive,loss,Punctuation,3
+sparsify,random,conditioned_vs_residual,joint,gain,Anatomical content,5
+sparsify,random,conditioned_vs_residual,joint,gain,Function word,1
+sparsify,random,conditioned_vs_residual,joint,gain,General VQA task term,1
+sparsify,random,conditioned_vs_residual,joint,gain,General image term,12
+sparsify,random,conditioned_vs_residual,joint,gain,Medical task term,3
+sparsify,random,conditioned_vs_residual,joint,gain,Other lexical content,3
+sparsify,random,conditioned_vs_residual,joint,gain,Question word,10
+sparsify,random,conditioned_vs_residual,joint,gain,Spatial content,2
+sparsify,random,conditioned_vs_residual,joint,gain,Unaligned or answer-only,72
+sparsify,random,conditioned_vs_residual,joint,loss,Anatomical content,2
+sparsify,random,conditioned_vs_residual,joint,loss,Function word,1
+sparsify,random,conditioned_vs_residual,joint,loss,General image term,1
+sparsify,random,conditioned_vs_residual,joint,loss,Medical task term,2
+sparsify,random,conditioned_vs_residual,joint,loss,Other lexical content,4
+sparsify,random,conditioned_vs_residual,joint,loss,Punctuation,3
+sparsify,random,conditioned_vs_residual,joint,loss,Unaligned or answer-only,8
+sparsify,random,conditioned_vs_residual,question,gain,Anatomical content,5
+sparsify,random,conditioned_vs_residual,question,gain,Function word,1
+sparsify,random,conditioned_vs_residual,question,gain,General VQA task term,1
+sparsify,random,conditioned_vs_residual,question,gain,General image term,12
+sparsify,random,conditioned_vs_residual,question,gain,Medical task term,3
+sparsify,random,conditioned_vs_residual,question,gain,Other lexical content,3
+sparsify,random,conditioned_vs_residual,question,gain,Question word,10
+sparsify,random,conditioned_vs_residual,question,gain,Spatial content,2
+sparsify,random,conditioned_vs_residual,question,loss,Anatomical content,2
+sparsify,random,conditioned_vs_residual,question,loss,Function word,1
+sparsify,random,conditioned_vs_residual,question,loss,General image term,1
+sparsify,random,conditioned_vs_residual,question,loss,Medical task term,2
+sparsify,random,conditioned_vs_residual,question,loss,Other lexical content,4
+sparsify,random,conditioned_vs_residual,question,loss,Punctuation,3
+sparsify,random,conditioned_vs_wrong,answer,gain,Unaligned or answer-only,4
+sparsify,random,conditioned_vs_wrong,exclusive,gain,Anatomical content,1
+sparsify,random,conditioned_vs_wrong,exclusive,gain,General VQA task term,2
+sparsify,random,conditioned_vs_wrong,exclusive,gain,General image term,1
+sparsify,random,conditioned_vs_wrong,exclusive,gain,Medical task term,4
+sparsify,random,conditioned_vs_wrong,exclusive,gain,Other lexical content,2
+sparsify,random,conditioned_vs_wrong,exclusive,gain,Question word,2
+sparsify,random,conditioned_vs_wrong,exclusive,gain,Spatial content,2
+sparsify,random,conditioned_vs_wrong,exclusive,loss,Anatomical content,1
+sparsify,random,conditioned_vs_wrong,exclusive,loss,General VQA task term,1
+sparsify,random,conditioned_vs_wrong,exclusive,loss,General image term,1
+sparsify,random,conditioned_vs_wrong,exclusive,loss,Medical task term,3
+sparsify,random,conditioned_vs_wrong,exclusive,loss,Other lexical content,2
+sparsify,random,conditioned_vs_wrong,exclusive,loss,Punctuation,1
+sparsify,random,conditioned_vs_wrong,exclusive,loss,Question word,2
+sparsify,random,conditioned_vs_wrong,exclusive,loss,Spatial content,1
+sparsify,random,conditioned_vs_wrong,joint,gain,Anatomical content,1
+sparsify,random,conditioned_vs_wrong,joint,gain,General VQA task term,2
+sparsify,random,conditioned_vs_wrong,joint,gain,General image term,1
+sparsify,random,conditioned_vs_wrong,joint,gain,Medical task term,4
+sparsify,random,conditioned_vs_wrong,joint,gain,Other lexical content,2
+sparsify,random,conditioned_vs_wrong,joint,gain,Question word,2
+sparsify,random,conditioned_vs_wrong,joint,gain,Spatial content,2
+sparsify,random,conditioned_vs_wrong,joint,gain,Unaligned or answer-only,4
+sparsify,random,conditioned_vs_wrong,joint,loss,Anatomical content,1
+sparsify,random,conditioned_vs_wrong,joint,loss,General VQA task term,1
+sparsify,random,conditioned_vs_wrong,joint,loss,General image term,1
+sparsify,random,conditioned_vs_wrong,joint,loss,Medical task term,3
+sparsify,random,conditioned_vs_wrong,joint,loss,Other lexical content,2
+sparsify,random,conditioned_vs_wrong,joint,loss,Punctuation,1
+sparsify,random,conditioned_vs_wrong,joint,loss,Question word,2
+sparsify,random,conditioned_vs_wrong,joint,loss,Spatial content,1
+sparsify,random,conditioned_vs_wrong,question,gain,Anatomical content,1
+sparsify,random,conditioned_vs_wrong,question,gain,General VQA task term,2
+sparsify,random,conditioned_vs_wrong,question,gain,General image term,1
+sparsify,random,conditioned_vs_wrong,question,gain,Medical task term,4
+sparsify,random,conditioned_vs_wrong,question,gain,Other lexical content,2
+sparsify,random,conditioned_vs_wrong,question,gain,Question word,2
+sparsify,random,conditioned_vs_wrong,question,gain,Spatial content,2
+sparsify,random,conditioned_vs_wrong,question,loss,Anatomical content,1
+sparsify,random,conditioned_vs_wrong,question,loss,General VQA task term,1
+sparsify,random,conditioned_vs_wrong,question,loss,General image term,1
+sparsify,random,conditioned_vs_wrong,question,loss,Medical task term,3
+sparsify,random,conditioned_vs_wrong,question,loss,Other lexical content,2
+sparsify,random,conditioned_vs_wrong,question,loss,Punctuation,1
+sparsify,random,conditioned_vs_wrong,question,loss,Question word,2
+sparsify,random,conditioned_vs_wrong,question,loss,Spatial content,1

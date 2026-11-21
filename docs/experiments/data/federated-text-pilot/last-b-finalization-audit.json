@@ -1,0 +1,224 @@
+{
+  "status": "passed",
+  "baseline_candidate_sets_exact": 180,
+  "primary_hashes_verified": 451,
+  "image_blind_score_equalities": 90,
+  "candidate_counts": [
+    109
+  ],
+  "aggregate_and_historical_metrics_recomputed": true,
+  "all_primary_scores_before_truth": true,
+  "fusion_gate": {
+    "clean_beats_prior": true,
+    "defenses_beating_baselines_and_wrong_upload": [
+      "noise",
+      "sparsify"
+    ],
+    "passed": true
+  },
+  "fusion_rule_checked": true,
+  "paired_answer_changes": [
+    {
+      "condition": "fedsgd-b1",
+      "image": "gt",
+      "comparator": "baseline",
+      "n": 30,
+      "answer_recall_delta": -0.3011374842334595,
+      "recall_wins": 0,
+      "recall_losses": 24,
+      "answer_full_coverage_gains": 0,
+      "answer_full_coverage_losses": 21
+    },
+    {
+      "condition": "fedsgd-b1",
+      "image": "gt",
+      "comparator": "lm_prior",
+      "n": 30,
+      "answer_recall_delta": 0.45653938768489855,
+      "recall_wins": 25,
+      "recall_losses": 1,
+      "answer_full_coverage_gains": 2,
+      "answer_full_coverage_losses": 1
+    },
+    {
+      "condition": "fedsgd-b1",
+      "image": "gt",
+      "comparator": "wrong_upload",
+      "n": 30,
+      "answer_recall_delta": 0.5529794461644306,
+      "recall_wins": 25,
+      "recall_losses": 0,
+      "answer_full_coverage_gains": 5,
+      "answer_full_coverage_losses": 0
+    },
+    {
+      "condition": "fedsgd-b1",
+      "image": "random",
+      "comparator": "baseline",
+      "n": 30,
+      "answer_recall_delta": -0.3011374842334595,
+      "recall_wins": 0,
+      "recall_losses": 24,
+      "answer_full_coverage_gains": 0,
+      "answer_full_coverage_losses": 21
+    },
+    {
+      "condition": "fedsgd-b1",
+      "image": "random",
+      "comparator": "lm_prior",
+      "n": 30,
+      "answer_recall_delta": 0.45653938768489855,
+      "recall_wins": 25,
+      "recall_losses": 1,
+      "answer_full_coverage_gains": 2,
+      "answer_full_coverage_losses": 1
+    },
+    {
+      "condition": "fedsgd-b1",
+      "image": "random",
+      "comparator": "wrong_upload",
+      "n": 30,
+      "answer_recall_delta": 0.5529794461644306,
+      "recall_wins": 25,
+      "recall_losses": 0,
+      "answer_full_coverage_gains": 5,
+      "answer_full_coverage_losses": 0
+    },
+    {
+      "condition": "noise",
+      "image": "gt",
+      "comparator": "baseline",
+      "n": 30,
+      "answer_recall_delta": 0.3459041394335512,
+      "recall_wins": 20,
+      "recall_losses": 4,
+      "answer_full_coverage_gains": 4,
+      "answer_full_coverage_losses": 1
+    },
+    {
+      "condition": "noise",
+      "image": "gt",
+      "comparator": "lm_prior",
+      "n": 30,
+      "answer_recall_delta": 0.45653938768489855,
+      "recall_wins": 25,
+      "recall_losses": 1,
+      "answer_full_coverage_gains": 2,
+      "answer_full_coverage_losses": 1
+    },
+    {
+      "condition": "noise",
+      "image": "gt",
+      "comparator": "wrong_upload",
+      "n": 30,
+      "answer_recall_delta": 0.5529794461644306,
+      "recall_wins": 25,
+      "recall_losses": 0,
+      "answer_full_coverage_gains": 5,
+      "answer_full_coverage_losses": 0
+    },
+    {
+      "condition": "noise",
+      "image": "random",
+      "comparator": "baseline",
+      "n": 30,
+      "answer_recall_delta": 0.29395969498910673,
+      "recall_wins": 18,
+      "recall_losses": 4,
+      "answer_full_coverage_gains": 3,
+      "answer_full_coverage_losses": 1
+    },
+    {
+      "condition": "noise",
+      "image": "random",
+      "comparator": "lm_prior",
+      "n": 30,
+      "answer_recall_delta": 0.45653938768489855,
+      "recall_wins": 25,
+      "recall_losses": 1,
+      "answer_full_coverage_gains": 2,
+      "answer_full_coverage_losses": 1
+    },
+    {
+      "condition": "noise",
+      "image": "random",
+      "comparator": "wrong_upload",
+      "n": 30,
+      "answer_recall_delta": 0.5529794461644306,
+      "recall_wins": 25,
+      "recall_losses": 0,
+      "answer_full_coverage_gains": 5,
+      "answer_full_coverage_losses": 0
+    },
+    {
+      "condition": "sparsify",
+      "image": "gt",
+      "comparator": "baseline",
+      "n": 30,
+      "answer_recall_delta": 0.07932748538011695,
+      "recall_wins": 13,
+      "recall_losses": 10,
+      "answer_full_coverage_gains": 2,
+      "answer_full_coverage_losses": 2
+    },
+    {
+      "condition": "sparsify",
+      "image": "gt",
+      "comparator": "lm_prior",
+      "n": 30,
+      "answer_recall_delta": 0.41977353514505217,
+      "recall_wins": 24,
+      "recall_losses": 1,
+      "answer_full_coverage_gains": 2,
+      "answer_full_coverage_losses": 1
+    },
+    {
+      "condition": "sparsify",
+      "image": "gt",
+      "comparator": "wrong_upload",
+      "n": 30,
+      "answer_recall_delta": 0.5236210010319917,
+      "recall_wins": 24,
+      "recall_losses": 1,
+      "answer_full_coverage_gains": 5,
+      "answer_full_coverage_losses": 0
+    },
+    {
+      "condition": "sparsify",
+      "image": "random",
+      "comparator": "baseline",
+      "n": 30,
+      "answer_recall_delta": 0.08014720215571608,
+      "recall_wins": 13,
+      "recall_losses": 11,
+      "answer_full_coverage_gains": 2,
+      "answer_full_coverage_losses": 3
+    },
+    {
+      "condition": "sparsify",
+      "image": "random",
+      "comparator": "lm_prior",
+      "n": 30,
+      "answer_recall_delta": 0.41977353514505217,
+      "recall_wins": 24,
+      "recall_losses": 1,
+      "answer_full_coverage_gains": 2,
+      "answer_full_coverage_losses": 1
+    },
+    {
+      "condition": "sparsify",
+      "image": "random",
+      "comparator": "wrong_upload",
+      "n": 30,
+      "answer_recall_delta": 0.5236210010319917,
+      "recall_wins": 24,
+      "recall_losses": 1,
+      "answer_full_coverage_gains": 5,
+      "answer_full_coverage_losses": 0
+    }
+  ],
+  "source_sha256": "885c69d9edb5160ba2ca5d22dd0757144a611d7f1cd5d26c2921afac11059df5",
+  "uses_private_reference": false,
+  "contains_private_tokens": false,
+  "uncommitted": true
+}

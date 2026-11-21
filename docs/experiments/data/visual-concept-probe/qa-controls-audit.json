@@ -1,0 +1,14 @@
+{
+  "analysis_source_sha256": "285b6493963020480b2486b75cffb74b77410fa434b237795047d1cdb8e84d81",
+  "conditions": 396,
+  "distances_recomputed": 4752,
+  "frozen_actual_runtime_source": "/home/zx/nas/GitRepos/giavlm/outputs/diagnostics/multilayer_property_20261101/source-qa-controls-v1/evaluation/qa_type_controls.py",
+  "max_distance_error": 3.3306690738754696e-16,
+  "old_q_gradients_exact": 396,
+  "plan_sha256": "18064571a9b230233a157ad79292d0dcb5a63939278343bf16295d86c6b7782c",
+  "pooled_visual_feature_comparisons_equal": 792,
+  "predictions_sha256": "2c77f611139735f90109f005a935eb7c9d1550673e0d6a7ad4fc62b2227b2e82",
+  "source_manifest_sha256": "aee97407a4c684727f756d4f7aa4b6c05f571678eac36fe8135851cb5107294b",
+  "status": "pass",
+  "token_additivity_metric_error": 0.0
+}

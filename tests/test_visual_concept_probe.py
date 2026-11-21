@@ -1,6 +1,31 @@
 import torch
+from types import SimpleNamespace
 
-from evaluation.visual_concept_probe import concept_distance, class_scores, visual_basis, native_hard_loss
+from evaluation.visual_concept_probe import concept_distance, class_scores, visual_basis, native_hard_loss, inject_logits
+
+
+def test_fp32_visual_master_enters_native_model_dtype_and_keeps_its_gradient():
+    torch.manual_seed(12)
+    embedding = torch.nn.Embedding(7, 4, dtype=torch.bfloat16)
+
+    class CausalModel(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.head = torch.nn.Linear(4, 7, dtype=torch.bfloat16)
+
+        def forward(self, inputs_embeds, **kwargs):
+            assert inputs_embeds.dtype == torch.bfloat16
+            return SimpleNamespace(logits=self.head(inputs_embeds.cumsum(1)))
+
+    adapter = SimpleNamespace(dtype=torch.bfloat16, embedding=lambda: embedding,
+        training_spec=SimpleNamespace(task="vqa"),
+        backend=SimpleNamespace(language_model=CausalModel()),
+        public_embeddings=lambda text, batch: embedding(torch.zeros(batch, 1, dtype=torch.long)))
+    visual = torch.randn(1, 3, 4, dtype=torch.float32, requires_grad=True)
+    logits = inject_logits(adapter, visual, torch.tensor([[1, 2]]), torch.tensor([[3, 4]]))
+    derivative, = torch.autograd.grad(logits.float().sum(), visual)
+    assert derivative.dtype == torch.float32 and derivative.norm() > 0
+    assert torch.isfinite(derivative).all()
 
 
 def test_concept_distance_rejects_zero_text_residual():

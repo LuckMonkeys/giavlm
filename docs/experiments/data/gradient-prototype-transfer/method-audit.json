@@ -1,0 +1,16 @@
+{
+  "aggregate_sha256": "beb14a518bac4595b72c8df14770461129b01101c069af598f707ed41125cc61",
+  "analysis_source_sha256": "ff2f870cf5d46739a18375068bff8fbb1cf4decf43995280dd46b66919a3e4a6",
+  "full_bank_distances_replayed": 1536,
+  "gpu_used": false,
+  "independent_direct_distances": 480,
+  "main_metric_groups": 48,
+  "max_distance_error": 3.2751579226442118e-15,
+  "new_medical_images": 0,
+  "prediction_commit_verified": true,
+  "public_only_rules_reproduced": true,
+  "sampling_rows_recomputed": 5832,
+  "score_ranking_unchanged_by_offset": true,
+  "source_manifest_sha256": "af36af78e0ba291a7f81a8f3723b710859524384e1dfcbeea4cf27a079a98e34",
+  "status": "pass"
+}

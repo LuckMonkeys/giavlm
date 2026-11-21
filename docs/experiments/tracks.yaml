@@ -30,14 +30,30 @@ discriminability:
 property:
   title: 属性推断
   icon: material-tag-search-outline
-  headline: 公开原型库和医学合成候选都显示出模态或部位信号，但相对文本对照的优势仍不确定。
+  headline: 医学合成原型使 Q24 在两模型两数据集均判对 20/20，仍需新目标确认。
   summary:
+    - 医学合成原型改善预定 Q24：LLaVA 在 SLAKE、VQA-RAD 原始问答均从等数量摄影库的 9/20、10/20 升至 20/20，Qwen 从 11/20、15/20 升至 20/20；两库公开阈值都为零，医学先验显式声明。
+    - Q24 在 SLAKE CT、MRI 和 VQA-RAD CT 内均为 8/8，两模型一致；Qwen Q32 原始问答仍只有 14/20、15/20，不能把末层视为通用最佳层。
+    - 当前满分来自反复分析过的四十图，新增一套三十二张生成库；部分 CT/MRI 提示并未生成真实对应模态，只验证 Head 属性，不代表临床有效或独立泛化确认。
+    - 固定相同问答后，公开与医学图的分差仍明显错位，问答不同不是唯一原因；Qwen Q24 的头部中位分差从公开 0.146685 降至医学 0.004680、0.009599，低于公开阈值 0.053032。
+    - 预定 Relative energy 的公开阈值在两模型 Q24、Q32 的全部医学条件中仍为 0.500、Head recall 为零；简单总体投影能量归一化不足，不代表医学上传没有排序信息。
+    - 原纯真实公开医学库因头部 CT 目视入组仅六张、少于所需八张而停止；后经用户授权完成全合成医学库替代条件，两个条件分别记录。
+    - 更多公开原型减少抽样波动但不保证更准：Qwen 的 VQA-RAD 从每类三张增至十二张，平均翻转从 44.50% 降至 1.00%，平均 Balanced accuracy 仍约 0.54。
+    - 公开规则均选 Q24，但指标大量并列；Qwen 原始问答的 SLAKE、VQA-RAD 为 0.700、0.800，LLaVA 均为 0.500。不能把公开并列胜出视为通用最佳层。
+    - 公开选层后校准的候选主方案在两模型、两数据集、两问答均全部判非头部，Balanced accuracy 为 0.500；这些是既有四十图的重复诊断，没有新目标确认。
+    - 预定 Q32 主条件在本轮 LLaVA 的 SLAKE 与 VQA-RAD 均为 14/20，Qwen3.5 分别为 12/20、11/20；同一模型快照评价两个数据集，固定末层规则未稳定迁移。
+    - Qwen 的 V24 在 VQA-RAD 原始问答下为 18/20，固定问答的 Q24 为 19/20；均是预定次要配置，需要公开选层和新目标确认，不能替换本轮主结果。
+    - 固定问答改善排序但不保证分类：LLaVA 两数据集 Q32 的 Head AUROC 都为 1.000，Accuracy 仍为 0.700、0.600；Qwen 在 VQA-RAD 的 AUROC 为 0.920，却全部判非头部。
     - 公开原型库推断模态：三十张新图像上重构文本准确率 0.600，高于 Model-only 的 0.400；相对校准文本对照的优势仍不确定。
     - 医学合成候选能判断部位：CT 队列 10/10，混合模态队列 18/20；样本与此前 pilot 重叠，仍需独立验证。
     - 换成通用摄影候选后平均只有 0.550，现有成功证据限于具有医学外观的候选库。
-    - 公开合成图的原始词向量概念探针未过门槛；真实视觉 tokens 可读出头部属性，接口一致性不等于梯度恢复成功。
-  start_here: [image-property-inference]
-  pages: [image-property-inference, synthetic-property, image-property-ideas]
+    - 首层词向量概念探针未通过门槛；真实视觉 tokens 读出时摄影组 61/72、医学组 24/24 判对，视觉表征本身含部位信息。
+    - 公开非医学原型的第 32 层 Q 能从医学上传判断头部：A、B、C 三批 Head Balanced accuracy 为 0.750、0.700、0.854，A 批 CT、MRI 内部分别判对 6/8、8/8；腹部仍接近随机。
+    - 公开数据选定的第 24 层和换用的 V24 在三批医学图像上几乎全部判负；多层聚合与多问答校准也没有改善。
+    - 末层 Q 对问题上下文敏感：公开图上固定回答、只换问题，Head Balanced accuracy 从 0.917 降到 0.500，加长回答不能恢复。
+    - 候选评分的张量加权与类内抑制、视觉 tokens 凸组合恢复都没有超过简单基线。
+  start_here: [image-property-inference, gradient-prototype-transfer]
+  pages: [image-property-inference, synthetic-property, image-property-ideas, gradient-prototype-transfer, candidate-scoring, visual-concept-probe, convex-token-recovery]
 text-tag:
   title: 文本重建（TAG）
   icon: material-text-search
@@ -50,17 +66,21 @@ text-tag:
 text-dager:
   title: 文本重建（DAGER）
   icon: material-text-recognition
-  headline: 固定四条问答时，四步 SGD 仍可恢复文本。
+  headline: 问题先验改善部分覆盖，完整问答候选覆盖仍不足。
   summary:
     - 两模型、三数据集、72 个 QA 共 288 次攻击已完成（rank 32、先验权重 0.01）。
-    - 固定每份上传四条 QA、bf16 主干与 FP32 LoRA 更新时，B1S4、B2S2、B4S1 的 Joint EM 为 GT 4/28、5/28、4/28，Random 1/28、1/28、3/28；四步仍泄露文本，七组数据不足以认定稳定的步数趋势。
-    - bf16 计算、FP32 参数更新的真实 SGD 对照中，单步与梯度均恢复 GT 10/30、Random 6/30，两步仍为 9/30、5/30；两步同时改变 batch 与 loss 加权，不能单独估计纯步数影响。
-    - 同一梯度的 SGD 单步更新对照中，标准 bf16 差值的 Joint EM 为 0/30；FP32 更新回到 GT 10/30、Random 6/30，表明参数舍入是本轮下降的主要原因，不能据此推断多步 FedAvg 的效果。AdamW 单步算术虽基本避免归零，但后续四样本差值提案在 FP32/bf16、单步/双步下均未恢复完整问答，当前不扩大矩阵。
+    - 防御下六方向验证完成：Noise Random 的无条件问题先验将问题 recall 从 B anchor 的 0.1075 提高到 0.4659，新增命中 98.5% 为问句结构、图像通用词或标点；完整问答候选仍为 Noise 0/30、Top-k 1/30。
+    - 浅层 L1 up 在 Noise Random 的首词 Top-5 命中为 8/30，同池 K/V 为 2/30、错配为 4/30；只有同批首词线索，没有新样本或序列确认。
+    - 原固定攻击在加噪和 Top-k 下完整恢复为 0/30，全局裁剪几乎没有影响；第零层部分消除、谱加权和 A/B 校正都未改善完整候选覆盖，LM 动态候选也未恢复完整问答。
+    - bf16 参数更新会抹掉所检坐标中约 93% 的 SGD 差值，恢复因此归零；改用 FP32 参数更新后回到与梯度相同的 GT 10/30、Random 6/30。
+    - 混合与多步本地 SGD 都没有阻断泄露：每份上传 4 条问答、本地 4 步（B1S4）仍恢复 GT 4/28、Random 1/28。
+    - AdamW 差值在 Pilot4 上全部失败（Joint EM 0/4），候选提案阶段就漏了 token；这不是隐私保证。
     - Random 条件下，Qwen3.5 在 SLAKE、VQA-RAD、VQAv2 的 Joint EM 为 25/30、11/21、8/21，LLaVA 为 11/30、3/21、2/21；两者结构不同，不能单独归因于架构。
     - 私有文本的 token 集合会泄露：rank 32 的 Residual 在随机图像下 Recall@100 约 0.994。
     - 提高 LoRA rank 改善恢复：已知图像时完整问答从 rank 8 的 0/10 升到 rank 32 的 5/10。
     - rank 32 加入语言先验后，十个新问答的完整恢复从 0/10 升到 8/10；rank 8 只升到 2/10；默认权重仍为 0。
     - 候选找齐仍不保证恢复：LLaVA 在 VQA-RAD 候选全部覆盖，完整恢复只有 GT 8/21、Random 3/21。
     - 三种第一阶段筛选改进都没有通过独立验证，保留现有筛选器。
+    - 64 个 B 位置同预算扫描后，按预设 Noise/Top-k 补充答案 recall 均值选出的模块候选仍为 L31 down、L32 o（0.8482、0.8462）；Top-k 单项召回以 L29 o 的 0.8738 略高，联合候选覆盖仍最多 1/30，尚未独立确认或运行新序列搜索。
   start_here: [crossmodel-text-benchmark]
-  pages: [crossmodel-text-benchmark, federated-text-pilot, dager-lm-prior, dager-multisample, dager-filter-phase, dager-single-sample-diagnostics]
+  pages: [crossmodel-text-benchmark, federated-text-pilot, dager-upload-defense, dager-lm-prior, dager-multisample, dager-filter-phase, dager-single-sample-diagnostics]

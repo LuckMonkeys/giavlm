@@ -1,0 +1,8 @@
+{
+  "figure_sha256": "f49ea8b3d1f3cf4be7253fc6d684cebbbc1d55ddf233bd08774f2f2f72e6f3a4",
+  "public_report_sha256": "1a81a8cfa6c701811cba4ef49c7ef84cfd6f500446f08deaebd73197f4817fcb",
+  "report_sha256": "1a81a8cfa6c701811cba4ef49c7ef84cfd6f500446f08deaebd73197f4817fcb",
+  "scope": "Matched diagnostic on the same 20 images; fixed task is known, not a new unknown-QA benchmark",
+  "source_sha256": "26956414d9e439b14c2826d88ab469f0241a47955af34a93150f27b1da64c0b6",
+  "summary_sha256": "baa2b119c33c13e2ece3261993c6c434209a8cb56e1c131aa39baea71f616e8c"
+}

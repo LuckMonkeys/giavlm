@@ -1,0 +1,10 @@
+{
+  "clean_beats_prior": true,
+  "defenses_beating_baselines_and_wrong_upload": [
+    "noise",
+    "sparsify"
+  ],
+  "passed": true,
+  "prespecified": true,
+  "time": 1793775970.3012145
+}

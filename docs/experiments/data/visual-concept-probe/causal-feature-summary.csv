@@ -1,0 +1,10 @@
+Variant,Comparisons,Bit equal,Max absolute error,Max relative L2
+baseline,192,192,0.0,0.0
+question_only,192,192,0.0,0.0
+answer_only,192,192,0.0,0.0
+both_changed,192,192,0.0,0.0
+compact_suffix,192,6,0.3125,0.017338382027021725
+prefix_only,192,6,0.34375,0.01764266903033091
+changed_public_prefix,192,6,7.6171875,0.2375559498313764
+image_only,192,6,18.79296875,1.385868442351322
+repeat_baseline,192,192,0.0,0.0
